@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, HunchSplash!</string>
-    <string name="app_name">Hunchdroid</string>
+    <string name="hello">Hello World, HunchMain!</string>
+    <string name="app_name">Hunch</string>
+<string name="placeholderButton">Do Something</string>
+<string name="listCategoriesButton">Load Categories</string>
 </resources>

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
-</LinearLayout>
+
+<RelativeLayout android:id="@+id/RelativeLayout01"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<Button android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_centerInParent="false"
+		android:layout_centerHorizontal="true"
+		android:layout_alignParentBottom="true" android:text="@string/listCategoriesButton"
+		android:id="@+id/categoriesButton"></Button>
+	
+
+
+
+<ListView android:layout_centerHorizontal="true" android:layout_height="wrap_content" android:layout_above="@+id/categoriesButton" android:id="@+id/catList" android:layout_width="fill_parent"></ListView>
+</RelativeLayout>
