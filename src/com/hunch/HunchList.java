@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -164,7 +163,7 @@ public class HunchList< T extends HunchObject > extends HunchObject implements L
 	}
 
 	@Override
-	public < T > T[] toArray( T[] array )
+	public < type > type[] toArray( type[] array )
 	{
 		return list.toArray( array );
 	}
@@ -172,7 +171,7 @@ public class HunchList< T extends HunchObject > extends HunchObject implements L
 	@Override
 	public JSONObject getJSON()
 	{
-		return null;
+		throw new UnsupportedOperationException( "getJSON() not supported on HunchList objects!" );
 	}
 
 }

@@ -308,7 +308,7 @@ public class HunchAPI
 
 	public void authenticateUser( String email_or_username, String password )
 	{
-
+		throw new UnsupportedOperationException( "authenticateUser() not yet implemented." ); 
 	}
 
 	public void getQuestion( Map< String, String > params,
