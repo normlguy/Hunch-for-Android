@@ -6,7 +6,7 @@ public class HunchCategory extends HunchObject
 {
 	private static Builder b;
 	
-	static class Builder
+	static class Builder extends HunchObject.Builder
 	{
 		private JSONObject val;
 		private String buildName, buildUrlName, buildImageUrl;
@@ -14,7 +14,8 @@ public class HunchCategory extends HunchObject
 		// instance control
 		protected Builder() {}
 		
-		protected Builder init( JSONObject j )
+		@Override
+		Builder init( JSONObject j )
 		{
 			val = j;
 			return this;
@@ -38,6 +39,7 @@ public class HunchCategory extends HunchObject
 			return this;
 		}
 		
+		@Override
 		void reset()
 		{
 			val = null;
@@ -46,6 +48,7 @@ public class HunchCategory extends HunchObject
 			buildImageUrl = null;
 		}
 		
+		@Override
 		HunchCategory build()
 		{
 			if( val == null || buildName == null || buildUrlName == null || buildImageUrl == null )

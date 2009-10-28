@@ -76,11 +76,7 @@ public class HunchAPI
 			HttpURLConnection con = initCall();
 			con.connect();
 
-			Response apiResponse = new Response();
-
-			apiResponse.buildFromOpenHttp( con );
-
-			return apiResponse;
+			return new Response( con );
 
 		}
 
@@ -222,16 +218,6 @@ public class HunchAPI
 		private String responseText;
 		private boolean responseReceived = false;
 
-		public Response()
-		{
-
-		}
-
-		public Response( String responseStr )
-		{
-			responseText = responseStr;
-		}
-
 		/**
 		 * Builds this Response from an open HttpURLConnection.
 		 * 
@@ -239,7 +225,18 @@ public class HunchAPI
 		 *            An already-opened and connected connection to the Request
 		 *            URL.
 		 */
-		public void buildFromOpenHttp( HttpURLConnection con )
+		public Response( HttpURLConnection con ) throws IOException
+		{
+			buildFromOpenHttp( con );
+		}
+
+		public Response( String responseStr )
+		{
+			responseText = responseStr;
+		}
+
+		
+		private void buildFromOpenHttp( HttpURLConnection con )
 				throws IOException
 		{
 			if ( con == null )
