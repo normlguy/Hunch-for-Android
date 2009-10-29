@@ -1,11 +1,13 @@
 package com.hunch;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class HunchQuestion extends HunchObject
 {
 	
 	private static Builder b;
+	private static int THAY_TOPIC_ID = -3;
 	
 	static class Builder extends HunchObject.Builder
 	{
@@ -126,6 +128,57 @@ public class HunchQuestion extends HunchObject
 	public int[] getResponseIds()
 	{
 		return _responseIds;
+	}
+	
+	static HunchQuestion buildFromJSON( JSONObject json )
+	{
+		HunchQuestion.Builder builder = getBuilder();
+		
+		// build the HunchQuestion object
+		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE;
+		JSONArray jsonResIds = (JSONArray) json.get( "responseIds" );
+		int[] resIds = new int[ jsonResIds.size() ];
+		try
+		{
+			try
+			{
+				topicId = Integer.parseInt( json.get( "topicId" ).toString() );
+			} catch ( NumberFormatException ex )
+			{
+				String topicIdVal = json.get( "topicId" ).toString();
+				if( topicIdVal.equals( "THAY" ) )
+				{
+					// Teach Hunch About You!
+					topicId = THAY_TOPIC_ID;
+				}
+				else
+				{
+					// some other cause of the NFE
+					ex.printStackTrace();
+				}
+			}
+			
+			id = Integer.parseInt( json.get( "id" ).toString() );
+			for( int i = 0; i < resIds.length; i++ )
+			{
+				Object resId = jsonResIds.get( i );
+				resIds[ i ] = Integer.parseInt( resId.toString() );
+			}
+				
+			
+		} catch ( NumberFormatException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			builder.init( json ).setId( id ).setTopicId( topicId );
+			builder.setText( json.get( "text" ).toString() );
+			builder.setImageUrl( json.get( "imageUrl").toString() );
+			builder.setResponseIds( resIds );
+		}
+		
+		return builder.build();
 	}
 
 	@Override

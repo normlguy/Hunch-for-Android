@@ -13,9 +13,9 @@ public class HunchTopic extends HunchObject
 	
 	private static Builder b;
 
-	static class Builder
+	static class Builder extends HunchObject.Builder
 	{
-		private JSONObject val;
+		private JSONObject _val;
 		private int buildId;
 		private String buildDecision, buildImageUrl, buildResultType,
 				buildUrlName, buildShortName;
@@ -26,9 +26,10 @@ public class HunchTopic extends HunchObject
 		{
 		}
 
+		@Override
 		Builder init( JSONObject val )
 		{
-			this.val = val;
+			this._val = val;
 			return this;
 		}
 
@@ -75,9 +76,10 @@ public class HunchTopic extends HunchObject
 			return this;
 		}
 
+		@Override
 		void reset()
 		{
-			val = null;
+			_val = null;
 			buildId = Integer.MIN_VALUE;
 			buildDecision = null;
 			buildImageUrl = null;
@@ -87,9 +89,10 @@ public class HunchTopic extends HunchObject
 			buildIsEitherOr = false;
 		}
 
+		@Override
 		HunchTopic build()
 		{
-			if ( val == null || buildId == Integer.MIN_VALUE
+			if ( _val == null || buildId == Integer.MIN_VALUE
 							 || buildDecision == null 	 || buildImageUrl == null
 							 || buildResultType == null  || buildUrlName == null
 							 || buildShortName == null )
@@ -98,7 +101,7 @@ public class HunchTopic extends HunchObject
 						"Not all required fields set before building HunchTopic!" );
 			}
 
-			HunchTopic ht = new HunchTopic( val, buildId, buildDecision, buildImageUrl, buildResultType, buildUrlName, buildShortName, buildIsEitherOr );
+			HunchTopic ht = new HunchTopic( _val, buildId, buildDecision, buildImageUrl, buildResultType, buildUrlName, buildShortName, buildIsEitherOr );
 			reset();
 
 			return ht;
@@ -199,7 +202,7 @@ public class HunchTopic extends HunchObject
 			builder.setResultType( topic.get( "resultType" ).toString() );
 			builder.setUrlName( topic.get( "urlName" ).toString() );
 			builder.setShortName( topic.get( "shortName" ).toString() );
-			builder.setIsEitherOr( ( eitherOr == 1 ) ? true : false );
+			builder.setIsEitherOr( eitherOr == 1 );
 		}
 		
 		return builder.build();
