@@ -307,7 +307,27 @@ public class HunchAPI
 	{
 		throw new UnsupportedOperationException( "authenticateUser() not yet implemented." ); 
 	}
+	
+	public void getResponse( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
+	{
+		// get response must set the response ID
+		assureParams( params, "responseId" );
+		
+		Request responseRequest = new Request();
+		
+		responseRequest.setAPICall( "getResponse" );
+		responseRequest.addParams( params );
+	}
 
+	/**
+	 * Retrieves a specific question.
+	 * 
+	 * @param params Params to pass in the URL of the request
+	 * @param completedCallback Callback to call upon completion of this request.
+	 * 	Passes a {@link HunchQuestion} as the sole argument.
+	 * @throws RuntimeException Upon failure to complete the call.
+	 */
 	public void getQuestion( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
@@ -328,11 +348,23 @@ public class HunchAPI
 			throw new RuntimeException( "Couldn't execute a question request!",
 					e );
 		}
-
-		//completedCallback.callComplete( r );
+		
+		JSONObject question = (JSONObject) r.getJSON().get( "question" );
+		
+		HunchQuestion ret = HunchQuestion.buildFromJSON( question );
+		
+		completedCallback.callComplete( ret );
 
 	}
 
+	/**
+	 * Lists all Hunch Topics in a given category.
+	 * 
+	 * @param params Parameters to pass in the URL request.
+	 * @param completedCallback Callback to call upon completion of this request.
+	 * 	Passes a {@link HunchList} of {@link HunchTopic}s as the sole argument.
+	 * @throws RuntimeException Upon failure to complete the call.
+	 */
 	public void listTopics( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
@@ -416,13 +448,13 @@ public class HunchAPI
 					"Can not assure parameters on a null map!" );
 
 		if ( !m.containsKey( first ) || m.get( first ) == null )
-			throw new IllegalArgumentException( "the " + first
+			throw new AssertionError( "the " + first
 					+ " parameter must be present and has not been found!" );
 
 		for ( String s : rest )
 		{
 			if ( !m.containsKey( s ) || m.get( s ) == null )
-				throw new IllegalArgumentException( "the " + s
+				throw new AssertionError( "the " + s
 						+ " parameter must be present and has not been found!" );
 		}
 	}
