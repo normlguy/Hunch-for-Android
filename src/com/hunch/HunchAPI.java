@@ -308,6 +308,40 @@ public class HunchAPI
 		throw new UnsupportedOperationException( "authenticateUser() not yet implemented." ); 
 	}
 	
+	public void getResult( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		assureParams( params, "resultId" );
+		
+		Request resultRequest = new Request();
+		
+		resultRequest.setAPICall( "getResult" );
+		resultRequest.addParams( params );
+		
+		Response r;
+		try
+		{
+			r = resultRequest.execute();
+		} catch ( IOException e )
+		{
+			throw new RuntimeException( "Couldn't execute a result request!", e );
+		}
+		
+		JSONObject result = (JSONObject) r.getJSON().get( "result" );
+		
+		HunchResult ret = HunchResult.buildFromJSON( result );
+		
+		completedCallback.callComplete( ret );
+		
+	}
+	
+	/**
+	 * Retrieves a specific question.
+	 * 
+	 * @param params Params to pass in the URL of the request
+	 * @param completedCallback Callback to call upon completion of this request.
+	 * 	Passes a {@link HunchQuestion} as the sole argument.
+	 * @throws RuntimeException Upon failure to complete the call.
+	 */
 	public void getResponse( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
@@ -318,6 +352,21 @@ public class HunchAPI
 		
 		responseRequest.setAPICall( "getResponse" );
 		responseRequest.addParams( params );
+		
+		Response r;
+		try
+		{
+			r = responseRequest.execute();
+		} catch( IOException e )
+		{
+			throw new RuntimeException( "Couldn't execute a response request!", e );
+		}
+		
+		JSONObject response = (JSONObject) r.getJSON().get( "response" );
+		
+		HunchResponse ret = HunchResponse.buildFromJSON( response );
+		
+		completedCallback.callComplete( ret );
 	}
 
 	/**
@@ -334,6 +383,7 @@ public class HunchAPI
 		// get question requests must set the question ID
 		assureParams( params, "questionId" );
 
+		// send the response
 		Request questionRequest = new Request();
 
 		questionRequest.setAPICall( "getQuestion" );
@@ -349,6 +399,7 @@ public class HunchAPI
 					e );
 		}
 		
+		// get the question data, build the object, and call back to the client
 		JSONObject question = (JSONObject) r.getJSON().get( "question" );
 		
 		HunchQuestion ret = HunchQuestion.buildFromJSON( question );
@@ -357,6 +408,26 @@ public class HunchAPI
 
 	}
 
+	public void getTopic( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void searchForTopic( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void searchForResult( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void searchForQuestion( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
 	/**
 	 * Lists all Hunch Topics in a given category.
 	 * 
@@ -440,6 +511,36 @@ public class HunchAPI
 
 	}
 
+	public void responseStats( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void responsePairStats( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void responsePositiveCorrelations( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void responseNegativeCorrelations( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void nextQuestion( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
+	public void rankedResults( Map< String, String > params, HunchAPI.Callback completedCallback )
+	{
+		
+	}
+	
 	private static void assureParams( Map< String, String > m, String first,
 			String... rest )
 	{
