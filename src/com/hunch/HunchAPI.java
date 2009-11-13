@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.json.*;
 
 import android.os.Handler;
 import android.util.Log;
@@ -235,7 +233,6 @@ public class HunchAPI
 			responseText = responseStr;
 		}
 
-		
 		private void buildFromOpenHttp( HttpURLConnection con )
 				throws IOException
 		{
@@ -272,7 +269,16 @@ public class HunchAPI
 
 		public JSONObject getJSON()
 		{
-			return (JSONObject) JSONValue.parse( getRaw() );
+			JSONObject ret;
+			try
+			{
+				ret = new JSONObject( getRaw() );
+			} catch ( JSONException e )
+			{
+				throw new RuntimeException( "couldn't build JSONObject!", e );
+			}
+			
+			return ret;
 
 		}
 
@@ -305,18 +311,17 @@ public class HunchAPI
 
 	public void authenticateUser( String email_or_username, String password )
 	{
-		throw new UnsupportedOperationException( "authenticateUser() not yet implemented." ); 
+		throw new UnsupportedOperationException(
+				"authenticateUser() not yet implemented." );
 	}
-	
-	public void getResult( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void getResult( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
 		assureParams( params, "resultId" );
-		
-		Request resultRequest = new Request();
-		
-		resultRequest.setAPICall( "getResult" );
-		resultRequest.addParams( params );
-		
+
+		Request resultRequest = new Request( "getResult", params );
+
 		Response r;
 		try
 		{
@@ -325,57 +330,75 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "Couldn't execute a result request!", e );
 		}
-		
-		JSONObject result = (JSONObject) r.getJSON().get( "result" );
-		
+
+		JSONObject result;
+		try
+		{
+			result = r.getJSON().getJSONObject( "result" );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "Couldn't execute a result request!", e );
+		}
+
 		HunchResult ret = HunchResult.buildFromJSON( result );
-		
+
 		completedCallback.callComplete( ret );
-		
+
 	}
-	
+
 	/**
 	 * Retrieves a specific question.
 	 * 
-	 * @param params Params to pass in the URL of the request
-	 * @param completedCallback Callback to call upon completion of this request.
-	 * 	Passes a {@link HunchQuestion} as the sole argument.
-	 * @throws RuntimeException Upon failure to complete the call.
+	 * @param params
+	 *            Params to pass in the URL of the request
+	 * @param completedCallback
+	 *            Callback to call upon completion of this request. Passes a
+	 *            {@link HunchQuestion} as the sole argument.
+	 * @throws RuntimeException
+	 *             Upon failure to complete the call.
 	 */
 	public void getResponse( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
 		// get response must set the response ID
 		assureParams( params, "responseId" );
-		
-		Request responseRequest = new Request();
-		
-		responseRequest.setAPICall( "getResponse" );
-		responseRequest.addParams( params );
-		
+
+		Request responseRequest = new Request( "getResponse", params );
+
 		Response r;
 		try
 		{
 			r = responseRequest.execute();
-		} catch( IOException e )
+		} catch ( IOException e )
 		{
-			throw new RuntimeException( "Couldn't execute a response request!", e );
+			throw new RuntimeException( "Couldn't execute a response request!",
+					e );
 		}
-		
-		JSONObject response = (JSONObject) r.getJSON().get( "response" );
-		
+
+		JSONObject response;
+		try
+		{
+			response = r.getJSON().getJSONObject( "response" );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not execute getResponse!", e );
+		}
+
 		HunchResponse ret = HunchResponse.buildFromJSON( response );
-		
+
 		completedCallback.callComplete( ret );
 	}
 
 	/**
 	 * Retrieves a specific question.
 	 * 
-	 * @param params Params to pass in the URL of the request
-	 * @param completedCallback Callback to call upon completion of this request.
-	 * 	Passes a {@link HunchQuestion} as the sole argument.
-	 * @throws RuntimeException Upon failure to complete the call.
+	 * @param params
+	 *            Params to pass in the URL of the request
+	 * @param completedCallback
+	 *            Callback to call upon completion of this request. Passes a
+	 *            {@link HunchQuestion} as the sole argument.
+	 * @throws RuntimeException
+	 *             Upon failure to complete the call.
 	 */
 	public void getQuestion( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
@@ -398,43 +421,77 @@ public class HunchAPI
 			throw new RuntimeException( "Couldn't execute a question request!",
 					e );
 		}
-		
+
 		// get the question data, build the object, and call back to the client
-		JSONObject question = (JSONObject) r.getJSON().get( "question" );
-		
+		JSONObject question;
+		try
+		{
+			question = r.getJSON().getJSONObject( "question" );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not execute getQuestion!", e );
+		}
+
 		HunchQuestion ret = HunchQuestion.buildFromJSON( question );
-		
+
 		completedCallback.callComplete( ret );
 
 	}
 
-	public void getTopic( Map< String, String > params, HunchAPI.Callback completedCallback )
+	public void getTopic( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
 		
-	}
-	
-	public void searchForTopic( Map< String, String > params, HunchAPI.Callback completedCallback )
-	{
+		// throw exception unless we have one or the other
+		try
+		{
+			assureParams( params, "topicId" );
+		} catch( Throwable e )
+		{
+			assureParams( params, "urlName" );
+		}
 		
+		Request getTopicRequest;
+		Response r;
+		if( params.containsKey( "topicId" ) )
+		{
+			
+		}
+		else if( params.containsKey( "urlName" ) )
+		{
+			
+		}
+
 	}
-	
-	public void searchForResult( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void searchForTopic( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void searchForQuestion( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void searchForResult( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
+
+	public void searchForQuestion( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
+	{
+
+	}
+
 	/**
 	 * Lists all Hunch Topics in a given category.
 	 * 
-	 * @param params Parameters to pass in the URL request.
-	 * @param completedCallback Callback to call upon completion of this request.
-	 * 	Passes a {@link HunchList} of {@link HunchTopic}s as the sole argument.
-	 * @throws RuntimeException Upon failure to complete the call.
+	 * @param params
+	 *            Parameters to pass in the URL request.
+	 * @param completedCallback
+	 *            Callback to call upon completion of this request. Passes a
+	 *            {@link HunchList} of {@link HunchTopic}s as the sole argument.
+	 * @throws RuntimeException
+	 *             Upon failure to complete the call.
 	 */
 	public void listTopics( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
@@ -454,14 +511,22 @@ public class HunchAPI
 					"Couldn't execute a listTopics request!", e );
 		}
 		
-		JSONArray topics = (JSONArray) r.getJSON().get( "topics" );
 		HunchList< HunchTopic > hunchTopics = new HunchList< HunchTopic >();
 		
-		for( Object objTopic : topics )
+		try
 		{
-			JSONObject topic = (JSONObject) objTopic;
-			HunchTopic h = HunchTopic.buildFromJSON( topic );
-			hunchTopics.add( h );	
+			JSONArray topics = r.getJSON().getJSONArray( "topics" );
+			
+
+			for ( int i = 0; i < topics.length(); i++ )
+			{
+				JSONObject topic = topics.getJSONObject( i );
+				HunchTopic h = HunchTopic.buildFromJSON( topic );
+				hunchTopics.add( h );
+			}
+		}  catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not execute listTopics!", e );
 		}
 
 		completedCallback.callComplete( hunchTopics );
@@ -470,16 +535,19 @@ public class HunchAPI
 	/**
 	 * Lists all Hunch question categories.
 	 * 
-	 * @param params Map of GET parameters
-	 * @param completedCallback Callback to call upon completion.
-	 *  Passes a {@link HunchList} of {@link HunchCategory}s as the sole argument.
-	 * @throws RuntimeException Upon failure to complete the call.
+	 * @param params
+	 *            Map of GET parameters
+	 * @param completedCallback
+	 *            Callback to call upon completion. Passes a {@link HunchList}
+	 *            of {@link HunchCategory}s as the sole argument.
+	 * @throws RuntimeException
+	 *             Upon failure to complete the call.
 	 */
 	public void listCategories( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
 		// list categories requires no parameters
-		//Handler h = new Handler();
+		// Handler h = new Handler();
 
 		Request listCategoriesRequest = new Request( "listCategories", params );
 
@@ -492,55 +560,69 @@ public class HunchAPI
 			throw new RuntimeException(
 					"Couldn't execute a listCategories request!", e );
 		}
-
-		JSONArray cats = (JSONArray) r.getJSON().get( "categories" );
+		
 		HunchList< HunchCategory > catList = new HunchList< HunchCategory >();
 		
-		for( Object objCat : cats )
+		try
 		{
-			JSONObject category = (JSONObject) objCat;
-			HunchCategory cat = HunchCategory.buildFromJSON( category );
-			
-			catList.add( cat );
+			JSONArray cats = r.getJSON().getJSONArray( "categories" );
+		
+
+			for ( int i = 0; i < cats.length(); i++ )
+			{
+				JSONObject category = cats.getJSONObject( i );
+				HunchCategory cat = HunchCategory.buildFromJSON( category );
+
+				catList.add( cat );
+			}
+
+			Log.d( HunchSplash.LOG_TAG,
+				"listCategories call complete, calling callback" );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not execute listCategories!", e );
 		}
-		
-		Log.d( HunchSplash.LOG_TAG, "listCategories call complete, calling callback" );
-		
+
 		completedCallback.callComplete( catList );
-		
 
 	}
 
-	public void responseStats( Map< String, String > params, HunchAPI.Callback completedCallback )
+	public void responseStats( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void responsePairStats( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void responsePairStats( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void responsePositiveCorrelations( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void responsePositiveCorrelations( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void responseNegativeCorrelations( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void responseNegativeCorrelations( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void nextQuestion( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void nextQuestion( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
-	public void rankedResults( Map< String, String > params, HunchAPI.Callback completedCallback )
+
+	public void rankedResults( Map< String, String > params,
+			HunchAPI.Callback completedCallback )
 	{
-		
+
 	}
-	
+
 	private static void assureParams( Map< String, String > m, String first,
 			String... rest )
 	{
