@@ -407,10 +407,7 @@ public class HunchAPI
 		assureParams( params, "questionId" );
 
 		// send the response
-		Request questionRequest = new Request();
-
-		questionRequest.setAPICall( "getQuestion" );
-		questionRequest.addParams( params );
+		Request questionRequest = new Request( "getQuestion", params );
 
 		Response r;
 		try
@@ -443,24 +440,71 @@ public class HunchAPI
 	{
 		
 		// throw exception unless we have one or the other
+		assureOneOf( params, "topicId", "urlName" );
+	
+		Request getTopicRequest = new Request( "getTopic", params );
+		
+		Response r;
 		try
 		{
-			assureParams( params, "topicId" );
-		} catch( Throwable e )
+			r = getTopicRequest.execute();
+		} catch ( IOException e )
 		{
-			assureParams( params, "urlName" );
+			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
 		}
 		
-		Request getTopicRequest;
-		Response r;
-		if( params.containsKey( "topicId" ) )
+		JSONObject topic;
+		try
 		{
-			
-		}
-		else if( params.containsKey( "urlName" ) )
+			topic = r.getJSON().getJSONObject( "topic" );
+		} catch ( JSONException e )
 		{
-			
+			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
 		}
+		
+		int id = Integer.MIN_VALUE, eitherOr = Integer.MIN_VALUE;
+		try
+		{
+			id = topic.getInt( "id" );
+			eitherOr = topic.getInt( "eitherOrTopic" );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
+		}
+		
+		HunchTopic hTopic;
+		HunchTopic.Builder b = HunchTopic.getBuilder();
+		
+		b.init( r.getJSON() );
+		try
+		{
+			b.setId( id )
+			.setDecision( topic.getString( "decision" ) )
+			.setUrlName( topic.getString( "urlName" ) )
+			.setShortName( topic.getString( "shortName" ) )
+			.setHunchUrl( topic.getString( "hunchUrl" ) )
+			.setImageUrl( topic.getString( "imageUrl" ) )
+			.setResultType( topic.getString( "resultType" ) )
+			.setIsEitherOr( eitherOr == 1 );
+			
+			JSONObject category = topic.getJSONObject( "category" );
+			
+			HunchCategory hCategory = HunchCategory.getBuilder()
+			.setUrlName( category.getString( "categoryUrlName" ) )
+			.setName( category.getString( "categoryName" ) )
+			.setImageUrl( category.getString( "categoryImageUrl" ) )
+			.build();
+			
+			b.setCategory( hCategory );
+			
+			hTopic = b.build();
+			
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "couldn't build HunchTopic object!", e );
+		}
+		
+		completedCallback.callComplete( hTopic );
 
 	}
 
@@ -640,6 +684,36 @@ public class HunchAPI
 				throw new AssertionError( "the " + s
 						+ " parameter must be present and has not been found!" );
 		}
+	}
+	
+	private static void assureOneOf( Map< String, String > m, String first, String... rest )
+	{
+		if ( m == null )
+			throw new IllegalArgumentException(
+					"Can not assure parameters on a null map!" );
+		
+		boolean found = false;
+		
+		if( m.containsKey( first ) && m.get( first ) != null )
+			found = true;
+		
+		for( String s : rest )
+		{
+			if( m.containsKey( s ) && m.get( s ) != null )
+			{
+				if( found )
+				{
+					throw new AssertionError( "only one parameter allowed!" );
+				}
+				else
+				{
+					found = true;
+				}
+			}
+		}
+		
+		if( !found )
+			throw new AssertionError( "did not find any of the parameters!" );
 	}
 
 }

@@ -17,9 +17,14 @@ public class HunchTopic extends HunchObject
 	{
 		private JSONObject _val;
 		private int buildId;
-		private String buildDecision, buildImageUrl, buildResultType,
-				buildUrlName, buildShortName;
+		private String buildDecision, 
+					   buildImageUrl,
+					   buildResultType,
+					   buildUrlName,
+					   buildShortName,
+					   buildHunchUrl;
 		private boolean buildIsEitherOr;
+		private HunchCategory buildCategory;
 
 		// instance control
 		private Builder()
@@ -75,6 +80,18 @@ public class HunchTopic extends HunchObject
 			this.buildIsEitherOr = isEitherOr;
 			return this;
 		}
+		
+		Builder setHunchUrl( String hunchUrl )
+		{
+			this.buildHunchUrl = hunchUrl;
+			return this;
+		}
+		
+		Builder setCategory( HunchCategory category )
+		{
+			this.buildCategory = category;
+			return this;
+		}
 
 		@Override
 		void reset()
@@ -86,22 +103,36 @@ public class HunchTopic extends HunchObject
 			buildResultType = null;
 			buildUrlName = null;
 			buildShortName = null;
+			buildHunchUrl = null;
 			buildIsEitherOr = false;
+			buildCategory = null;
 		}
 
 		@Override
 		HunchTopic build()
 		{
-			if ( _val == null || buildId == Integer.MIN_VALUE
-							 || buildDecision == null 	 || buildImageUrl == null
-							 || buildResultType == null  || buildUrlName == null
-							 || buildShortName == null )
+			if ( _val == null ||
+				 buildId == Integer.MIN_VALUE ||
+				 buildDecision == null ||
+				 buildImageUrl == null ||
+				 buildResultType == null ||
+				 buildUrlName == null ||
+				 buildShortName == null )
 			{
 				throw new IllegalStateException(
 						"Not all required fields set before building HunchTopic!" );
 			}
 
-			HunchTopic ht = new HunchTopic( _val, buildId, buildDecision, buildImageUrl, buildResultType, buildUrlName, buildShortName, buildIsEitherOr );
+			HunchTopic ht = new HunchTopic( _val,
+											buildId,
+											buildDecision,
+											buildImageUrl,
+											buildResultType,
+											buildUrlName,
+											buildShortName,
+											buildIsEitherOr,
+											buildHunchUrl,
+											buildCategory );
 			reset();
 
 			return ht;
@@ -112,8 +143,19 @@ public class HunchTopic extends HunchObject
 	private final String _decision, _imageUrl, _resultType, _urlName, _shortName;
 	private final boolean _isEitherOr;
 	private final JSONObject json;
+	private String _hunchUrl; // optional
+	private HunchCategory _category;
 	
-	private HunchTopic( JSONObject val, int id, String decision, String imageUrl, String resultType, String urlName, String shortName, boolean isEitherOr )
+	private HunchTopic( JSONObject val,
+						int id,
+						String decision,
+						String imageUrl,
+						String resultType,
+						String urlName,
+						String shortName,
+						boolean isEitherOr,
+						String hunchUrl,
+						HunchCategory category )
 	{
 		json = val;
 		_id = id;
@@ -123,6 +165,8 @@ public class HunchTopic extends HunchObject
 		_urlName = urlName;
 		_shortName = shortName;
 		_isEitherOr = isEitherOr;
+		_hunchUrl = hunchUrl;
+		_category = category;
 	}
 	
 	public static Builder getBuilder()
@@ -161,10 +205,20 @@ public class HunchTopic extends HunchObject
 	{
 		return _shortName;
 	}
+	
+	public String getHunchUrl()
+	{
+		return _hunchUrl;
+	}
 
 	public boolean isEitherOr()
 	{
 		return _isEitherOr;
+	}
+	
+	public HunchCategory getCategory()
+	{
+		return _category;
 	}
 
 	@Override
@@ -195,11 +249,11 @@ public class HunchTopic extends HunchObject
 			
 			builder.init( topic )
 			.setId( id )
-			.setDecision( topic.get( "decision" ).toString() )
-			.setImageUrl( topic.get( "imageUrl" ).toString() )
-			.setResultType( topic.get( "resultType" ).toString() )
-			.setUrlName( topic.get( "urlName" ).toString() )
-			.setShortName( topic.get( "shortName" ).toString() )
+			.setDecision( topic.getString( "decision" ) )
+			.setImageUrl( topic.getString( "imageUrl" ) )
+			.setResultType( topic.getString( "resultType" ) )
+			.setUrlName( topic.getString( "urlName" ) )
+			.setShortName( topic.getString( "shortName" ) )
 			.setIsEitherOr( eitherOr == 1 );
 		} catch ( NumberFormatException e )
 		{
