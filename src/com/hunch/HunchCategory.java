@@ -1,6 +1,6 @@
 package com.hunch;
 
-import org.json.simple.JSONObject;
+import org.json.*;
 
 public class HunchCategory extends HunchObject
 {
@@ -12,7 +12,7 @@ public class HunchCategory extends HunchObject
 		private String buildName, buildUrlName, buildImageUrl;
 		
 		// instance control
-		protected Builder() {}
+		private Builder() {}
 		
 		@Override
 		Builder init( JSONObject j )
@@ -112,9 +112,16 @@ public class HunchCategory extends HunchObject
 		HunchCategory.Builder builder = getBuilder();
 		
 		// build the HunchCategory object
-		builder.init( json ).setName( json.get( "name" ).toString() );
-		builder.setImageUrl( json.get( "imageUrl" ).toString() );
-		builder.setUrlName( json.get( "urlName" ).toString() );
+		try
+		{
+			builder.init( json )
+			.setName( json.getString( "name" ) )
+			.setImageUrl( json.getString( "imageUrl" ) )
+			.setUrlName( json.getString( "urlName" ) );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not build HunchCategory!", e );
+		}
 		
 		return builder.build();
 	}

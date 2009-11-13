@@ -1,6 +1,6 @@
 package com.hunch;
 
-import org.json.simple.JSONObject;
+import org.json.*;
 
 /**
  * 
@@ -196,25 +196,26 @@ public class HunchResult extends HunchObject
 		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE;
 		try
 		{
-			id = Integer.parseInt( json.get( "id" ).toString() );
-			topicId = Integer.parseInt( json.get( "topicId" ).toString() );				
+			id = Integer.parseInt( json.getString( "id" ) );
+			topicId = Integer.parseInt( json.getString( "topicId" ) );
 			
-		} catch ( NumberFormatException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
 			builder.init( json )
 			.setId( id )
 			.setTopicId( topicId )
-			.setImageUrl( json.get( "imageUrl").toString() )
+			.setImageUrl( json.getString( "imageUrl") )
 			.setType( json.get( "type" ).toString() )
 			.setDescription( json.get( "description" ).toString() )
 			.setName( json.get( "name" ).toString() )
 			.setUrlName( json.get( "urlName" ).toString() )
 			.setReadMoreUrl( json.get( "readMoreUrl" ).toString() )
 			.setHunchUrl( json.get( "hunchUrl" ).toString() );
+			
+		} catch ( NumberFormatException e )
+		{
+			throw new RuntimeException( "Couldn't build HunchResult!", e );
+		} catch( JSONException e )
+		{
+			throw new RuntimeException( "Couldn't build HunchResult!", e );
 		}
 		
 		return builder.build();

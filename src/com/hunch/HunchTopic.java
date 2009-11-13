@@ -1,6 +1,6 @@
 package com.hunch;
 
-import org.json.simple.JSONObject;
+import org.json.*;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class HunchTopic extends HunchObject
 		private boolean buildIsEitherOr;
 
 		// instance control
-		protected Builder()
+		private Builder()
 		{
 		}
 
@@ -113,7 +113,7 @@ public class HunchTopic extends HunchObject
 	private final boolean _isEitherOr;
 	private final JSONObject json;
 	
-	protected HunchTopic( JSONObject val, int id, String decision, String imageUrl, String resultType, String urlName, String shortName, boolean isEitherOr )
+	private HunchTopic( JSONObject val, int id, String decision, String imageUrl, String resultType, String urlName, String shortName, boolean isEitherOr )
 	{
 		json = val;
 		_id = id;
@@ -187,22 +187,26 @@ public class HunchTopic extends HunchObject
 		// build the HunchTopic object
 		int id = Integer.MIN_VALUE;
 		int eitherOr = Integer.MIN_VALUE;
+
 		try
 		{
-			id = Integer.parseInt( topic.get( "id" ).toString() );
-			eitherOr = Integer.parseInt( topic.get( "eitherOrTopic" ).toString() );
+			id = Integer.parseInt( topic.getString( "id" ) );
+			eitherOr = Integer.parseInt( topic.getString( "eitherOrTopic" ) );
+			
+			builder.init( topic )
+			.setId( id )
+			.setDecision( topic.get( "decision" ).toString() )
+			.setImageUrl( topic.get( "imageUrl" ).toString() )
+			.setResultType( topic.get( "resultType" ).toString() )
+			.setUrlName( topic.get( "urlName" ).toString() )
+			.setShortName( topic.get( "shortName" ).toString() )
+			.setIsEitherOr( eitherOr == 1 );
 		} catch ( NumberFormatException e )
 		{
-			e.printStackTrace();
-		}
-		finally
-		{	
-			builder.init( topic ).setId( id ).setDecision( topic.get( "decision" ).toString() );
-			builder.setImageUrl( topic.get( "imageUrl" ).toString() );
-			builder.setResultType( topic.get( "resultType" ).toString() );
-			builder.setUrlName( topic.get( "urlName" ).toString() );
-			builder.setShortName( topic.get( "shortName" ).toString() );
-			builder.setIsEitherOr( eitherOr == 1 );
+			throw new RuntimeException( "could not build HunchTopic!", e );
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not build HunchTopic", e );
 		}
 		
 		return builder.build();

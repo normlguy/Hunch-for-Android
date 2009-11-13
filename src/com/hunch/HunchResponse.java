@@ -2,9 +2,16 @@ package com.hunch;
 
 import org.json.*;
 
-public class HunchQuestion extends HunchObject
+/**
+ * 
+ * 
+ * @author Tyler Levine
+ * Nov 5, 2009
+ *
+ */
+public class HunchResponse extends HunchObject
 {
-	
+
 	private static Builder b;
 	private static int THAY_TOPIC_ID = -3;
 	
@@ -12,9 +19,8 @@ public class HunchQuestion extends HunchObject
 	{
 		
 		private JSONObject val;
-		private int __id, __topicId;
-		private String __text, __imageUrl;
-		private int[] __responseIds;
+		private int __id, __order, __questionId, __topicId;
+		private String __text;
 		
 		private Builder() {}
 		
@@ -43,15 +49,15 @@ public class HunchQuestion extends HunchObject
 			return this;
 		}
 		
-		Builder setImageUrl( String imageUrl )
+		Builder setQuestionId( int questionId )
 		{
-			__imageUrl = imageUrl;
+			__questionId = questionId;
 			return this;
 		}
 		
-		Builder setResponseIds( int[] ids )
+		Builder setOrder( int order )
 		{
-			this.__responseIds = ids;
+			__order = order;
 			return this;
 		}
 
@@ -60,21 +66,19 @@ public class HunchQuestion extends HunchObject
 		{
 			val = null;
 			__text = null;
-			__imageUrl = null;
-			__responseIds = null;
-			__id = __topicId = Integer.MIN_VALUE;
+			__id = __topicId = __order = __questionId = Integer.MIN_VALUE;
 		}
 		
 		@Override
-		HunchQuestion build()
+		HunchResponse build()
 		{
-			if( val == null || __text == null || __imageUrl == null || __responseIds == null
+			if( val == null || __text == null || __order == Integer.MIN_VALUE || __questionId == Integer.MIN_VALUE
 					|| __id == Integer.MIN_VALUE || __topicId == Integer.MIN_VALUE )
 			{
 				throw new IllegalStateException( "Not all required fields set before building HunchQuestion!" );
 			}
 			
-			HunchQuestion ret = new HunchQuestion( val, __text, __imageUrl, __id, __topicId, __responseIds );
+			HunchResponse ret = new HunchResponse( val, __text, __order, __id, __topicId, __questionId );
 			reset();
 			
 			return ret;
@@ -82,19 +86,19 @@ public class HunchQuestion extends HunchObject
 	}
 	
 	private final JSONObject json;
-	private final String _text, _imageUrl;
-	private final int _id, _topicId;
-	private final int[] _responseIds;
+	private final int _id, _order, _questionId, _topicId;
+	private final String _text;
 	
-	private HunchQuestion( JSONObject jsonObj, String text, String imageUrl,
-			int id, int topicId, int[] responseIds )
+	private HunchResponse( JSONObject jsonObj, String text, int order,
+			int id, int topicId, int questionId )
 	{
 		json = jsonObj;
 		_text = text;
-		_imageUrl = imageUrl;
+		_order = order;
 		_id = id;
 		_topicId = topicId;
-		_responseIds = responseIds;
+		_questionId = questionId;
+		
 	}
 	
 	public static Builder getBuilder()
@@ -109,9 +113,9 @@ public class HunchQuestion extends HunchObject
 		return _text;
 	}
 	
-	public String getImageUrl()
+	public int getOrder()
 	{
-		return _imageUrl;
+		return _order;
 	}
 	
 	public int getId()
@@ -124,36 +128,23 @@ public class HunchQuestion extends HunchObject
 		return _topicId;
 	}
 	
-	public int[] getResponseIds()
+	public int getQuestionId()
 	{
-		return _responseIds;
+		return _questionId;
 	}
 	
-	static HunchQuestion buildFromJSON( JSONObject json )
+	static HunchResponse buildFromJSON( JSONObject json )
 	{
-		HunchQuestion.Builder builder = getBuilder();
+		HunchResponse.Builder builder = getBuilder();
 		
-		// build the HunchQuestion object
-		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE;
-		int[] resIds;
-		String text = "", imgUrl = "";
-		JSONArray jsonResIds;
-		
-		try
-		{
-			jsonResIds = json.getJSONArray( "responseIds" );
-		} catch ( JSONException e )
-		{
-			throw new RuntimeException( "Couldn't build HunchQuestion!", e );
-		}
-		
-		resIds = new int[ jsonResIds.length() ];
-		
+		// build the HunchResponse object
+		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE,
+			questionId = Integer.MIN_VALUE, order = Integer.MIN_VALUE;
+		String text = "";
 		
 		try
 		{
 			String tId = json.getString( "topicId" );
-			
 			try
 			{
 				topicId = Integer.parseInt( tId );
@@ -167,36 +158,30 @@ public class HunchQuestion extends HunchObject
 				else
 				{
 					// some other cause of the NFE
-					throw new RuntimeException( "Couldn't build HunchQuestion!", e );
+					throw new RuntimeException( "Couldn't build HunchResponse!", e );
 				}
 			}
 			
 			id = Integer.parseInt( json.getString( "id" ) );
-			for( int i = 0; i < resIds.length; i++ )
-			{
-				String resId = jsonResIds.getString( i );
-				resIds[ i ] = Integer.parseInt( resId );
-			}
-			
+			questionId = Integer.parseInt( json.getString( "questionId" ) );
+			order = Integer.parseInt( json.getString( "order" ) );
 			text = json.getString( "text" );
-			imgUrl = json.getString( "imageUrl" );
 				
-			
 		} catch ( NumberFormatException e )
 		{
-			throw new RuntimeException( "Couldn't build HunchQuestion!", e );
+			throw new RuntimeException( "Couldn't build HunchResponse!", e );
 		} catch ( JSONException e )
 		{
-			throw new RuntimeException( "Couldn't build HunchQuestion!", e );
+			throw new RuntimeException( "Couldn't build HunchResponse!", e );
 		}
 		finally
 		{
 			builder.init( json )
 			.setId( id )
 			.setTopicId( topicId )
-			.setText( text )
-			.setImageUrl( imgUrl )
-			.setResponseIds( resIds );
+			.setQuestionId( questionId )
+			.setOrder( order )
+			.setText( text );
 		}
 		
 		return builder.build();

@@ -1,6 +1,6 @@
 package com.hunch;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 public abstract class HunchObject
 {
