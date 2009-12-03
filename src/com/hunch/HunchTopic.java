@@ -10,21 +10,18 @@ import org.json.*;
  */
 public class HunchTopic extends HunchObject
 {
-	
-	private static Builder b;
+
+	private static Builder b = new Builder();
 
 	static class Builder extends HunchObject.Builder
 	{
 		private JSONObject _val;
 		private int buildId;
-		private String buildDecision, 
-					   buildImageUrl,
-					   buildResultType,
-					   buildUrlName,
-					   buildShortName,
-					   buildHunchUrl;
+		private String buildDecision, buildImageUrl, buildResultType,
+				buildUrlName, buildShortName, buildHunchUrl;
 		private boolean buildIsEitherOr;
 		private HunchCategory buildCategory;
+		private double buildScore;
 
 		// instance control
 		private Builder()
@@ -80,16 +77,22 @@ public class HunchTopic extends HunchObject
 			this.buildIsEitherOr = isEitherOr;
 			return this;
 		}
-		
+
 		Builder setHunchUrl( String hunchUrl )
 		{
 			this.buildHunchUrl = hunchUrl;
 			return this;
 		}
-		
+
 		Builder setCategory( HunchCategory category )
 		{
 			this.buildCategory = category;
+			return this;
+		}
+
+		Builder setScore( double score )
+		{
+			this.buildScore = score;
 			return this;
 		}
 
@@ -106,56 +109,74 @@ public class HunchTopic extends HunchObject
 			buildHunchUrl = null;
 			buildIsEitherOr = false;
 			buildCategory = null;
+			buildScore = Float.NaN;
 		}
 
 		@Override
 		HunchTopic build()
 		{
-			if ( _val == null ||
-				 buildId == Integer.MIN_VALUE ||
-				 buildDecision == null ||
-				 buildImageUrl == null ||
-				 buildResultType == null ||
-				 buildUrlName == null ||
-				 buildShortName == null )
-			{
-				throw new IllegalStateException(
-						"Not all required fields set before building HunchTopic!" );
-			}
+			assureBuildParams();
 
-			HunchTopic ht = new HunchTopic( _val,
-											buildId,
-											buildDecision,
-											buildImageUrl,
-											buildResultType,
-											buildUrlName,
-											buildShortName,
-											buildIsEitherOr,
-											buildHunchUrl,
-											buildCategory );
+			return buildInternal();
+
+		}
+
+		HunchTopic buildForSearch()
+		{
+			assureSearchBuildParams();
+
+			return buildInternal();
+		}
+
+		private HunchTopic buildInternal()
+		{
+			HunchTopic ht = new HunchTopic( _val, buildId, buildDecision,
+					buildImageUrl, buildResultType, buildUrlName,
+					buildShortName, buildIsEitherOr, buildHunchUrl,
+					buildCategory, buildScore );
 			reset();
 
 			return ht;
 		}
+
+		private void assureBuildParams()
+		{
+			if ( _val == null || buildId == Integer.MIN_VALUE
+					|| buildDecision == null || buildImageUrl == null
+					|| buildResultType == null || buildUrlName == null
+					|| buildShortName == null )
+			{
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchTopic!" );
+			}
+		}
+
+		private void assureSearchBuildParams()
+		{
+			if ( _val == null || buildId == Integer.MIN_VALUE
+					|| buildDecision == null || buildUrlName == null
+					|| buildScore == Float.NaN )
+			{
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchTopic!" );
+			}
+		}
+
 	}
-	
+
 	private final int _id;
-	private final String _decision, _imageUrl, _resultType, _urlName, _shortName;
+	private final String _decision, _imageUrl, _resultType, _urlName,
+			_shortName;
 	private final boolean _isEitherOr;
 	private final JSONObject json;
-	private String _hunchUrl; // optional
-	private HunchCategory _category;
-	
-	private HunchTopic( JSONObject val,
-						int id,
-						String decision,
-						String imageUrl,
-						String resultType,
-						String urlName,
-						String shortName,
-						boolean isEitherOr,
-						String hunchUrl,
-						HunchCategory category )
+	private final String _hunchUrl; // optional
+	private final HunchCategory _category;
+	private final double _score;
+
+	private HunchTopic( JSONObject val, int id, String decision,
+			String imageUrl, String resultType, String urlName,
+			String shortName, boolean isEitherOr, String hunchUrl,
+			HunchCategory category, double score )
 	{
 		json = val;
 		_id = id;
@@ -167,12 +188,11 @@ public class HunchTopic extends HunchObject
 		_isEitherOr = isEitherOr;
 		_hunchUrl = hunchUrl;
 		_category = category;
+		_score = score;
 	}
-	
+
 	public static Builder getBuilder()
 	{
-		if( b == null ) b = new Builder();
-		
 		return b;
 	}
 
@@ -205,7 +225,7 @@ public class HunchTopic extends HunchObject
 	{
 		return _shortName;
 	}
-	
+
 	public String getHunchUrl()
 	{
 		return _hunchUrl;
@@ -215,10 +235,15 @@ public class HunchTopic extends HunchObject
 	{
 		return _isEitherOr;
 	}
-	
+
 	public HunchCategory getCategory()
 	{
 		return _category;
+	}
+
+	public double getScore()
+	{
+		return _score;
 	}
 
 	@Override
@@ -226,18 +251,18 @@ public class HunchTopic extends HunchObject
 	{
 		return json;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return getShortName();
 	}
-	
+
 	static HunchTopic buildFromJSON( JSONObject topic )
 	{
-		
+
 		HunchTopic.Builder builder = getBuilder();
-		
+
 		// build the HunchTopic object
 		int id = Integer.MIN_VALUE;
 		int eitherOr = Integer.MIN_VALUE;
@@ -246,7 +271,7 @@ public class HunchTopic extends HunchObject
 		{
 			id = Integer.parseInt( topic.getString( "id" ) );
 			eitherOr = Integer.parseInt( topic.getString( "eitherOrTopic" ) );
-			
+
 			builder.init( topic )
 			.setId( id )
 			.setDecision( topic.getString( "decision" ) )
@@ -254,7 +279,7 @@ public class HunchTopic extends HunchObject
 			.setResultType( topic.getString( "resultType" ) )
 			.setUrlName( topic.getString( "urlName" ) )
 			.setShortName( topic.getString( "shortName" ) )
-			.setIsEitherOr( eitherOr == 1 );
+			.setIsEitherOr(	eitherOr == 1 );
 		} catch ( NumberFormatException e )
 		{
 			throw new RuntimeException( "could not build HunchTopic!", e );
@@ -262,7 +287,7 @@ public class HunchTopic extends HunchObject
 		{
 			throw new RuntimeException( "could not build HunchTopic", e );
 		}
-		
+
 		return builder.build();
 	}
 

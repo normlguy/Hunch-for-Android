@@ -116,8 +116,8 @@ public class HunchResult extends HunchObject
 	}
 	
 	private final JSONObject json;
-	private int _id, _topicId;
-	private String _type, _name, _urlName, _desc, _imageUrl, _readMoreUrl, _hunchUrl;
+	private final int _id, _topicId;
+	private final String _type, _name, _urlName, _desc, _imageUrl, _readMoreUrl, _hunchUrl;
 	
 	
 	private HunchResult( JSONObject jsonObj, int id, int topicId, String type, String name,
@@ -203,12 +203,12 @@ public class HunchResult extends HunchObject
 			.setId( id )
 			.setTopicId( topicId )
 			.setImageUrl( json.getString( "imageUrl") )
-			.setType( json.get( "type" ).toString() )
-			.setDescription( json.get( "description" ).toString() )
-			.setName( json.get( "name" ).toString() )
-			.setUrlName( json.get( "urlName" ).toString() )
-			.setReadMoreUrl( json.get( "readMoreUrl" ).toString() )
-			.setHunchUrl( json.get( "hunchUrl" ).toString() );
+			.setType( json.getString( "type" ) )
+			.setDescription( json.getString( "description" ) )
+			.setName( json.getString( "name" ) )
+			.setUrlName( json.getString( "urlName" ) )
+			.setReadMoreUrl( json.getString( "readMoreUrl" ) )
+			.setHunchUrl( json.getString( "hunchUrl" ) );
 			
 		} catch ( NumberFormatException e )
 		{

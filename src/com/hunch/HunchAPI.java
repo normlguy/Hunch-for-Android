@@ -309,12 +309,6 @@ public class HunchAPI
 		public void callComplete( HunchObject resp );
 	}
 
-	public void authenticateUser( String email_or_username, String password )
-	{
-		throw new UnsupportedOperationException(
-				"authenticateUser() not yet implemented." );
-	}
-
 	public void getResult( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
@@ -511,7 +505,75 @@ public class HunchAPI
 	public void searchForTopic( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
-
+		assureParams( params, "query" );
+		
+		Request searchForTopicRequest = new Request( "searchForTopic", params );
+		Response r;
+		
+		try
+		{
+			r = searchForTopicRequest.execute();
+		} catch ( IOException e )
+		{
+			throw new RuntimeException( "could not execute searchForTopic!", e );
+		}
+		
+		JSONArray topics;
+		HunchList< HunchTopic > resultList = new HunchList< HunchTopic >();
+		
+		try
+		{
+			topics = r.getJSON().getJSONArray( "topics" );	
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "could not execute searchForTopic!", e );
+		}
+		
+		for( int i = 0; i < topics.length(); i++ )
+		{
+			JSONObject topic;
+			
+			try
+			{
+				topic = topics.getJSONObject( i );
+			} catch ( JSONException e )
+			{
+				throw new RuntimeException( "couldn't build HunchTopic!", e );
+			}
+			
+			if( topic == null ) break;
+			
+			HunchTopic hTopic;
+			HunchTopic.Builder b = HunchTopic.getBuilder();
+			
+			int id;
+			double score;
+			String decision, urlName;
+			
+			try
+			{
+				id = topic.getInt( "id" );
+				score = topic.getDouble( "score" );
+				decision = topic.getString( "decision" );
+				urlName = topic.getString( "urlName" );
+			} catch ( JSONException e )
+			{
+				throw new RuntimeException( "couldn't build HunchTopic!", e );
+			}
+			
+			b.init( topic )
+			.setId( id )
+			.setDecision( decision )
+			.setUrlName( urlName )
+			.setScore( score );
+			
+			hTopic = b.buildForSearch();
+			resultList.add( hTopic );
+			
+		}
+		
+		completedCallback.callComplete( resultList );
+		
 	}
 
 	public void searchForResult( Map< String, String > params,

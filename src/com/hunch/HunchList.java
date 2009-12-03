@@ -173,5 +173,21 @@ public class HunchList< T extends HunchObject > extends HunchObject implements L
 	{
 		throw new UnsupportedOperationException( "getJSON() not supported on HunchList objects!" );
 	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder b = new StringBuilder( "=HunchList=\n{\n" );
+		
+		for( T val : this )
+		{
+			b.append( val.toString() );
+			b.append( "\n" );
+		}
+		
+		b.append( "}" );
+		
+		return b.toString();
+	}
 
 }

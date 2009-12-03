@@ -4,4 +4,7 @@
     <string name="app_name">Hunch</string>
 <string name="placeholderButton">Do Something</string>
 <string name="listCategoriesButton">Load Categories</string>
+<string name="splash">Hunch for Android\n\nVersion 0.0</string>
+<string name="splashButton">Continue...</string>
+
 </resources>

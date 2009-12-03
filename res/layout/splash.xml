@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_height="fill_parent" android:layout_width="fill_parent" android:orientation="vertical">
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="15dp" android:id="@+id/splashText" android:text="@string/splash" android:gravity="center" android:textSize="30sp" android:layout_gravity="center"></TextView>
+
+<Button android:layout_width="wrap_content" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_marginTop="150dp" android:text="@string/splashButton" android:id="@+id/splashButton"></Button>
+</LinearLayout>
