@@ -1,4 +1,4 @@
-package com.hunch;
+package com.hunch.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.json.JSONObject;
+
 
 /**
  * 

@@ -1,4 +1,9 @@
-package com.hunch;
+package com.hunch.ui;
+
+import com.hunch.Const;
+import com.hunch.R;
+import com.hunch.R.id;
+import com.hunch.R.layout;
 
 import android.app.Activity;
 import android.os.Bundle;

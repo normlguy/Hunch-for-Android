@@ -1,4 +1,4 @@
-package com.hunch;
+package com.hunch.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,10 +13,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.os.Handler;
 import android.util.Log;
+
+import com.hunch.Const;
 
 public class HunchAPI
 {
@@ -682,7 +685,7 @@ public class HunchAPI
 				catList.add( cat );
 			}
 
-			Log.d( HunchSplash.LOG_TAG,
+			Log.d( Const.TAG,
 				"listCategories call complete, calling callback" );
 		} catch ( JSONException e )
 		{

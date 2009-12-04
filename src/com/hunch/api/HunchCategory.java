@@ -1,6 +1,8 @@
-package com.hunch;
+package com.hunch.api;
 
 import org.json.*;
+
+import com.hunch.api.HunchObject.Builder;
 
 public class HunchCategory extends HunchObject
 {

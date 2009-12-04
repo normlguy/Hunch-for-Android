@@ -1,17 +1,16 @@
 package com.hunch;
 
+import com.hunch.ui.HunchHome;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class HunchSplash extends Activity
 {
-	public static final String LOG_TAG = "HUNCH";
 
 	/** Called when the activity is first created. */
 	@Override

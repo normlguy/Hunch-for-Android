@@ -9,7 +9,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name="HunchHome" android:label="@string/app_name"></activity>
+		<activity android:name=".ui.HunchHome" android:label="@string/app_name"></activity>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 
