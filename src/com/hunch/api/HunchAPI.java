@@ -118,6 +118,9 @@ public class HunchAPI
 			{
 				addDefaultParams();
 				address = new URL( buildURL() );
+
+				Log.d( Const.TAG, "performing API call (" + address.toString() + ")" );
+
 				connection = (HttpURLConnection) address.openConnection();
 				connection.setRequestMethod( "GET" );
 				connection.setReadTimeout( RESPONSE_TIMEOUT );
@@ -280,7 +283,7 @@ public class HunchAPI
 			{
 				throw new RuntimeException( "couldn't build JSONObject!", e );
 			}
-			
+
 			return ret;
 
 		}
@@ -435,12 +438,12 @@ public class HunchAPI
 	public void getTopic( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
-		
+
 		// throw exception unless we have one or the other
 		assureOneOf( params, "topicId", "urlName" );
-	
+
 		Request getTopicRequest = new Request( "getTopic", params );
-		
+
 		Response r;
 		try
 		{
@@ -449,7 +452,7 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
 		}
-		
+
 		JSONObject topic;
 		try
 		{
@@ -458,7 +461,7 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
 		}
-		
+
 		int id = Integer.MIN_VALUE, eitherOr = Integer.MIN_VALUE;
 		try
 		{
@@ -468,39 +471,39 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "couldn't execute a getTopicRequest!", e );
 		}
-		
+
 		HunchTopic hTopic;
 		HunchTopic.Builder b = HunchTopic.getBuilder();
-		
+
 		b.init( r.getJSON() );
 		try
 		{
 			b.setId( id )
-			.setDecision( topic.getString( "decision" ) )
-			.setUrlName( topic.getString( "urlName" ) )
-			.setShortName( topic.getString( "shortName" ) )
-			.setHunchUrl( topic.getString( "hunchUrl" ) )
-			.setImageUrl( topic.getString( "imageUrl" ) )
-			.setResultType( topic.getString( "resultType" ) )
-			.setIsEitherOr( eitherOr == 1 );
-			
+					.setDecision( topic.getString( "decision" ) )
+					.setUrlName( topic.getString( "urlName" ) )
+					.setShortName( topic.getString( "shortName" ) )
+					.setHunchUrl( topic.getString( "hunchUrl" ) )
+					.setImageUrl( topic.getString( "imageUrl" ) )
+					.setResultType( topic.getString( "resultType" ) )
+					.setIsEitherOr( eitherOr == 1 );
+
 			JSONObject category = topic.getJSONObject( "category" );
-			
+
 			HunchCategory hCategory = HunchCategory.getBuilder()
-			.setUrlName( category.getString( "categoryUrlName" ) )
-			.setName( category.getString( "categoryName" ) )
-			.setImageUrl( category.getString( "categoryImageUrl" ) )
-			.build();
-			
+					.setUrlName( category.getString( "categoryUrlName" ) )
+					.setName( category.getString( "categoryName" ) )
+					.setImageUrl( category.getString( "categoryImageUrl" ) )
+					.build();
+
 			b.setCategory( hCategory );
-			
+
 			hTopic = b.build();
-			
+
 		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "couldn't build HunchTopic object!", e );
 		}
-		
+
 		completedCallback.callComplete( hTopic );
 
 	}
@@ -509,10 +512,10 @@ public class HunchAPI
 			HunchAPI.Callback completedCallback )
 	{
 		assureParams( params, "query" );
-		
+
 		Request searchForTopicRequest = new Request( "searchForTopic", params );
 		Response r;
-		
+
 		try
 		{
 			r = searchForTopicRequest.execute();
@@ -520,22 +523,22 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "could not execute searchForTopic!", e );
 		}
-		
+
 		JSONArray topics;
 		HunchList< HunchTopic > resultList = new HunchList< HunchTopic >();
-		
+
 		try
 		{
-			topics = r.getJSON().getJSONArray( "topics" );	
+			topics = r.getJSON().getJSONArray( "topics" );
 		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "could not execute searchForTopic!", e );
 		}
-		
-		for( int i = 0; i < topics.length(); i++ )
+
+		for ( int i = 0; i < topics.length(); i++ )
 		{
 			JSONObject topic;
-			
+
 			try
 			{
 				topic = topics.getJSONObject( i );
@@ -543,16 +546,17 @@ public class HunchAPI
 			{
 				throw new RuntimeException( "couldn't build HunchTopic!", e );
 			}
-			
-			if( topic == null ) break;
-			
+
+			if ( topic == null )
+				break;
+
 			HunchTopic hTopic;
 			HunchTopic.Builder b = HunchTopic.getBuilder();
-			
+
 			int id;
 			double score;
 			String decision, urlName;
-			
+
 			try
 			{
 				id = topic.getInt( "id" );
@@ -563,20 +567,20 @@ public class HunchAPI
 			{
 				throw new RuntimeException( "couldn't build HunchTopic!", e );
 			}
-			
+
 			b.init( topic )
-			.setId( id )
-			.setDecision( decision )
-			.setUrlName( urlName )
-			.setScore( score );
-			
+					.setId( id )
+					.setDecision( decision )
+					.setUrlName( urlName )
+					.setScore( score );
+
 			hTopic = b.buildForSearch();
 			resultList.add( hTopic );
-			
+
 		}
-		
+
 		completedCallback.callComplete( resultList );
-		
+
 	}
 
 	public void searchForResult( Map< String, String > params,
@@ -619,13 +623,12 @@ public class HunchAPI
 			throw new RuntimeException(
 					"Couldn't execute a listTopics request!", e );
 		}
-		
+
 		HunchList< HunchTopic > hunchTopics = new HunchList< HunchTopic >();
-		
+
 		try
 		{
 			JSONArray topics = r.getJSON().getJSONArray( "topics" );
-			
 
 			for ( int i = 0; i < topics.length(); i++ )
 			{
@@ -633,7 +636,7 @@ public class HunchAPI
 				HunchTopic h = HunchTopic.buildFromJSON( topic );
 				hunchTopics.add( h );
 			}
-		}  catch ( JSONException e )
+		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "could not execute listTopics!", e );
 		}
@@ -669,13 +672,12 @@ public class HunchAPI
 			throw new RuntimeException(
 					"Couldn't execute a listCategories request!", e );
 		}
-		
+
 		HunchList< HunchCategory > catList = new HunchList< HunchCategory >();
-		
+
 		try
 		{
 			JSONArray cats = r.getJSON().getJSONArray( "categories" );
-		
 
 			for ( int i = 0; i < cats.length(); i++ )
 			{
@@ -686,7 +688,7 @@ public class HunchAPI
 			}
 
 			Log.d( Const.TAG,
-				"listCategories call complete, calling callback" );
+					"listCategories call complete, calling callback" );
 		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "could not execute listCategories!", e );
@@ -723,6 +725,22 @@ public class HunchAPI
 	public void nextQuestion( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
+		assureParams( params, "topicId" );
+
+		Request nextQuestionRequest = new Request( "nextQuestion", params );
+
+		Response r;
+		try
+		{
+			r = nextQuestionRequest.execute();
+		} catch ( IOException e )
+		{
+			throw new RuntimeException( "Couldn't execute nextQuestion request!", e );
+		}
+		
+		HunchNextQuestion nextQuestion = HunchNextQuestion.buildFromJSON( r.getJSON() );
+		
+		completedCallback.callComplete( nextQuestion );
 
 	}
 
@@ -750,34 +768,33 @@ public class HunchAPI
 						+ " parameter must be present and has not been found!" );
 		}
 	}
-	
+
 	private static void assureOneOf( Map< String, String > m, String first, String... rest )
 	{
 		if ( m == null )
 			throw new IllegalArgumentException(
 					"Can not assure parameters on a null map!" );
-		
+
 		boolean found = false;
-		
-		if( m.containsKey( first ) && m.get( first ) != null )
+
+		if ( m.containsKey( first ) && m.get( first ) != null )
 			found = true;
-		
-		for( String s : rest )
+
+		for ( String s : rest )
 		{
-			if( m.containsKey( s ) && m.get( s ) != null )
+			if ( m.containsKey( s ) && m.get( s ) != null )
 			{
-				if( found )
+				if ( found )
 				{
 					throw new AssertionError( "only one parameter allowed!" );
-				}
-				else
+				} else
 				{
 					found = true;
 				}
 			}
 		}
-		
-		if( !found )
+
+		if ( !found )
 			throw new AssertionError( "did not find any of the parameters!" );
 	}
 

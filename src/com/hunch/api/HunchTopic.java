@@ -128,6 +128,13 @@ public class HunchTopic extends HunchObject
 
 			return buildInternal();
 		}
+		
+		HunchTopic buildForNextQuestion()
+		{
+			assureNextQuestionBuildParams();
+			
+			return buildInternal();
+		}
 
 		private HunchTopic buildInternal()
 		{
@@ -138,6 +145,17 @@ public class HunchTopic extends HunchObject
 			reset();
 
 			return ht;
+		}
+		
+		private void assureNextQuestionBuildParams()
+		{
+			if ( _val == null || buildId == Integer.MIN_VALUE
+					|| buildDecision == null || buildImageUrl == null
+					|| buildUrlName == null || buildCategory == null )
+			{
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchTopic!" );
+			}
 		}
 
 		private void assureBuildParams()
@@ -267,14 +285,16 @@ public class HunchTopic extends HunchObject
 		// build the HunchTopic object
 		int id = Integer.MIN_VALUE;
 		int eitherOr = Integer.MIN_VALUE;
+		
+		builder.init( topic );
 
 		try
 		{
 			id = Integer.parseInt( topic.getString( "id" ) );
 			eitherOr = Integer.parseInt( topic.getString( "eitherOrTopic" ) );
 
-			builder.init( topic )
-			.setId( id )
+			
+			builder.setId( id )
 			.setDecision( topic.getString( "decision" ) )
 			.setImageUrl( topic.getString( "imageUrl" ) )
 			.setResultType( topic.getString( "resultType" ) )

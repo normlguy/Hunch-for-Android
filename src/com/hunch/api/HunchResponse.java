@@ -2,63 +2,75 @@ package com.hunch.api;
 
 import org.json.*;
 
-
 /**
  * 
  * 
- * @author Tyler Levine
- * Nov 5, 2009
- *
+ * @author Tyler Levine Nov 5, 2009
+ * 
  */
 public class HunchResponse extends HunchObject
 {
 
 	private static Builder b;
 	private static int THAY_TOPIC_ID = -3;
-	
+
 	static class Builder extends HunchObject.Builder
 	{
-		
+
 		private JSONObject val;
 		private int __id, __order, __questionId, __topicId;
-		private String __text;
-		
-		private Builder() {}
-		
+		private String __text, __qaState, __imageUrl;
+
+		private Builder()
+		{
+		}
+
 		@Override
 		Builder init( JSONObject jsonVal )
 		{
 			val = jsonVal;
 			return this;
 		}
-		
+
 		Builder setId( int id )
 		{
 			__id = id;
 			return this;
 		}
-		
+
 		Builder setTopicId( int topicId )
 		{
 			__topicId = topicId;
 			return this;
 		}
-		
+
 		Builder setText( String text )
 		{
 			__text = text;
 			return this;
 		}
-		
+
 		Builder setQuestionId( int questionId )
 		{
 			__questionId = questionId;
 			return this;
 		}
-		
+
 		Builder setOrder( int order )
 		{
 			__order = order;
+			return this;
+		}
+
+		Builder setQAState( String qaState )
+		{
+			__qaState = qaState;
+			return this;
+		}
+
+		Builder setImageUrl( String imageUrl )
+		{
+			__imageUrl = imageUrl;
 			return this;
 		}
 
@@ -68,30 +80,78 @@ public class HunchResponse extends HunchObject
 			val = null;
 			__text = null;
 			__id = __topicId = __order = __questionId = Integer.MIN_VALUE;
+			__qaState = null;
+			__imageUrl = null;
 		}
-		
+
 		@Override
 		HunchResponse build()
 		{
-			if( val == null || __text == null || __order == Integer.MIN_VALUE || __questionId == Integer.MIN_VALUE
-					|| __id == Integer.MIN_VALUE || __topicId == Integer.MIN_VALUE )
+			assureBuildParams();
+
+			return buildInternal();
+		}
+
+		HunchResponse buildForQuestion()
+		{
+			assureQuestionBuildParams();
+
+			return buildInternal();
+		}
+
+		HunchResponse buildForNextQuestion()
+		{
+			assureNextQuestionBuildParams();
+
+			return buildInternal();
+		}
+
+		private void assureQuestionBuildParams()
+		{
+			if ( val == null || __id == Integer.MIN_VALUE )
 			{
-				throw new IllegalStateException( "Not all required fields set before building HunchQuestion!" );
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchQuestion!" );
 			}
-			
-			HunchResponse ret = new HunchResponse( val, __text, __order, __id, __topicId, __questionId );
+		}
+
+		private void assureNextQuestionBuildParams()
+		{
+			if ( val == null || __id == Integer.MIN_VALUE || __text == null
+					|| __qaState == null )
+			{
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchQuestion!" );
+			}
+		}
+
+		private void assureBuildParams()
+		{
+			if ( val == null || __text == null || __order == Integer.MIN_VALUE
+					|| __questionId == Integer.MIN_VALUE || __id == Integer.MIN_VALUE
+					|| __topicId == Integer.MIN_VALUE )
+			{
+				throw new IllegalStateException(
+						"Not all required fields set before building HunchQuestion!" );
+			}
+		}
+
+		private HunchResponse buildInternal()
+		{
+			HunchResponse ret = new HunchResponse( val, __text, __qaState, __imageUrl,
+					__order, __id, __topicId, __questionId );
 			reset();
-			
+
 			return ret;
 		}
 	}
-	
+
 	private final JSONObject json;
 	private final int _id, _order, _questionId, _topicId;
-	private final String _text;
-	
-	private HunchResponse( JSONObject jsonObj, String text, int order,
-			int id, int topicId, int questionId )
+	private final String _text, _qaState, _imageUrl;
+
+	private HunchResponse( JSONObject jsonObj, String text, String qaState, String imageUrl,
+			int order, int id, int topicId, int questionId )
 	{
 		json = jsonObj;
 		_text = text;
@@ -99,50 +159,62 @@ public class HunchResponse extends HunchObject
 		_id = id;
 		_topicId = topicId;
 		_questionId = questionId;
-		
+		_qaState = qaState;
+		_imageUrl = imageUrl;
 	}
-	
+
 	public static Builder getBuilder()
 	{
-		if( b == null ) b = new Builder();
-		
+		if ( b == null )
+			b = new Builder();
+
 		return b;
 	}
-	
+
+	public String getQAState()
+	{
+		return _qaState;
+	}
+
+	public String getImageUrl()
+	{
+		return _imageUrl;
+	}
+
 	public String getText()
 	{
 		return _text;
 	}
-	
+
 	public int getOrder()
 	{
 		return _order;
 	}
-	
+
 	public int getId()
 	{
 		return _id;
 	}
-	
+
 	public int getTopicId()
 	{
 		return _topicId;
 	}
-	
+
 	public int getQuestionId()
 	{
 		return _questionId;
 	}
-	
+
 	static HunchResponse buildFromJSON( JSONObject json )
 	{
 		HunchResponse.Builder builder = getBuilder();
-		
+
 		// build the HunchResponse object
-		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE,
-			questionId = Integer.MIN_VALUE, order = Integer.MIN_VALUE;
+		int id = Integer.MIN_VALUE, topicId = Integer.MIN_VALUE;
+		int questionId = Integer.MIN_VALUE, order = Integer.MIN_VALUE;
 		String text = "";
-		
+
 		try
 		{
 			String tId = json.getString( "topicId" );
@@ -151,40 +223,38 @@ public class HunchResponse extends HunchObject
 				topicId = Integer.parseInt( tId );
 			} catch ( NumberFormatException e )
 			{
-				if( tId.equals( "THAY" ) )
+				if ( tId.equals( "THAY" ) )
 				{
 					// Teach Hunch About You!
 					topicId = THAY_TOPIC_ID;
-				}
-				else
+				} else
 				{
 					// some other cause of the NFE
 					throw new RuntimeException( "Couldn't build HunchResponse!", e );
 				}
 			}
-			
+
 			id = Integer.parseInt( json.getString( "id" ) );
 			questionId = Integer.parseInt( json.getString( "questionId" ) );
 			order = Integer.parseInt( json.getString( "order" ) );
 			text = json.getString( "text" );
-				
+
 		} catch ( NumberFormatException e )
 		{
 			throw new RuntimeException( "Couldn't build HunchResponse!", e );
 		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "Couldn't build HunchResponse!", e );
-		}
-		finally
+		} finally
 		{
 			builder.init( json )
-			.setId( id )
-			.setTopicId( topicId )
-			.setQuestionId( questionId )
-			.setOrder( order )
-			.setText( text );
+					.setId( id )
+					.setTopicId( topicId )
+					.setQuestionId( questionId )
+					.setOrder( order )
+					.setText( text );
 		}
-		
+
 		return builder.build();
 	}
 
