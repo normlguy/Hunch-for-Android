@@ -643,6 +643,7 @@ public class HunchAPI
 					hunchTopics.add( h );
 				}
 
+				// FIXME: why isn't this being removed from the URL
 				params.remove( "limit" );
 			} else
 			{

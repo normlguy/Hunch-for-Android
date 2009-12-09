@@ -75,10 +75,20 @@ public class HunchNextQuestion extends HunchObject
 		@Override
 		HunchNextQuestion build()
 		{
-			if ( val == null || buildNextQuestion == null || buildTopic == null )
+			if ( val == null )
 			{
 				throw new IllegalStateException(
-						"Not all required fields set before building HunchNextQuestion!" );
+				"Not all required fields set before building HunchNextQuestion! (JSON value null)" );
+			}
+			else if( buildNextQuestion == null )
+			{
+				throw new IllegalStateException(
+				"Not all required fields set before building HunchNextQuestion! (nextQuestion null)" );
+			}
+			else if( buildTopic == null )
+			{
+				throw new IllegalStateException(
+				"Not all required fields set before building HunchNextQuestion! (buildTopic null)" );
 			}
 
 			/*
@@ -202,13 +212,29 @@ public class HunchNextQuestion extends HunchObject
 					respImgUrl = jsonResponse.getString( "imageUrl" );
 				} catch ( JSONException e )
 				{
-					Log.d( Const.TAG, "got response object with no imageUrl in HunchNextQuestion.buildFromJSON()" );
+					Log.d( Const.TAG, "got response object with no imageUrl " +
+							"in HunchNextQuestion.buildFromJSON()" );
+				}
+				
+				/*
+				 * 	Same deal here, the responseID is not set for 
+				 *  "skip this question" responses, handle it separately
+				 */
+				
+				Integer respID = null;
+				try
+				{
+					respID = jsonResponse.getInt( "responseId" );
+				} catch ( JSONException e )
+				{
+					//Log.d( Const.TAG, "couldn't find ID for HunchResponse! (probably a " +
+					//		"\"skip this question\" response)" );
 				}
 				
 				Log.d( Const.TAG, "building hunchResponse...\n" + jsonResponse.toString( 4 ) );
 				
 				respBuilder.init( jsonResponse )
-						.setId( jsonResponse.getInt( "responseId" ) )
+						.setId( respID )
 						.setText( jsonResponse.getString( "responseText" ) )
 						.setQAState( jsonResponse.getString( "qaState" ) )
 						.setImageUrl( respImgUrl );
@@ -217,13 +243,31 @@ public class HunchNextQuestion extends HunchObject
 
 				responses.add( resp );
 			}
+			
+			Log.d( Const.TAG, "building HunchQuestion...\n" + jsonNextQuestion.toString( 4 ) );
+			
+			/*
+			 * Again, imageUrl can be null sometimes when the
+			 * API returns a hunchQuestion as part of a
+			 * nextQuestion call, so we have to handle it 
+			 * in a separate try block 
+			 */
+			String questionImageUrl = null;
+			try
+			{
+				questionImageUrl = jsonNextQuestion.getString( "imageUrl" );
+			} catch ( JSONException e )
+			{
+				Log.d( Const.TAG, "got question object with no imageUrl " +
+				"in HunchNextQuestion.buildFromJSON()" );
+			}
 
 			// build the question
 			qBuilder.init( jsonNextQuestion )
 					.setId( jsonNextQuestion.getInt( "questionId" ) )
 					.setText( jsonNextQuestion.getString( "questionText" ) )
 					.setQuestionNumber( jsonNextQuestion.getInt( "questionNumber" ) )
-					.setImageUrl( jsonNextQuestion.getString( "imageUrl" ) )
+					.setImageUrl( questionImageUrl )
 					.setResponses( responses );
 
 			final HunchQuestion nextQuestion = qBuilder.buildForNextQuestion();
@@ -231,29 +275,49 @@ public class HunchNextQuestion extends HunchObject
 			JSONObject jsonTopic = response.getJSONObject( "topic" );
 
 			JSONObject jsonCategory = jsonTopic.getJSONObject( "category" );
+			
+			Log.d( Const.TAG, "building HunchCategory...\n" + jsonCategory.toString( 4 ) );
 
 			catBuilder.init( jsonCategory )
 					.setUrlName( jsonCategory.getString( "categoryUrlName" ) )
 					.setName( jsonCategory.getString( "categoryName" ) )
 					.setImageUrl( jsonCategory.getString( "categoryImageUrl" ) );
 			
+			Log.d( Const.TAG, "building HunchTopic...\n" + jsonTopic.toString( 4 ) );
+			
 			tBuilder.init( jsonTopic )
 			.setId( jsonTopic.getInt( "topicId" ) )
 			.setDecision( jsonTopic.getString( "topicDecision" ) )
 			.setHunchUrl( jsonTopic.getString( "hunchUrl" ) )
+			.setImageUrl( jsonTopic.getString( "imageUrl" ) )
 			.setCategory( catBuilder.build() );
 			
 			final HunchTopic topic = tBuilder.buildForNextQuestion();
 			
+			/*
+			 * PrevQaState is left unset by the API on the first question.
+			 * Again, gotta handle it separately.
+			 */
+			
+			String prevQaState = null;
+			try
+			{
+				prevQaState = response.getString( "prevQaState" );
+			} catch ( JSONException e )
+			{
+				Log.d( Const.TAG, "got nextQuestion object with no prevQaState " +
+				"in HunchNextQuestion.buildFromJSON() (probably first question)" );
+			}
+			
 			nqBuilder.init( jsonNextQuestion )
 			.setNextQuestion( nextQuestion )
 			.setTopic( topic )
-			.setPrevQAState( jsonNextQuestion.getString( "prevQaState" ) )
-			.setRankedResultResponses( jsonNextQuestion.getString( "rankedResultResponses" ) );
+			.setPrevQAState( prevQaState )
+			.setRankedResultResponses( response.getString( "rankedResultResponses" ) );
 
 		} catch ( JSONException e )
 		{
-			e.printStackTrace();
+			throw new RuntimeException( "Couldn't build HunchNextQuestion!", e );
 		}
 		
 		return nqBuilder.build();

@@ -17,12 +17,12 @@ public class HunchTopic extends HunchObject
 	static class Builder extends HunchObject.Builder
 	{
 		private JSONObject _val;
-		private int buildId;
+		private Integer buildId;
 		private String buildDecision, buildImageUrl, buildResultType,
 				buildUrlName, buildShortName, buildHunchUrl;
-		private boolean buildIsEitherOr;
+		private Boolean buildIsEitherOr;
 		private HunchCategory buildCategory;
-		private double buildScore;
+		private Double buildScore;
 
 		// instance control
 		private Builder()
@@ -36,7 +36,7 @@ public class HunchTopic extends HunchObject
 			return this;
 		}
 
-		Builder setId( int id )
+		Builder setId( Integer id )
 		{
 			this.buildId = id;
 			return this;
@@ -73,7 +73,7 @@ public class HunchTopic extends HunchObject
 			return this;
 		}
 
-		Builder setIsEitherOr( boolean isEitherOr )
+		Builder setIsEitherOr( Boolean isEitherOr )
 		{
 			this.buildIsEitherOr = isEitherOr;
 			return this;
@@ -91,7 +91,7 @@ public class HunchTopic extends HunchObject
 			return this;
 		}
 
-		Builder setScore( double score )
+		Builder setScore( Double score )
 		{
 			this.buildScore = score;
 			return this;
@@ -101,7 +101,7 @@ public class HunchTopic extends HunchObject
 		void reset()
 		{
 			_val = null;
-			buildId = Integer.MIN_VALUE;
+			buildId = null;
 			buildDecision = null;
 			buildImageUrl = null;
 			buildResultType = null;
@@ -110,7 +110,7 @@ public class HunchTopic extends HunchObject
 			buildHunchUrl = null;
 			buildIsEitherOr = false;
 			buildCategory = null;
-			buildScore = Float.NaN;
+			buildScore = null;
 		}
 
 		@Override
@@ -149,9 +149,9 @@ public class HunchTopic extends HunchObject
 		
 		private void assureNextQuestionBuildParams()
 		{
-			if ( _val == null || buildId == Integer.MIN_VALUE
+			if ( _val == null || buildId == null || buildHunchUrl == null
 					|| buildDecision == null || buildImageUrl == null
-					|| buildUrlName == null || buildCategory == null )
+					|| buildCategory == null )
 			{
 				throw new IllegalStateException(
 						"Not all required fields set before building HunchTopic!" );
@@ -160,7 +160,7 @@ public class HunchTopic extends HunchObject
 
 		private void assureBuildParams()
 		{
-			if ( _val == null || buildId == Integer.MIN_VALUE
+			if ( _val == null || buildId == null
 					|| buildDecision == null || buildImageUrl == null
 					|| buildResultType == null || buildUrlName == null
 					|| buildShortName == null )
@@ -172,9 +172,9 @@ public class HunchTopic extends HunchObject
 
 		private void assureSearchBuildParams()
 		{
-			if ( _val == null || buildId == Integer.MIN_VALUE
+			if ( _val == null || buildId == null
 					|| buildDecision == null || buildUrlName == null
-					|| buildScore == Float.NaN )
+					|| buildScore == null )
 			{
 				throw new IllegalStateException(
 						"Not all required fields set before building HunchTopic!" );
@@ -183,19 +183,19 @@ public class HunchTopic extends HunchObject
 
 	}
 
-	private final int _id;
+	private final Integer _id;
 	private final String _decision, _imageUrl, _resultType, _urlName,
 			_shortName;
-	private final boolean _isEitherOr;
+	private final Boolean _isEitherOr;
 	private final JSONObject json;
 	private final String _hunchUrl; // optional
 	private final HunchCategory _category;
-	private final double _score;
+	private final Double _score;
 
-	private HunchTopic( JSONObject val, int id, String decision,
+	private HunchTopic( JSONObject val, Integer id, String decision,
 			String imageUrl, String resultType, String urlName,
-			String shortName, boolean isEitherOr, String hunchUrl,
-			HunchCategory category, double score )
+			String shortName, Boolean isEitherOr, String hunchUrl,
+			HunchCategory category, Double score )
 	{
 		json = val;
 		_id = id;
@@ -215,7 +215,7 @@ public class HunchTopic extends HunchObject
 		return b;
 	}
 
-	public int getId()
+	public Integer getId()
 	{
 		return _id;
 	}
@@ -250,7 +250,7 @@ public class HunchTopic extends HunchObject
 		return _hunchUrl;
 	}
 
-	public boolean isEitherOr()
+	public Boolean isEitherOr()
 	{
 		return _isEitherOr;
 	}
@@ -260,7 +260,7 @@ public class HunchTopic extends HunchObject
 		return _category;
 	}
 
-	public double getScore()
+	public Double getScore()
 	{
 		return _score;
 	}

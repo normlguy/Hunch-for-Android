@@ -2,6 +2,10 @@ package com.hunch.api;
 
 import org.json.*;
 
+import com.hunch.Const;
+
+import android.util.Log;
+
 /**
  * 
  * 
@@ -18,7 +22,7 @@ public class HunchResponse extends HunchObject
 	{
 
 		private JSONObject val;
-		private int __id, __order, __questionId, __topicId;
+		private Integer __id, __order, __questionId, __topicId;
 		private String __text, __qaState, __imageUrl;
 
 		private Builder()
@@ -32,13 +36,13 @@ public class HunchResponse extends HunchObject
 			return this;
 		}
 
-		Builder setId( int id )
+		Builder setId( Integer id )
 		{
 			__id = id;
 			return this;
 		}
 
-		Builder setTopicId( int topicId )
+		Builder setTopicId( Integer topicId )
 		{
 			__topicId = topicId;
 			return this;
@@ -50,13 +54,13 @@ public class HunchResponse extends HunchObject
 			return this;
 		}
 
-		Builder setQuestionId( int questionId )
+		Builder setQuestionId( Integer questionId )
 		{
 			__questionId = questionId;
 			return this;
 		}
 
-		Builder setOrder( int order )
+		Builder setOrder( Integer order )
 		{
 			__order = order;
 			return this;
@@ -79,7 +83,10 @@ public class HunchResponse extends HunchObject
 		{
 			val = null;
 			__text = null;
-			__id = __topicId = __order = __questionId = Integer.MIN_VALUE;
+			__id = null;
+			__topicId = null;
+			__order = null;
+			__questionId = null;
 			__qaState = null;
 			__imageUrl = null;
 		}
@@ -117,19 +124,22 @@ public class HunchResponse extends HunchObject
 
 		private void assureNextQuestionBuildParams()
 		{
-			if ( val == null || __id == Integer.MIN_VALUE || __text == null
-					|| __qaState == null )
+			if ( val == null || __text == null || __qaState == null )
 			{
 				throw new IllegalStateException(
 						"Not all required fields set before building HunchQuestion!" );
 			}
+
+			if ( __id == null )
+				Log.d(	Const.TAG, "building HunchResponse for NextQuestion " +
+						"without ID! (probably a \"skip this question\" response)" );
 		}
 
 		private void assureBuildParams()
 		{
-			if ( val == null || __text == null || __order == Integer.MIN_VALUE
-					|| __questionId == Integer.MIN_VALUE || __id == Integer.MIN_VALUE
-					|| __topicId == Integer.MIN_VALUE )
+			if ( val == null || __text == null || __order == null
+					|| __questionId == null || __id == null
+					|| __topicId == null )
 			{
 				throw new IllegalStateException(
 						"Not all required fields set before building HunchQuestion!" );
@@ -147,11 +157,11 @@ public class HunchResponse extends HunchObject
 	}
 
 	private final JSONObject json;
-	private final int _id, _order, _questionId, _topicId;
+	private final Integer _id, _order, _questionId, _topicId;
 	private final String _text, _qaState, _imageUrl;
 
 	private HunchResponse( JSONObject jsonObj, String text, String qaState, String imageUrl,
-			int order, int id, int topicId, int questionId )
+			Integer order, Integer id, Integer topicId, Integer questionId )
 	{
 		json = jsonObj;
 		_text = text;
@@ -186,22 +196,22 @@ public class HunchResponse extends HunchObject
 		return _text;
 	}
 
-	public int getOrder()
+	public Integer getOrder()
 	{
 		return _order;
 	}
 
-	public int getId()
+	public Integer getId()
 	{
 		return _id;
 	}
 
-	public int getTopicId()
+	public Integer getTopicId()
 	{
 		return _topicId;
 	}
 
-	public int getQuestionId()
+	public Integer getQuestionId()
 	{
 		return _questionId;
 	}
