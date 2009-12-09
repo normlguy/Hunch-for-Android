@@ -205,6 +205,8 @@ public class HunchNextQuestion extends HunchObject
 					Log.d( Const.TAG, "got response object with no imageUrl in HunchNextQuestion.buildFromJSON()" );
 				}
 				
+				Log.d( Const.TAG, "building hunchResponse...\n" + jsonResponse.toString( 4 ) );
+				
 				respBuilder.init( jsonResponse )
 						.setId( jsonResponse.getInt( "responseId" ) )
 						.setText( jsonResponse.getString( "responseText" ) )

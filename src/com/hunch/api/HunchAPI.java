@@ -633,6 +633,9 @@ public class HunchAPI
 			if ( params.containsKey( "limit" ) )
 			{
 				Integer limit = new Integer( params.get( "limit" ) );
+				
+				Log.d( Const.TAG, "only returning " + limit + " HunchTopics from listTopics()" );
+				
 				for ( int i = 0; i < limit; i++ )
 				{
 					JSONObject topic = topics.getJSONObject( i );
@@ -649,13 +652,6 @@ public class HunchAPI
 					HunchTopic h = HunchTopic.buildFromJSON( topic );
 					hunchTopics.add( h );
 				}
-			}
-			
-			for ( int i = 0; i < topics.length(); i++ )
-			{
-				JSONObject topic = topics.getJSONObject( i );
-				HunchTopic h = HunchTopic.buildFromJSON( topic );
-				hunchTopics.add( h );
 			}
 
 		} catch ( JSONException e )
