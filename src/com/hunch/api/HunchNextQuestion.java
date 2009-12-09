@@ -7,6 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hunch.Const;
+
+import android.util.Log;
+
 /**
  * This class is a representation of the JSON object returned by the
  * nextQuestion call of the HunchAPI.
@@ -182,12 +186,30 @@ public class HunchNextQuestion extends HunchObject
 			for ( int i = 0; i < jsonResponses.length(); i++ )
 			{
 				JSONObject jsonResponse = jsonResponses.getJSONObject( i );
-
+				
+				/*
+				 * 	image url can be not set on some				 
+				 *  response objects returned by the Hunch API
+				 *  --
+				 *  in order to avoid jumping to the catch block
+				 *  upon missing imageUrl, we need to handle it
+				 *  in it's own try block
+				 */
+				
+				String respImgUrl = null;
+				try
+				{
+					respImgUrl = jsonResponse.getString( "imageUrl" );
+				} catch ( JSONException e )
+				{
+					Log.d( Const.TAG, "got response object with no imageUrl in HunchNextQuestion.buildFromJSON()" );
+				}
+				
 				respBuilder.init( jsonResponse )
 						.setId( jsonResponse.getInt( "responseId" ) )
 						.setText( jsonResponse.getString( "responseText" ) )
 						.setQAState( jsonResponse.getString( "qaState" ) )
-						.setImageUrl( jsonResponse.getString( "imageUrl" ) );
+						.setImageUrl( respImgUrl );
 
 				HunchResponse resp = respBuilder.buildForNextQuestion();
 

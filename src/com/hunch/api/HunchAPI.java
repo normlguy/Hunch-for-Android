@@ -630,12 +630,34 @@ public class HunchAPI
 		{
 			JSONArray topics = r.getJSON().getJSONArray( "topics" );
 
+			if ( params.containsKey( "limit" ) )
+			{
+				Integer limit = new Integer( params.get( "limit" ) );
+				for ( int i = 0; i < limit; i++ )
+				{
+					JSONObject topic = topics.getJSONObject( i );
+					HunchTopic h = HunchTopic.buildFromJSON( topic );
+					hunchTopics.add( h );
+				}
+
+				params.remove( "limit" );
+			} else
+			{
+				for ( int i = 0; i < topics.length(); i++ )
+				{
+					JSONObject topic = topics.getJSONObject( i );
+					HunchTopic h = HunchTopic.buildFromJSON( topic );
+					hunchTopics.add( h );
+				}
+			}
+			
 			for ( int i = 0; i < topics.length(); i++ )
 			{
 				JSONObject topic = topics.getJSONObject( i );
 				HunchTopic h = HunchTopic.buildFromJSON( topic );
 				hunchTopics.add( h );
 			}
+
 		} catch ( JSONException e )
 		{
 			throw new RuntimeException( "could not execute listTopics!", e );
@@ -737,9 +759,9 @@ public class HunchAPI
 		{
 			throw new RuntimeException( "Couldn't execute nextQuestion request!", e );
 		}
-		
+
 		HunchNextQuestion nextQuestion = HunchNextQuestion.buildFromJSON( r.getJSON() );
-		
+
 		completedCallback.callComplete( nextQuestion );
 
 	}
