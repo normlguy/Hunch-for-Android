@@ -314,6 +314,30 @@ public class HunchAPI
 	{
 		public void callComplete( HunchObject resp );
 	}
+	
+	/*
+	 * The lone instance of HunchAPI
+	 */
+	private static HunchAPI instance = null;
+	
+	/*
+	 * Private constructor - only one instance of the Hunch API should exist
+	 * at any one point in time. The Hunch API is static by nature, so each call
+	 * could be implemented by a single static method. Each client of the API
+	 * can therefore safely share a single instance.
+	 */
+	private HunchAPI() {}
+	
+	/*
+	 * The only way to get the lone instance of the Hunch API.
+	 */
+	public static synchronized HunchAPI getInstance()
+	{
+		if( instance == null )
+			instance = new HunchAPI();
+		
+		return instance;
+	}
 
 	public void getResult( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
