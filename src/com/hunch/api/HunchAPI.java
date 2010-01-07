@@ -660,7 +660,9 @@ public class HunchAPI
 				
 				Log.d( Const.TAG, "only returning " + limit + " HunchTopics from listTopics()" );
 				
-				for ( int i = 0; i < limit; i++ )
+				// don't auto-unbox on every iteration please
+				final int intLimit = limit;
+				for ( int i = 0; i < intLimit; i++ )
 				{
 					JSONObject topic = topics.getJSONObject( i );
 					HunchTopic h = HunchTopic.buildFromJSON( topic );

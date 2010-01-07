@@ -105,6 +105,26 @@ public class HunchNextQuestion extends HunchObject
 
 			return ret;
 		}
+		
+		HunchNextQuestion buildForResults()
+		{
+			if ( val == null )
+			{
+				throw new IllegalStateException(
+				"Not all required fields set before building HunchNextQuestion! (JSON value null)" );
+			} 
+			else if ( buildRankedResultResponses == null )
+			{
+				throw new IllegalStateException(
+				"Not all required fields set before building HunchNextQuestion! (RankedResults value null)" );
+			}
+			
+			HunchNextQuestion ret = new HunchNextQuestion( val, null, null, null, buildRankedResultResponses );
+			
+			reset();
+			
+			return ret;
+		}
 
 		/*
 		 * (non-Javadoc)
@@ -140,21 +160,29 @@ public class HunchNextQuestion extends HunchObject
 
 	public HunchQuestion getNextQuestion()
 	{
+		assert _nextQuestion != null;
+		
 		return _nextQuestion;
 	}
 
 	public HunchTopic getTopic()
 	{
+		assert _topic != null;
+		
 		return _topic;
 	}
 
 	public String getPrevQAState()
 	{
+		assert _prevQAState != null;
+		
 		return _prevQAState;
 	}
 
 	public String getRankedResultResponses()
 	{
+		assert _rankedResultResponses != null;
+		
 		return _rankedResultResponses;
 	}
 
@@ -180,6 +208,25 @@ public class HunchNextQuestion extends HunchObject
 	public static HunchNextQuestion buildFromJSON( final JSONObject response )
 	{
 		final HunchNextQuestion.Builder nqBuilder = getBuilder();
+		
+		if ( response.has( "rankedResultResponses" ) && response.length() == 1 )
+		{
+			// this is the last question in the topic
+			// it contains only the list of results to be passed
+			// to rankedResponses
+			try
+			{
+				
+				nqBuilder.init( response )
+				.setRankedResultResponses( response.getString( "rankedResultResponses" ) );
+			} catch ( JSONException e )
+			{
+				throw new RuntimeException( "Couldn't build HunchNextQuestion!", e );
+			}
+			
+			return nqBuilder.buildForResults();
+		}
+		
 		final HunchQuestion.Builder qBuilder = HunchQuestion.getBuilder();
 		final HunchTopic.Builder tBuilder = HunchTopic.getBuilder();
 		final HunchResponse.Builder respBuilder = HunchResponse.getBuilder();
