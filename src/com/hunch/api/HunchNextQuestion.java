@@ -194,6 +194,8 @@ public class HunchNextQuestion extends HunchObject
 	@Override
 	public JSONObject getJSON()
 	{
+		assert _json != null;
+		
 		return _json;
 	}
 

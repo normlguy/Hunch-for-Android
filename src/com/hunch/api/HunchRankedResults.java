@@ -3,6 +3,8 @@ package com.hunch.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hunch.util.Pair;
@@ -156,6 +158,47 @@ public class HunchRankedResults extends HunchObject
 		assert val != null;
 		
 		return val;
+	}
+	
+	public static HunchRankedResults buildFromJSON( JSONObject val )
+	{
+		try
+		{
+			b.init( val )
+			.setAllResultsHunchUrl( val.getString( "hunchUrl" ) )
+			.setWildcardId( val.getString( "wildCardResultId" ) );
+			
+			JSONArray ids = null, pcts = null;
+			ids = val.getJSONArray( "rankedResultIds" );
+			
+			if( val.has( "eitherOrPct" ) )
+			{
+				pcts = val.getJSONArray( "eitherOrPct" );
+			}
+			
+			if( pcts == null )
+			{
+				for( int i = 0; i < ids.length(); i++ )
+				{
+					// this is dumb, null is an object by default?
+					// so you have to explicitly downcast
+					b.addResultsPair( Pair.create( ids.getString( i ), (String) null ) );
+				}
+			}
+			else
+			{
+				for( int i = 0; i < ids.length(); i++ )
+				{
+					b.addResultsPair( Pair.create( ids.getString( i ), pcts.getString( i ) ) );
+				}
+			}
+						
+		} catch ( JSONException e )
+		{
+			throw new RuntimeException( "Couldn't build HunchRankedResults!", e );
+		}
+		
+		return b.build();
 	}
 	
 	public static Builder getBuilder()
