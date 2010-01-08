@@ -23,6 +23,17 @@ public class HunchNextQuestion extends HunchObject
 {
 
 	private static Builder b;
+	
+	/*
+	 * The various varieties of this object returned by the API.
+	 * 
+	 * Different varieties have different capabilities. Runtime checking
+	 * of variety should help reduce possible NPE's
+	 */
+	public enum Variety
+	{
+		DEFAULT, RESULTS
+	}
 
 	static class Builder extends HunchObject.Builder
 	{
@@ -99,7 +110,7 @@ public class HunchNextQuestion extends HunchObject
 			 */
 
 			HunchNextQuestion ret = new HunchNextQuestion( val, buildNextQuestion, buildTopic,
-					buildPrevQAState, buildRankedResultResponses );
+					buildPrevQAState, buildRankedResultResponses, Variety.DEFAULT );
 
 			reset();
 
@@ -119,7 +130,8 @@ public class HunchNextQuestion extends HunchObject
 				"Not all required fields set before building HunchNextQuestion! (RankedResults value null)" );
 			}
 			
-			HunchNextQuestion ret = new HunchNextQuestion( val, null, null, null, buildRankedResultResponses );
+			HunchNextQuestion ret = new HunchNextQuestion( val, null, null, null,
+					buildRankedResultResponses, Variety.RESULTS );
 			
 			reset();
 			
@@ -143,47 +155,56 @@ public class HunchNextQuestion extends HunchObject
 
 	}
 
-	private final JSONObject _json;
-	private final HunchQuestion _nextQuestion;
-	private final HunchTopic _topic;
-	private final String _prevQAState, _rankedResultResponses;
+	private final JSONObject json;
+	private final HunchQuestion nextQuestion;
+	private final HunchTopic topic;
+	private final String prevQAState, rankedResultResponses;
+	private final Variety variety;
 
 	private HunchNextQuestion( JSONObject json, HunchQuestion nextQuestion, HunchTopic topic,
-			String prevQAState, String rankedResultResponses )
+			String prevQAState, String rankedResultResponses, Variety v )
 	{
-		_json = json;
-		_nextQuestion = nextQuestion;
-		_topic = topic;
-		_prevQAState = prevQAState;
-		_rankedResultResponses = rankedResultResponses;
+		this.json = json;
+		this.nextQuestion = nextQuestion;
+		this.topic = topic;
+		this.prevQAState = prevQAState;
+		this.rankedResultResponses = rankedResultResponses;
+		this.variety = v;
 	}
 
 	public HunchQuestion getNextQuestion()
 	{
-		assert _nextQuestion != null;
+		assert nextQuestion != null;
 		
-		return _nextQuestion;
+		return nextQuestion;
 	}
 
 	public HunchTopic getTopic()
 	{
-		assert _topic != null;
+		assert topic != null;
 		
-		return _topic;
+		return topic;
 	}
 
 	public String getPrevQAState()
 	{
-		assert _prevQAState != null;
+		assert prevQAState != null;
 		
-		return _prevQAState;
+		return prevQAState;
 	}
 
 	public String getRankedResultResponses()
 	{
-		assert _rankedResultResponses != null;
+		assert rankedResultResponses != null;
 		
-		return _rankedResultResponses;
+		return rankedResultResponses;
+	}
+	
+	public Variety getVariety()
+	{
+		assert variety != null;
+		
+		return variety;
 	}
 
 	/*
@@ -194,9 +215,9 @@ public class HunchNextQuestion extends HunchObject
 	@Override
 	public JSONObject getJSON()
 	{
-		assert _json != null;
+		assert json != null;
 		
-		return _json;
+		return json;
 	}
 
 	public static HunchNextQuestion.Builder getBuilder()

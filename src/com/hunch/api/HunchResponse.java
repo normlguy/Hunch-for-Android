@@ -17,6 +17,11 @@ public class HunchResponse extends HunchObject
 
 	private static Builder b;
 	private static int THAY_TOPIC_ID = -3;
+	
+	public enum Variety
+	{
+		DEFAULT, QUESTION, NEXT_QUESTION
+	}
 
 	static class Builder extends HunchObject.Builder
 	{
@@ -96,21 +101,21 @@ public class HunchResponse extends HunchObject
 		{
 			assureBuildParams();
 
-			return buildInternal();
+			return buildInternal( Variety.DEFAULT );
 		}
 
 		HunchResponse buildForQuestion()
 		{
 			assureQuestionBuildParams();
 
-			return buildInternal();
+			return buildInternal( Variety.QUESTION );
 		}
 
 		HunchResponse buildForNextQuestion()
 		{
 			assureNextQuestionBuildParams();
 
-			return buildInternal();
+			return buildInternal( Variety.NEXT_QUESTION );
 		}
 
 		private void assureQuestionBuildParams()
@@ -146,10 +151,11 @@ public class HunchResponse extends HunchObject
 			}
 		}
 
-		private HunchResponse buildInternal()
+		private HunchResponse buildInternal( Variety v )
 		{
 			HunchResponse ret = new HunchResponse( val, __text, __qaState, __imageUrl,
-					__order, __id, __topicId, __questionId );
+					__order, __id, __topicId, __questionId, v );
+			
 			reset();
 
 			return ret;
@@ -157,20 +163,23 @@ public class HunchResponse extends HunchObject
 	}
 
 	private final JSONObject json;
-	private final Integer _id, _order, _questionId, _topicId;
-	private final String _text, _qaState, _imageUrl;
+	private final Integer id, order, questionId, topicId;
+	private final String text, qaState, imageUrl;
+	private final Variety variety;
 
 	private HunchResponse( JSONObject jsonObj, String text, String qaState, String imageUrl,
-			Integer order, Integer id, Integer topicId, Integer questionId )
+			Integer order, Integer id, Integer topicId, Integer questionId, Variety v )
 	{
-		json = jsonObj;
-		_text = text;
-		_order = order;
-		_id = id;
-		_topicId = topicId;
-		_questionId = questionId;
-		_qaState = qaState;
-		_imageUrl = imageUrl;
+		this.json = jsonObj;
+		this.text = text;
+		this.order = order;
+		this.id = id;
+		this.topicId = topicId;
+		this.questionId = questionId;
+		this.qaState = qaState;
+		this.imageUrl = imageUrl;
+		
+		this.variety = v;
 	}
 
 	public static Builder getBuilder()
@@ -183,37 +192,37 @@ public class HunchResponse extends HunchObject
 
 	public String getQAState()
 	{
-		return _qaState;
+		return qaState;
 	}
 
 	public String getImageUrl()
 	{
-		return _imageUrl;
+		return imageUrl;
 	}
 
 	public String getText()
 	{
-		return _text;
+		return text;
 	}
 
 	public Integer getOrder()
 	{
-		return _order;
+		return order;
 	}
 
 	public Integer getId()
 	{
-		return _id;
+		return id;
 	}
 
 	public Integer getTopicId()
 	{
-		return _topicId;
+		return topicId;
 	}
 
 	public Integer getQuestionId()
 	{
-		return _questionId;
+		return questionId;
 	}
 
 	static HunchResponse buildFromJSON( JSONObject json )

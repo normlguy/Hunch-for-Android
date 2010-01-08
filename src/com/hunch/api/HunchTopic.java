@@ -13,6 +13,11 @@ public class HunchTopic extends HunchObject
 {
 
 	private static Builder b = new Builder();
+	
+	public enum Variety
+	{
+		DEFAULT, SEARCH, NEXT_QUESTION
+	}
 
 	static class Builder extends HunchObject.Builder
 	{
@@ -118,7 +123,7 @@ public class HunchTopic extends HunchObject
 		{
 			assureBuildParams();
 
-			return buildInternal();
+			return buildInternal( Variety.DEFAULT );
 
 		}
 
@@ -126,22 +131,22 @@ public class HunchTopic extends HunchObject
 		{
 			assureSearchBuildParams();
 
-			return buildInternal();
+			return buildInternal( Variety.SEARCH );
 		}
 		
 		HunchTopic buildForNextQuestion()
 		{
 			assureNextQuestionBuildParams();
 			
-			return buildInternal();
+			return buildInternal( Variety.NEXT_QUESTION );
 		}
 
-		private HunchTopic buildInternal()
+		private HunchTopic buildInternal( Variety v )
 		{
 			HunchTopic ht = new HunchTopic( _val, buildId, buildDecision,
 					buildImageUrl, buildResultType, buildUrlName,
 					buildShortName, buildIsEitherOr, buildHunchUrl,
-					buildCategory, buildScore );
+					buildCategory, buildScore, v );
 			reset();
 
 			return ht;
@@ -191,11 +196,12 @@ public class HunchTopic extends HunchObject
 	private final String _hunchUrl; // optional
 	private final HunchCategory _category;
 	private final Double _score;
+	private final Variety variety;
 
 	private HunchTopic( JSONObject val, Integer id, String decision,
 			String imageUrl, String resultType, String urlName,
 			String shortName, Boolean isEitherOr, String hunchUrl,
-			HunchCategory category, Double score )
+			HunchCategory category, Double score, Variety v )
 	{
 		json = val;
 		_id = id;
@@ -208,6 +214,8 @@ public class HunchTopic extends HunchObject
 		_hunchUrl = hunchUrl;
 		_category = category;
 		_score = score;
+		
+		this.variety = v;
 	}
 
 	public static Builder getBuilder()
@@ -263,6 +271,11 @@ public class HunchTopic extends HunchObject
 	public Double getScore()
 	{
 		return _score;
+	}
+	
+	public Variety getVariety()
+	{
+		return variety;
 	}
 
 	@Override
