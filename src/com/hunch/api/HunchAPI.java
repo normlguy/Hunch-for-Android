@@ -792,6 +792,22 @@ public class HunchAPI
 	public void rankedResults( Map< String, String > params,
 			HunchAPI.Callback completedCallback )
 	{
+		assureParams( params, "topicId" );
+		
+		Request rankedResultsRequest = new Request( "rankedResults", params );
+		
+		Response r;
+		try
+		{
+			r = rankedResultsRequest.execute();
+		} catch( IOException e )
+		{
+			throw new RuntimeException( "Couldn't execute rankedResults request!", e );
+		}
+		
+		HunchRankedResults results = HunchRankedResults.buildFromJSON( r.getJSON() );
+		
+		completedCallback.callComplete( results );
 
 	}
 

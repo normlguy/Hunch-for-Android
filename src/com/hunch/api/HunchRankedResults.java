@@ -1,12 +1,16 @@
 package com.hunch.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.hunch.Const;
 import com.hunch.util.Pair;
 
 /**
@@ -76,8 +80,15 @@ public class HunchRankedResults extends HunchObject
 			}
 			else if( wildcardId == null )
 			{
-				throw new IllegalStateException( "Not all required fields set" +
-				" before building HunchRankedResult! (wildcardId is null)" );
+				/*
+				 * From the Hunch API spec:
+				 * 
+				 * Sometimes-included identifier for the "wildcard" result.
+				 */
+				//throw new IllegalStateException( "Not all required fields set" +
+				//" before building HunchRankedResult! (wildcardId is null)" );
+				Log.d( Const.TAG, "got null wildCardId when building HunchRankedResults!" +
+						" (missing from response?)" );
 			}
 			else if( allResultsHunchUrl == null )
 			{
@@ -128,6 +139,11 @@ public class HunchRankedResults extends HunchObject
 		return allResultsHunchUrl;
 	}
 	
+	public boolean hasWildCard()
+	{
+		return wildcardId != null;
+	}
+	
 	public String getWildcardId()
 	{
 		assert wildcardId != null;
@@ -139,7 +155,12 @@ public class HunchRankedResults extends HunchObject
 	{
 		assert results != null;
 		
-		return results;
+		// return a defensive copy of our mutable list
+		List< Pair< String, String > > outList = new ArrayList< Pair< String, String > >( results.size() );
+		
+		Collections.copy( outList, results );
+		
+		return outList;
 	}
 	
 	public Pair< String, String > getResult( int idx )

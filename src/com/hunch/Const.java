@@ -2,6 +2,12 @@ package com.hunch;
 
 import android.graphics.Color;
 
+/*
+ * A little project info -
+ * 
+ * As of rev 70, current code base stands at 3246 lines in the trunk.
+ */
+
 public class Const
 {
 	// debug tag
