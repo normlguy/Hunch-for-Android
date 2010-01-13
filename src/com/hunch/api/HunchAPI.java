@@ -845,18 +845,13 @@ public class HunchAPI
 		{
 			if ( m.containsKey( s ) && m.get( s ) != null )
 			{
-				if ( found )
-				{
-					throw new AssertionError( "only one parameter allowed!" );
-				} else
-				{
-					found = true;
-				}
+				assert !found : "only one parameter allowed!";
+				
+				found = true;
 			}
 		}
 
-		if ( !found )
-			throw new AssertionError( "did not find any of the parameters!" );
+		assert found : "did not find any of the parameters!";
 	}
 
 }
