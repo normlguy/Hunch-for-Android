@@ -7,9 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hunch.Const;
-
 import android.util.Log;
+
+import com.hunch.Const;
 
 /**
  * This class is a representation of the JSON object returned by the
@@ -23,6 +23,11 @@ public class HunchNextQuestion extends HunchObject
 {
 
 	private static Builder b;
+	
+	public interface Callback
+	{
+		public void callComplete( HunchNextQuestion h );
+	}
 	
 	/*
 	 * The various varieties of this object returned by the API.
@@ -41,7 +46,7 @@ public class HunchNextQuestion extends HunchObject
 		private JSONObject val;
 		private HunchQuestion buildNextQuestion;
 		private String buildPrevQAState, buildRankedResultResponses;
-		private HunchTopic buildTopic;
+		private IHunchTopic buildTopic;
 
 		private Builder()
 		{
@@ -72,7 +77,7 @@ public class HunchNextQuestion extends HunchObject
 			return this;
 		}
 
-		Builder setTopic( HunchTopic topic )
+		Builder setTopic( IHunchTopic topic )
 		{
 			buildTopic = topic;
 			return this;
@@ -110,7 +115,7 @@ public class HunchNextQuestion extends HunchObject
 			 */
 
 			HunchNextQuestion ret = new HunchNextQuestion( val, buildNextQuestion, buildTopic,
-					buildPrevQAState, buildRankedResultResponses, Variety.DEFAULT );
+					buildPrevQAState, buildRankedResultResponses, Variety.DEFAULT, false );
 
 			reset();
 
@@ -131,7 +136,7 @@ public class HunchNextQuestion extends HunchObject
 			}
 			
 			HunchNextQuestion ret = new HunchNextQuestion( val, null, null, null,
-					buildRankedResultResponses, Variety.RESULTS );
+					buildRankedResultResponses, Variety.RESULTS, true );
 			
 			reset();
 			
@@ -157,12 +162,13 @@ public class HunchNextQuestion extends HunchObject
 
 	private final JSONObject json;
 	private final HunchQuestion nextQuestion;
-	private final HunchTopic topic;
+	private final IHunchTopic topic;
 	private final String prevQAState, rankedResultResponses;
 	private final Variety variety;
+	private final Boolean isResultsOnly;
 
-	private HunchNextQuestion( JSONObject json, HunchQuestion nextQuestion, HunchTopic topic,
-			String prevQAState, String rankedResultResponses, Variety v )
+	private HunchNextQuestion( JSONObject json, HunchQuestion nextQuestion, IHunchTopic topic,
+			String prevQAState, String rankedResultResponses, Variety v, Boolean isResultsOnly )
 	{
 		this.json = json;
 		this.nextQuestion = nextQuestion;
@@ -170,6 +176,7 @@ public class HunchNextQuestion extends HunchObject
 		this.prevQAState = prevQAState;
 		this.rankedResultResponses = rankedResultResponses;
 		this.variety = v;
+		this.isResultsOnly = isResultsOnly;
 	}
 
 	public HunchQuestion getNextQuestion()
@@ -179,7 +186,7 @@ public class HunchNextQuestion extends HunchObject
 		return nextQuestion;
 	}
 
-	public HunchTopic getTopic()
+	public IHunchTopic getTopic()
 	{
 		assert topic != null;
 		
@@ -205,6 +212,13 @@ public class HunchNextQuestion extends HunchObject
 		assert variety != null;
 		
 		return variety;
+	}
+	
+	public boolean isResult()
+	{
+		assert isResultsOnly != null;
+		
+		return isResultsOnly; // unboxes the Boolean on return.
 	}
 
 	/*
@@ -282,7 +296,7 @@ public class HunchNextQuestion extends HunchObject
 					respImgUrl = jsonResponse.getString( "imageUrl" );
 				} catch ( JSONException e )
 				{
-					Log.d( Const.TAG, "got response object with no imageUrl " +
+					Log.v( Const.TAG, "got response object with no imageUrl " +
 							"in HunchNextQuestion.buildFromJSON()" );
 				}
 				
@@ -301,7 +315,7 @@ public class HunchNextQuestion extends HunchObject
 					//		"\"skip this question\" response)" );
 				}
 				
-				Log.d( Const.TAG, "building hunchResponse...\n" + jsonResponse.toString( 4 ) );
+				//Log.d( Const.TAG, "building hunchResponse...\n" + jsonResponse.toString( 4 ) );
 				
 				respBuilder.init( jsonResponse )
 						.setId( respID )
@@ -314,7 +328,7 @@ public class HunchNextQuestion extends HunchObject
 				responses.add( resp );
 			}
 			
-			Log.d( Const.TAG, "building HunchQuestion...\n" + jsonNextQuestion.toString( 4 ) );
+			//Log.d( Const.TAG, "building HunchQuestion...\n" + jsonNextQuestion.toString( 4 ) );
 			
 			/*
 			 * Again, imageUrl can be null sometimes when the
@@ -328,7 +342,7 @@ public class HunchNextQuestion extends HunchObject
 				questionImageUrl = jsonNextQuestion.getString( "imageUrl" );
 			} catch ( JSONException e )
 			{
-				Log.d( Const.TAG, "got question object with no imageUrl " +
+				Log.i( Const.TAG, "got question object with no imageUrl " +
 				"in HunchNextQuestion.buildFromJSON()" );
 			}
 
@@ -346,14 +360,14 @@ public class HunchNextQuestion extends HunchObject
 
 			JSONObject jsonCategory = jsonTopic.getJSONObject( "category" );
 			
-			Log.d( Const.TAG, "building HunchCategory...\n" + jsonCategory.toString( 4 ) );
+			//Log.d( Const.TAG, "building HunchCategory...\n" + jsonCategory.toString( 4 ) );
 
 			catBuilder.init( jsonCategory )
 					.setUrlName( jsonCategory.getString( "categoryUrlName" ) )
 					.setName( jsonCategory.getString( "categoryName" ) )
 					.setImageUrl( jsonCategory.getString( "categoryImageUrl" ) );
 			
-			Log.d( Const.TAG, "building HunchTopic...\n" + jsonTopic.toString( 4 ) );
+			//Log.d( Const.TAG, "building HunchTopic...\n" + jsonTopic.toString( 4 ) );
 			
 			tBuilder.init( jsonTopic )
 			.setId( jsonTopic.getInt( "topicId" ) )
@@ -362,7 +376,7 @@ public class HunchNextQuestion extends HunchObject
 			.setImageUrl( jsonTopic.getString( "imageUrl" ) )
 			.setCategory( catBuilder.build() );
 			
-			final HunchTopic topic = tBuilder.buildForNextQuestion();
+			final IHunchTopic topic = tBuilder.buildForNextQuestion();
 			
 			/*
 			 * PrevQaState is left unset by the API on the first question.
@@ -375,11 +389,11 @@ public class HunchNextQuestion extends HunchObject
 				prevQaState = response.getString( "prevQaState" );
 			} catch ( JSONException e )
 			{
-				Log.d( Const.TAG, "got nextQuestion object with no prevQaState " +
+				Log.i( Const.TAG, "got nextQuestion object with no prevQaState " +
 				"in HunchNextQuestion.buildFromJSON() (probably first question)" );
 			}
 			
-			nqBuilder.init( jsonNextQuestion )
+			nqBuilder.init( response )
 			.setNextQuestion( nextQuestion )
 			.setTopic( topic )
 			.setPrevQAState( prevQaState )

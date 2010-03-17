@@ -1,6 +1,13 @@
 package com.hunch.api;
 
-import org.json.*;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.hunch.Const;
+
+import android.util.Log;
 
 
 /**
@@ -14,6 +21,16 @@ public class HunchResult extends HunchObject
 {
 
 	private static Builder b;
+	
+	public interface Callback
+	{
+		public void callComplete( HunchResult h );
+	}
+	
+	public interface ListCallback
+	{
+		public void callComplete( List< HunchResult > h );
+	}
 	
 	static class Builder extends HunchObject.Builder
 	{
@@ -102,7 +119,7 @@ public class HunchResult extends HunchObject
 		HunchResult build()
 		{
 			if( val == null || __name == null || __imageUrl == null || __urlName == null
-					|| __desc == null || __readMoreUrl == null || __hunchUrl == null
+					|| __desc == null || __hunchUrl == null
 					|| __id == Integer.MIN_VALUE || __topicId == Integer.MIN_VALUE )
 			{
 				throw new IllegalStateException( "Not all required fields set before building HunchQuestion!" );
@@ -208,8 +225,16 @@ public class HunchResult extends HunchObject
 			.setDescription( json.getString( "description" ) )
 			.setName( json.getString( "name" ) )
 			.setUrlName( json.getString( "urlName" ) )
-			.setReadMoreUrl( json.getString( "readMoreUrl" ) )
 			.setHunchUrl( json.getString( "hunchUrl" ) );
+			
+			// read more url may be omitted
+			try
+			{
+				builder.setReadMoreUrl( json.getString( "readMoreUrl" ) );
+			} catch( JSONException e )
+			{
+				Log.w( Const.TAG, "No read more URL in Hunch result! This is probably OK." );
+			}
 			
 		} catch ( NumberFormatException e )
 		{
@@ -226,6 +251,31 @@ public class HunchResult extends HunchObject
 	public JSONObject getJSON()
 	{
 		return json;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getName();
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		int result = 17;
+		
+		result = 31 * result + json.hashCode();
+		result = 31 * result + _id;
+		result = 31 * result + _topicId;
+		result = 31 * result + _type.hashCode();
+		result = 31 * result + _name.hashCode();
+		result = 31 * result + _urlName.hashCode();
+		result = 31 * result + _desc.hashCode();
+		result = 31 * result + _imageUrl.hashCode();
+		result = 31 * result + _readMoreUrl.hashCode();
+		result = 31 * result + _hunchUrl.hashCode();
+		
+		return result;
 	}
 
 }

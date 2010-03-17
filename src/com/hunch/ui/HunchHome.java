@@ -1,16 +1,19 @@
 package com.hunch.ui;
 
-import com.hunch.Const;
-import com.hunch.R;
-import com.hunch.R.id;
-import com.hunch.R.layout;
-
-import android.app.Activity;
+import android.app.TabActivity;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TabHost;
+import android.widget.TextView;
+
+import com.hunch.Const;
+import com.hunch.R;
 
 /**
  * 
@@ -19,96 +22,62 @@ import android.widget.Button;
  * Dec 3, 2009
  *
  */
-public class HunchHome extends Activity
+public class HunchHome extends TabActivity
 {
-
 	@Override
 	public void onCreate( Bundle b )
 	{
 		super.onCreate( b );
-		setContentView( R.layout.home );
-		Log.d( Const.TAG, "Loading categories..." );
+
+		Log.i( Const.TAG, "Home Loaded..." );
 		
-		final Button button = (Button) findViewById( R.id.categoriesButton );
-		button.setOnClickListener( new OnClickListener()
-		{
-			
-			@Override
-			public void onClick( View v )
-			{
-				Log.d( Const.TAG, "Loading categories..." );
-				
-			}
-		} );
+		// set up the TabHost container element, and add each tab
+		final TabHost tabs = getTabHost();
+		TabHost.TabSpec tabOne, tabTwo, tabThree;
+		
+		tabOne = tabs.newTabSpec( "decide" );		
+		tabOne.setContent( new Intent( this, TopicSelectActivity.class ) );
+		tabOne.setIndicator( "Decide", 
+				getResources().getDrawable( R.drawable.tab1_icon ) );
+		
+		tabs.addTab( tabOne );
+		
+		tabTwo = tabs.newTabSpec( "search" );
+		tabTwo.setContent( new Intent( this, TabTwoContentActivity.class ) );
+		tabTwo.setIndicator( "Search", 
+				getResources().getDrawable( R.drawable.tab2_icon ) );
+		
+		tabs.addTab( tabTwo );
+		
+		tabThree = tabs.newTabSpec( "starred" );
+		tabThree.setContent( new Intent( this, TabThreeContentActivity.class ) );
+		//tabThree.setIndicator( "Starred" );
+		
+		//TextView test = new TextView( this );
+		//test.setText( "Starred :D" );
+		
+//		View v = this.getLayoutInflater().inflate( R.layout.tab_indicator, null );
+//		
+//		TextView tv = (TextView) v.findViewById( R.id.title );
+//		tv.setText( "Starred" );
+//		
+//		ImageView icon = (ImageView) v.findViewById( R.id.icon );
+//		icon.setImageDrawable( Resources.getSystem().getDrawable( android.R.drawable.ic_menu_compass ) );
+		
+		tabThree.setIndicator( "Starred",
+				getResources().getDrawable( R.drawable.tab3_icon ) );
+		
+		tabs.addTab( tabThree );
+		
+//		for( int i = 0; i < tabs.getTabWidget().getChildCount(); i++ )
+//		{
+//			View v = tabs.getTabWidget().getChildAt( i );
+//			v.setMinimumHeight( 70 );
+//		}
+		
+		//tabs.getTabWidget().setMinimumHeight( 75 );
+		
+		tabs.setCurrentTab( 0 );
+
 	}
 }
-
-/*final Button b = (Button) findViewById( R.id.categoriesButton );
-final ListView listView = (ListView) findViewById( R.id.catList );
-final HunchAPI api = new HunchAPI();
-
-b.setOnClickListener( new OnClickListener()
-{
-	@Override
-	public void onClick( View v )
-	{				
-
-		final HunchAPI.Callback listCallback = new HunchAPI.Callback()
-		{
-
-			@SuppressWarnings( "unchecked" )
-			@Override
-			public void callComplete( HunchObject resp )
-			{
-				// Log.i( LOG_TAG, resp.getRaw() );
-
-				if( !( resp instanceof HunchList< ? > ) ) return;
-				
-				HunchList< HunchCategory > list = (HunchList< HunchCategory >) resp;
-				final ArrayAdapter< HunchCategory > adapter;
-				adapter = new ArrayAdapter< HunchCategory >( HunchSplash.this, android.R.layout.simple_list_item_1, list );
-		
-				
-				listView.setAdapter( adapter );
-				listView.setSelection( -1 );
-			}
-		};
-		
-		final HunchAPI.Callback printCallback = new HunchAPI.Callback()
-		{
-			
-			@Override
-			public void callComplete( HunchObject resp )
-			{
-				// TODO Auto-generated method stub
-				System.out.println( resp );
-				
-			}
-		};
-		
-		Log.i( LOG_TAG, "fetching categories..." );
-
-		api.listCategories( null, listCallback );
-		
-		Log.i( LOG_TAG, "beginning comprehensive test..." );
-		
-		
-		
-		Log.i( LOG_TAG, "onClick complete." );
-
-	}
-} );
-
-listView.setOnItemClickListener( new OnItemClickListener()
-{
-
-	@Override
-	public void onItemClick( AdapterView< ? > parent, View v, int position, long id )
-	{
-		
-		// adding some content for SVN test
-		
-		
-	}
-	
-});*/

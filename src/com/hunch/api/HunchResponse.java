@@ -18,6 +18,11 @@ public class HunchResponse extends HunchObject
 	private static Builder b;
 	private static int THAY_TOPIC_ID = -3;
 	
+	public interface Callback
+	{
+		public void callComplete( HunchResponse h );
+	}
+	
 	public enum Variety
 	{
 		DEFAULT, QUESTION, NEXT_QUESTION
@@ -136,7 +141,7 @@ public class HunchResponse extends HunchObject
 			}
 
 			if ( __id == null )
-				Log.d(	Const.TAG, "building HunchResponse for NextQuestion " +
+				Log.i(	Const.TAG, "building HunchResponse for NextQuestion " +
 						"without ID! (probably a \"skip this question\" response)" );
 		}
 
@@ -223,6 +228,11 @@ public class HunchResponse extends HunchObject
 	public Integer getQuestionId()
 	{
 		return questionId;
+	}
+	
+	public Variety getVariety()
+	{
+		return variety;
 	}
 
 	static HunchResponse buildFromJSON( JSONObject json )

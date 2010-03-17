@@ -1,6 +1,9 @@
 package com.hunch.api;
 
-import org.json.*;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -9,10 +12,27 @@ import org.json.*;
  * @author Tyler Levine Oct 25, 2009
  * 
  */
-public class HunchTopic extends HunchObject
+public class HunchTopic extends HunchObject implements IHunchTopic
 {
 
 	private static Builder b = new Builder();
+	
+	public interface Callback
+	{
+		public void callComplete( IHunchTopic h );
+	}
+	
+	public interface ListCallback
+	{
+		public void callComplete( List< IHunchTopic > h );
+	}
+	
+	// what is with the long names in this app???
+	// it makes sense (to me at least)
+//	public interface LazyDeserializingListCallback
+//	{
+//		public void callComplete( )
+//	}
 	
 	public enum Variety
 	{
@@ -134,7 +154,7 @@ public class HunchTopic extends HunchObject
 			return buildInternal( Variety.SEARCH );
 		}
 		
-		HunchTopic buildForNextQuestion()
+		IHunchTopic buildForNextQuestion()
 		{
 			assureNextQuestionBuildParams();
 			
@@ -188,17 +208,17 @@ public class HunchTopic extends HunchObject
 
 	}
 
-	private final Integer _id;
-	private final String _decision, _imageUrl, _resultType, _urlName,
+	protected final Integer _id;
+	protected final String _decision, _imageUrl, _resultType, _urlName,
 			_shortName;
-	private final Boolean _isEitherOr;
-	private final JSONObject json;
-	private final String _hunchUrl; // optional
-	private final HunchCategory _category;
-	private final Double _score;
-	private final Variety variety;
+	protected final Boolean _isEitherOr;
+	protected final JSONObject json;
+	protected final String _hunchUrl; // optional
+	protected final HunchCategory _category;
+	protected final Double _score;
+	protected final Variety variety;
 
-	private HunchTopic( JSONObject val, Integer id, String decision,
+	protected HunchTopic( JSONObject val, Integer id, String decision,
 			String imageUrl, String resultType, String urlName,
 			String shortName, Boolean isEitherOr, String hunchUrl,
 			HunchCategory category, Double score, Variety v )
@@ -223,56 +243,89 @@ public class HunchTopic extends HunchObject
 		return b;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getId()
+	 */
 	public Integer getId()
 	{
 		return _id;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getDecision()
+	 */
 	public String getDecision()
 	{
 		return _decision;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getImageUrl()
+	 */
 	public String getImageUrl()
 	{
 		return _imageUrl;
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getResultType()
+	 */
 	public String getResultType()
 	{
 		return _resultType;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getUrlName()
+	 */
 	public String getUrlName()
 	{
 		return _urlName;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getShortName()
+	 */
 	public String getShortName()
 	{
 		return _shortName;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getHunchUrl()
+	 */
 	public String getHunchUrl()
 	{
 		return _hunchUrl;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#isEitherOr()
+	 */
 	public Boolean isEitherOr()
 	{
 		return _isEitherOr;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getCategory()
+	 */
 	public HunchCategory getCategory()
 	{
 		return _category;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getScore()
+	 */
 	public Double getScore()
 	{
 		return _score;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#getVariety()
+	 */
 	public Variety getVariety()
 	{
 		return variety;
@@ -284,13 +337,16 @@ public class HunchTopic extends HunchObject
 		return json;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.hunch.api.IHunchTopic#toString()
+	 */
 	@Override
 	public String toString()
 	{
 		return getShortName();
 	}
 
-	static HunchTopic buildFromJSON( JSONObject topic )
+	static IHunchTopic buildFromJSON( JSONObject topic )
 	{
 
 		HunchTopic.Builder builder = getBuilder();

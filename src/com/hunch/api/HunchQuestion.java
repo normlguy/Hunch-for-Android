@@ -13,6 +13,19 @@ public class HunchQuestion extends HunchObject
 	private static Builder b;
 	private static int THAY_TOPIC_ID = -3;
 	
+	/*
+	 * The Callback interface for getting HunchQuestion instances.
+	 */
+	public interface Callback
+	{
+		public void callComplete( HunchQuestion h );
+	}
+	
+	public interface ListCallback
+	{
+		public void callComplete( List< HunchQuestion > h );
+	}
+	
 	public enum Variety
 	{
 		DEFAULT, NEXT_QUESTION
@@ -174,7 +187,7 @@ public class HunchQuestion extends HunchObject
 		return topicId;
 	}
 
-	public List< HunchResponse > getResponseIds()
+	public List< HunchResponse > getResponses()
 	{
 		return responses;
 	}

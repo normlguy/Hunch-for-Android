@@ -1,12 +1,23 @@
 package com.hunch.api;
 
-import org.json.*;
+import java.util.List;
 
-import com.hunch.api.HunchObject.Builder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class HunchCategory extends HunchObject
 {
 	private static Builder b;
+	
+	public interface Callback
+	{
+		public void callComplete( HunchCategory h );
+	}
+	
+	public interface ListCallback
+	{
+		public void callComplete( List< HunchCategory > h );
+	}
 	
 	static class Builder extends HunchObject.Builder
 	{
@@ -53,7 +64,13 @@ public class HunchCategory extends HunchObject
 		@Override
 		HunchCategory build()
 		{
-			if( val == null || buildName == null || buildUrlName == null || buildImageUrl == null )
+			if( val == null )
+				throw new IllegalStateException( "Not all required fields set before building HunchCategory!" );
+			else if( buildName == null )
+				throw new IllegalStateException( "Not all required fields set before building HunchCategory!" );
+			else if( buildUrlName == null )
+				throw new IllegalStateException( "Not all required fields set before building HunchCategory!" );
+			else if( buildImageUrl == null )
 				throw new IllegalStateException( "Not all required fields set before building HunchCategory!" );
 			
 			HunchCategory ret = new HunchCategory( val, buildName, buildUrlName, buildImageUrl );

@@ -8,14 +8,14 @@ import java.util.ListIterator;
 
 import org.json.JSONObject;
 
-
+/*
 /**
  * 
  * 
  * @author Tyler Levine
  * Oct 25, 2009
  *
- */
+ *
 public class HunchList< T extends HunchObject > extends HunchObject implements List<T>
 {
 	
@@ -192,3 +192,4 @@ public class HunchList< T extends HunchObject > extends HunchObject implements L
 	}
 
 }
+*/

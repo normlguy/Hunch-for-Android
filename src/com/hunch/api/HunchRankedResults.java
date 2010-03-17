@@ -25,6 +25,11 @@ public class HunchRankedResults extends HunchObject
 	
 	private static final Builder b = new Builder();
 	
+	public interface Callback
+	{
+		public void callComplete( HunchRankedResults h );
+	}
+	
 	private static class Builder extends HunchObject.Builder
 	{
 		private List< Pair< String, String > > results = new ArrayList< Pair< String, String > >();
@@ -118,7 +123,7 @@ public class HunchRankedResults extends HunchObject
 		
 	}
 	
-	private final List< Pair< String, String> > results;
+	private final List< ResultStub > results;
 	private final String wildcardId;
 	private final String allResultsHunchUrl;
 	private final JSONObject val; 
@@ -127,9 +132,14 @@ public class HunchRankedResults extends HunchObject
 			String wildcardId, String allResultsHunchUrl )
 	{
 		this.val = val;
-		this.results = results;
 		this.wildcardId = wildcardId;
 		this.allResultsHunchUrl = allResultsHunchUrl;
+		this.results = new ArrayList< ResultStub >( results.size() );
+		
+		for( Pair< String, String > p : results )
+		{
+			this.results.add( new ResultStub( p.first, p.second ) );
+		}
 	}
 	
 	public String getAllResultsHunchUrl()
@@ -146,24 +156,24 @@ public class HunchRankedResults extends HunchObject
 	
 	public String getWildcardId()
 	{
-		assert wildcardId != null;
+		assert hasWildCard();
 		
 		return wildcardId;
 	}
 	
-	public List< Pair< String, String > > getAllResults()
+	public List< ResultStub > getAllResults()
 	{
 		assert results != null;
 		
 		// return a defensive copy of our mutable list
-		List< Pair< String, String > > outList = new ArrayList< Pair< String, String > >( results.size() );
+		List< ResultStub > outList = new ArrayList< ResultStub >( results.size() );
 		
-		Collections.copy( outList, results );
+		outList.addAll( results );
 		
 		return outList;
 	}
 	
-	public Pair< String, String > getResult( int idx )
+	public ResultStub getResult( int idx )
 	{
 		assert results != null;
 		
@@ -186,8 +196,17 @@ public class HunchRankedResults extends HunchObject
 		try
 		{
 			b.init( val )
-			.setAllResultsHunchUrl( val.getString( "hunchUrl" ) )
-			.setWildcardId( val.getString( "wildCardResultId" ) );
+			.setAllResultsHunchUrl( val.getString( "hunchUrl" ) );
+			
+			// bugfix: wildcard id is sometimes not included with the results
+			try
+			{
+				b.setWildcardId( val.getString( "wildCardResultId" ) );
+			} catch ( JSONException e )
+			{
+				Log.d( Const.TAG, "building HunchRankedResults without wildCardResultId!" +
+						" (this is probably OK)" );
+			}
 			
 			JSONArray ids = null, pcts = null;
 			ids = val.getJSONArray( "rankedResultIds" );
@@ -201,7 +220,7 @@ public class HunchRankedResults extends HunchObject
 			{
 				for( int i = 0; i < ids.length(); i++ )
 				{
-					// this is dumb, null is an object by default?
+					// this is dumb, null is an Object by default?
 					// so you have to explicitly downcast
 					b.addResultsPair( Pair.create( ids.getString( i ), (String) null ) );
 				}
@@ -225,6 +244,60 @@ public class HunchRankedResults extends HunchObject
 	public static Builder getBuilder()
 	{
 		return b;
+	}
+	
+	public static class ResultStub
+	{
+		private final String id;
+		private final String eitherOrPct;
+		
+		private ResultStub( String id, String eitherOrPct )
+		{
+			this.id = id;
+			this.eitherOrPct = eitherOrPct;
+		}
+		
+		private ResultStub( Integer id, Integer eitherOrPct )
+		{
+			this( String.valueOf( id ), String.valueOf( eitherOrPct ) );
+		}
+		
+		public String getId()
+		{
+			return id;
+		}
+		
+		public String getEitherOrPct()
+		{
+			return eitherOrPct;
+		}
+		
+		public boolean hasEitherOrPct()
+		{
+			return eitherOrPct != null;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return "ResultStub ID#" + id;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			int result = 17;
+			
+			result = 31 * result + id.hashCode();
+			
+			// eitherOrPct may be null
+			if( eitherOrPct == null )
+				return result;
+			
+			result = 31 * result + eitherOrPct.hashCode();
+			
+			return result;
+		}
 	}
 
 }
