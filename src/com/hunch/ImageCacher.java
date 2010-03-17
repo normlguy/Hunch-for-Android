@@ -1,4 +1,3 @@
-
 package com.hunch;
 
 import java.io.BufferedInputStream;
@@ -63,7 +62,7 @@ public class ImageCacher
 			{
 				try
 				{
-					Log.d( Const.TAG, "fetching image from URL (" + url.toString() + ")" );
+					Log.v( Const.TAG, "fetching image from URL (" + url.toString() + ")" );
 					
 					final BufferedInputStream input = new BufferedInputStream( url.openStream(), 4096 );
 					final Drawable image = Drawable.createFromStream( input, "src" );

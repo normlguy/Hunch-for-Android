@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<drawable name="homeTabFocused">#C63C1A</drawable>
+	<color name="listItemBackground">#FFFFFF</color>
+<color name="listItemText">#501C0A</color>
+<drawable name="categoryListDivider">#F1EBE9</drawable>
+<color name="playTopicBackground">#FFFFFF</color>
+<color name="playTopicHeaderText">#666666</color>
+<color name="playTopicQuestionText">#252525</color>
+</resources>

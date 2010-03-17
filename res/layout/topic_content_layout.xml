@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:id="@+id/questionAndResponsesLayout"
+	android:background="@drawable/hunch_question_bg"
+	android:layout_centerHorizontal="true" android:layout_height="fill_parent">
+	<TextView android:text="@+id/TextView01"
+		android:layout_height="wrap_content" android:id="@+id/questionText"
+		android:textColor="@color/playTopicQuestionText" android:textStyle="bold"
+		android:textSize="18dp" android:layout_gravity="center_horizontal"
+		android:layout_width="fill_parent" android:gravity="center"
+		android:paddingTop="5px" android:layout_alignParentTop="true">
+	</TextView>
+
+
+	
+<ListView android:layout_below="@id/questionText" android:layout_height="wrap_content" android:id="@+id/responseLayout" android:divider="#0000" android:layout_width="fill_parent" android:cacheColorHint="#00000000"></ListView>
+</RelativeLayout>

@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout android:id="@+id/RelativeLayout01"
+<LinearLayout android:id="@+id/homeContainer"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android">
-	<Button android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_centerInParent="false"
-		android:layout_centerHorizontal="true"
-		android:layout_alignParentBottom="true" android:text="@string/listCategoriesButton"
-		android:id="@+id/categoriesButton"></Button>
-	
 
 
 
-<ListView android:layout_centerHorizontal="true" android:layout_height="wrap_content" android:layout_above="@+id/categoriesButton" android:id="@+id/catList" android:layout_width="fill_parent"></ListView>
-</RelativeLayout>
+	<TabHost android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:id="@+id/homeTabHost">
+		<TabWidget android:id="@android:id/tabs"
+			android:layout_width="fill_parent" android:layout_height="wrap_content" android:weightSum="0"/>
+		<FrameLayout android:id="@android:id/tabcontent"
+			android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingTop="70dp">
+
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/homeTabOne"></LinearLayout>
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/homeTabTwo">
+			</LinearLayout>
+			<LinearLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/homeTabThree"></LinearLayout>
+		</FrameLayout>
+	</TabHost>
+</LinearLayout>

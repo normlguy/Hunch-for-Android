@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, HunchMain!</string>
-    <string name="app_name">Hunch</string>
-<string name="placeholderButton">Do Something</string>
-<string name="listCategoriesButton">Load Categories</string>
-<string name="splash">Hunch for Android\n\nVersion 0.0</string>
-<string name="splashButton">Continue...</string>
+	<string name="hello">Hello World, HunchMain!</string>
+	<string name="app_name">Hunch</string>
+	<string name="placeholderButton">Do Something</string>
+	<string name="listCategoriesButton">Load Categories</string>
+	<string name="splash">Hunch for Android\n\nVersion 0.0</string>
+	<string name="splashButton">Continue...</string>
 
+	<string name="tabOneContent">THIS IS TAB ONE</string>
+	<string name="tabTwoContent">THIS IS TAB TWO</string>
+<string name="tabThreeContent">and this is tab 3</string>
+<string name="loadingText">Loading...</string>
+<string name="playTopicSkip">Skip this question</string>
+<string name="lastQuestionText">Back</string>
+<string name="resultsTitleText">Results</string>
 </resources>

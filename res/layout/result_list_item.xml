@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:layout_gravity="center" android:gravity="center"
+	android:layout_height="wrap_content" android:padding="4dp"
+	android:minHeight="75dp" android:background="@drawable/result_btn" android:id="@+id/mainResultLayout" android:layout_marginRight="2dp">
+	<RelativeLayout android:id="@+id/RelativeLayout01"
+		android:layout_height="fill_parent" android:layout_width="wrap_content"
+		android:paddingRight="7dp" android:paddingLeft="5dp" android:minWidth="32dp">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/resultNumber"
+			android:textSize="22sp" android:textColor="#000000"></TextView>
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true" android:id="@+id/resultPct"
+			android:textSize="16sp" android:textColor="#000000" android:layout_marginBottom="5dp"></TextView>
+
+	</RelativeLayout>
+	<ProgressBar android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/resultImage"
+		style="@android:style/Widget.ProgressBar" android:background="#00000000"/>
+	<TextView android:text="@string/loadingText" android:id="@+id/resultName"
+		android:layout_width="fill_parent" android:textColor="@color/listItemText"
+		android:textSize="18dp" android:gravity="center" android:layout_margin="5dp" android:layout_height="wrap_content"></TextView>
+
+</LinearLayout>

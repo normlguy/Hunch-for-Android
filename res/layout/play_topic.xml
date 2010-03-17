@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout">
+
+	<LinearLayout android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/headerLayout"
+		android:minHeight="60dp" android:layout_alignParentTop="true"
+		android:paddingLeft="3px" android:paddingTop="7px"
+		android:orientation="horizontal">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/topicImage"
+			android:layout_gravity="center_vertical"></ImageView>
+		<TextView android:text="@+id/TextView01"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:paddingLeft="15dp" android:id="@+id/topicTitle"
+			android:layout_gravity="center_vertical" android:textColor="@color/playTopicHeaderText"
+			android:textSize="24dp"></TextView>
+	</LinearLayout>
+	<FrameLayout android:id="@+id/topicContentContainer"
+		android:layout_height="fill_parent" android:layout_width="fill_parent"
+		android:layout_below="@+id/headerLayout" android:layout_above="@+id/playTopicBottomButtonLayout"
+		android:padding="3px">
+
+	</FrameLayout>
+	<RelativeLayout android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/playTopicBottomButtonLayout"
+		android:layout_alignParentBottom="true" android:paddingLeft="3px"
+		android:paddingRight="3px">
+		<Button android:layout_below="@id/topicContentContainer"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true" android:id="@+id/lastQuestion"
+			android:text="@string/lastQuestionText" android:width="110dp"></Button>
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_alignParentRight="true"
+			android:text="@string/playTopicSkip" android:id="@+id/skipQuestion"
+			android:width="190dp"></Button>
+	</RelativeLayout>
+
+
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/LinearLayout01" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<ListView android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:id="@android:id/list"
+		android:background="@color/listItemBackground" android:divider="@drawable/categoryListDivider"
+		android:dividerHeight="1dp">
+
+	</ListView>
+
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:background="@color/listItemBackground" android:layout_width="fill_parent"
+		android:id="@android:id/empty" android:minHeight="50dp"
+		android:layout_gravity="center" android:layout_height="fill_parent"
+		android:paddingTop="5dp">
+		<ProgressBar android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/progressBar"
+			android:layout_marginLeft="5dp" style="@android:style/Widget.ProgressBar"
+			android:background="@color/listItemBackground" />
+			
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/loadingText"
+			style="@style/listItemMainText" android:id="@+id/loadingItemText"
+			android:paddingLeft="10dp" android:textSize="30sp">
+		</TextView>
+
+
+	</LinearLayout>
+</LinearLayout>
