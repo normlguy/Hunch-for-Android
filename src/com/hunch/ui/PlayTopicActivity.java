@@ -21,7 +21,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.hunch.Const;
+import static com.hunch.Const.*;
 import com.hunch.ImageCacher;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
@@ -74,7 +74,7 @@ public class PlayTopicActivity extends Activity
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
-			Log.d( Const.TAG, "creating View for result #" + position );
+			//Log.d( TAG, "creating View for result #" + position );
 
 			// inflate the layout responsible for responses
 			View item = inflater.inflate( R.layout.play_topic_response_item, null );
@@ -107,11 +107,6 @@ public class PlayTopicActivity extends Activity
 		{
 			// load more if we're within 2 items of the end
 			return curPos >= size - 2;
-		}
-
-		public String getSkipQAState()
-		{
-			return curSkipQAState;
 		}
 
 	}
@@ -256,7 +251,8 @@ public class PlayTopicActivity extends Activity
 			else
 			{
 				// and use it to get the full result off the network
-				HunchAPI.getInstance().getResult( stub.getId(), "48x48", new HunchResult.Callback()
+				HunchAPI.getInstance().getResult( stub.getId(), RESULT_IMAGE_SIZE,
+						new HunchResult.Callback()
 				{
 
 					@Override
@@ -331,7 +327,7 @@ public class PlayTopicActivity extends Activity
 		//if ( icicle != null && icicle.containsKey( "qaState" ) )
 		//	curQAState = icicle.getString( "qaState" );
 
-		Log.d( Const.TAG, String.format( "creating: (tid: %s)", topicId ) );
+		Log.d( TAG, String.format( "creating: (tid: %s)", topicId ) );
 
 	}
 
@@ -362,7 +358,7 @@ public class PlayTopicActivity extends Activity
 			startTopic();
 		}
 		
-		Log.d( Const.TAG, String.format( "resuming: (tid: %s, qaS: %s)", topicId, curQAState ) );
+		Log.d( TAG, String.format( "resuming: (tid: %s, qaS: %s)", topicId, curQAState ) );
 	}
 
 	@Override
@@ -377,7 +373,7 @@ public class PlayTopicActivity extends Activity
 		curState = (State) icicle.getSerializable( "curState" );
 		latestResultDetailsId = icicle.getInt( "latestResultDetailsId" );
 
-		Log.d( Const.TAG, String.format( "restoring state %s: (tid: %s, qaS: %s, detailsID: %s)",
+		Log.d( TAG, String.format( "restoring state %s: (tid: %s, qaS: %s, detailsID: %s)",
 				curState, topicId, curQAState, latestResultDetailsId ) );
 	}
 
@@ -386,7 +382,7 @@ public class PlayTopicActivity extends Activity
 	{
 		super.onSaveInstanceState( out );
 
-		Log.d( Const.TAG, String.format( "saving state %s: (tid: %s, qaS: %s)",
+		Log.d( TAG, String.format( "saving state %s: (tid: %s, qaS: %s)",
 				curState, topicId, curQAState ) );
 
 		out.putString( "qaState", curQAState );
@@ -404,8 +400,8 @@ public class PlayTopicActivity extends Activity
 		createTopicLayouts();
 		
 		// then get the first question
-		api.nextQuestion( topicId, curQAState, null, "48x48", "48x48", "64x64",
-				new HunchNextQuestion.Callback()
+		api.nextQuestion( topicId, curQAState, null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE, 
+				TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion h )
@@ -476,7 +472,7 @@ public class PlayTopicActivity extends Activity
 			 * in this case, we're forced to do an extra API call to get the info
 			 */
 			
-			api.getTopic( topicId, null, "64x64", new HunchTopic.Callback()
+			api.getTopic( topicId, null, TOPIC_IMAGE_SIZE, new HunchTopic.Callback()
 			{
 				
 				@Override
@@ -534,8 +530,8 @@ public class PlayTopicActivity extends Activity
 	{
 		curQAState = resp.getQAState();
 
-		api.nextQuestion( topicId, resp.getQAState(), null, "32x32", "32x32", "64x64",
-				new HunchNextQuestion.Callback()
+		api.nextQuestion( topicId, resp.getQAState(), null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE,
+				TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion response )
@@ -615,9 +611,9 @@ public class PlayTopicActivity extends Activity
 	
 	private void resultDetails( HunchResult result )
 	{
-		curState = State.RESULTS_DETAIL;
 		latestResultDetailsId = result.getId();
+		curState = State.RESULTS_DETAIL;
 		
-		Log.d( Const.TAG, "show result with ID#" + result.getId() );
+		Log.d( TAG, "show result with ID#" + result.getId() );
 	}
 }
