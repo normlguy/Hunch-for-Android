@@ -53,7 +53,7 @@ public class PlayTopicActivity extends Activity
 	private class ResponseListAdapter extends InfiniteListAdapter< HunchResponse >
 	{
 		private final Context context;
-		private String curSkipQAState;
+		//private String curSkipQAState;
 		
 		public static final int RESPONSES_SHOWN_ON_LOAD = 10;
 		public static final int RESPONSES_ADDED_INLINE = 5;
