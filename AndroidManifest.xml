@@ -11,7 +11,7 @@
 		</activity>
 
 		<activity android:name=".ui.HunchHome" android:label="@string/app_name" />
-		<activity android:name=".ui.TopicSelectActivity" />
+		<activity android:name=".ui.SelectTopicActivity"/>
 		<activity android:name=".ui.TabTwoContentActivity"></activity>
 		<activity android:name=".ui.TabThreeContentActivity"></activity>
 	<activity android:name=".ui.PlayTopicActivity"></activity>

@@ -31,7 +31,7 @@ import com.hunch.util.InfiniteListAdapter;
  * @author Tyler Levine Dec 6, 2009
  * 
  */
-public class TopicSelectActivity extends ListActivity
+public class SelectTopicActivity extends ListActivity
 {
 	/*interface DrawableWithText
 	{
@@ -176,92 +176,17 @@ public class TopicSelectActivity extends ListActivity
 				@Override
 				public void onClick( View v )
 				{
-					Intent topicIntent = new Intent( TopicSelectActivity.this, PlayTopicActivity.class );
+					Intent topicIntent = new Intent( SelectTopicActivity.this, PlayTopicActivity.class );
 					topicIntent.putExtra( "topicId", topic.getId() );
 
-					TopicSelectActivity.this.startActivity( topicIntent );
+					SelectTopicActivity.this.startActivity( topicIntent );
 				}
 			} );
 		}
 
 	}
-/*	
-	private final class EagerUrlDrawableWithText implements DrawableWithText
-	{
-		private final String _url, _text;
-		
-		public EagerUrlDrawableWithText( String text, String url )
-		{
-			_text = text;
-			_url = url;
-		}
-
-		 (non-Javadoc)
-		 * @see com.hunch.ui.ImageTextListAdapter.DrawableWithText#setDrawableAsync(android.widget.ImageView)
-		 
-		@Override
-		public void setDrawableAsync( final ImageView v )
-		{
-			ImageCacher.fromURL( _url, new ImageCacher.Callback()
-			{
-				@Override
-				public void callComplete( Drawable d )
-				{
-					v.setImageDrawable( d );
-				}
-			} );
-			
-		}
-
-		 (non-Javadoc)
-		 * @see com.hunch.ui.ImageTextListAdapter.DrawableWithText#text()
-		 
-		@Override
-		public String text()
-		{
-			// TODO Auto-generated method stub
-			return _text;
-		}
-	}
-
-	// this is a mouthful
-	private final class LazyTopicDrawableWithText< T extends IHunchTopic > implements
-			DrawableWithText
-	{
-		private final T hunchobj;
-		//private Drawable d;
-
-		public LazyTopicDrawableWithText( T obj )
-		{
-			hunchobj = obj;
-		}
-
-		@Override
-		public String text()
-		{
-			// toString will lazily construct the object
-			// if the class supports that.
-			return hunchobj.toString();
-		}
-
-		@Override
-		public void setDrawableAsync( final ImageView v )
-		{
-			ImageCacher.fromURL( hunchobj.getImageUrl(), new ImageCacher.Callback()
-			{
-				@Override
-				public void callComplete( Drawable d )
-				{
-					v.setImageDrawable( d );
-				}
-			} );
-		}
-	};*/
 
 	private HunchAPI api;
-	//private List< HunchCategory > catList;
-	//private List< IHunchTopic > topicList;
-	//private TopicListAdapter adapter;
 	
 	private enum State
 	{
@@ -270,7 +195,6 @@ public class TopicSelectActivity extends ListActivity
 	
 	private State curState;
 	private String lastCatUrlName = null;
-	//private ListAdapter loadingAdapter;
 
 	@Override
 	public void onCreate( Bundle b )
@@ -363,9 +287,9 @@ public class TopicSelectActivity extends ListActivity
 			public void callComplete( List< HunchCategory > h )
 			{
 				//catList = h;
-				CategoryListAdapter adapter = new CategoryListAdapter( TopicSelectActivity.this, h );
+				CategoryListAdapter adapter = new CategoryListAdapter( SelectTopicActivity.this, h );
 
-				TopicSelectActivity.this.setListAdapter( adapter );			
+				SelectTopicActivity.this.setListAdapter( adapter );			
 			}
 		});
 		
@@ -385,9 +309,9 @@ public class TopicSelectActivity extends ListActivity
 			public void callComplete( final List< IHunchTopic > resp )
 			{
 				
-				TopicListAdapter adapter = new TopicListAdapter( TopicSelectActivity.this, resp );
+				TopicListAdapter adapter = new TopicListAdapter( SelectTopicActivity.this, resp );
 				
-				TopicSelectActivity.this.setListAdapter( adapter );
+				SelectTopicActivity.this.setListAdapter( adapter );
 
 			}
 		} );

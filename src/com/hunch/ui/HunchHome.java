@@ -36,7 +36,7 @@ public class HunchHome extends TabActivity
 		TabHost.TabSpec tabOne, tabTwo, tabThree;
 		
 		tabOne = tabs.newTabSpec( "decide" );		
-		tabOne.setContent( new Intent( this, TopicSelectActivity.class ) );
+		tabOne.setContent( new Intent( this, SelectTopicActivity.class ) );
 		tabOne.setIndicator( "Decide", 
 				getResources().getDrawable( R.drawable.tab1_icon ) );
 		

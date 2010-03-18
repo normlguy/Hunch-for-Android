@@ -14,9 +14,9 @@ import android.widget.BaseAdapter;
 /**
  * This adapter provides all of the facilities needed for infinitely loading lists.
  * 
- * Make sure you call tryLoadInline() from getView(), otherwise the list won't know
- * when to load. It is also recommended you override shouldLoadInline() to decide
- * when to append more items to the list.
+ * Make sure you call tryLoadInline( int ) from getView(), otherwise the list won't know
+ * when to append more items. It is also recommended you override shouldLoadInline( int, int )
+ * to decide when to append more items to the list.
  * 
  * @author Tyler Levine
  * @since Mar 15, 2010
@@ -108,7 +108,7 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 	 * When you inherit from this class, call this method in
 	 * your getView() method. The list will not expand otherwise.
 	 * 
-	 * This method calls shouldLoadInline() to decide if more items
+	 * This method calls shouldLoadInline( int, int ) to decide if more items
 	 * should be loaded.
 	 * 
 	 * @param curPos the current view position in the list
@@ -155,7 +155,7 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 	 * Provides raw access to full items list (whether those items are currently
 	 * visible or not) to subclasses. Avoid using this unless you need to
 	 * access elements of the list that are not currently displayed in the list.
-	 * You can use getItem() for most purposes.
+	 * You can use getItem( int ) for most purposes.
 	 * 
 	 * @return The list that backs this adapter.
 	 */
