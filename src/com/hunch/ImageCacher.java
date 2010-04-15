@@ -10,10 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.hunch.util.Pair;
-
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -33,25 +30,6 @@ public class ImageCacher
 			executor = Executors.newCachedThreadPool();
 		
 	}
-	
-	// hander to deal with the image once this thread has it
-	private final static Handler imgHandler = new Handler()
-	{
-		@Override
-		public void handleMessage( Message msg )
-		{
-			Pair< Drawable, ImageCacher.Callback > dataPair = 
-				(Pair< Drawable, ImageCacher.Callback >) msg.obj;
-			Drawable d = dataPair.first;
-			
-			// get the URL out of cold storage
-			URL url = (URL) msg.getData().getSerializable( "url" );
-			
-			// add to the cache and return
-			drawableMap.put( url, d );
-			dataPair.second.callComplete( d );
-		}
-	};
 	
 	// no instantiation
 	private ImageCacher() {}
@@ -77,6 +55,19 @@ public class ImageCacher
 			return;
 		}
 		
+		// hander to deal with the image once this thread has it
+		final Handler imgHandler = new Handler()
+		{
+			@Override
+			public void handleMessage( Message msg )
+			{
+				Drawable d = (Drawable) msg.obj;
+				
+				// add to the cache and return
+				drawableMap.put( url, d );
+				callback.callComplete( d );
+			}
+		};
 		
 		
 		// send the job to grab the image off the network
@@ -87,26 +78,16 @@ public class ImageCacher
 			{
 				try
 				{
-					Log.v( Const.TAG, "fetching image from URL (" + url.toString() + ")" );
+					Log.v( Const.TAG, String.format( "[%d] fetching image from URL (%s)", 
+							Thread.currentThread().getId(), url.toString() ) );
 					
 					final BufferedInputStream input = new BufferedInputStream( url.openStream(), 4096 );
 					final Drawable image = Drawable.createFromStream( input, "src" );
 					
 					final Message msg = imgHandler.obtainMessage();
 					
-					/*
-					 * This is a dirty trick. I'm using a util.Pair to marshall two objects
-					 * across in the object field of the message. I'm sending the Drawable itself,
-					 * and also the Callback to call from the handler.
-					 */
-					Pair< Drawable, Callback > dataPair = Pair.create( image, callback );
-					msg.obj = dataPair;
-					
-					// then put the URL in a bundle so we can use it to cache later
-					Bundle data = new Bundle();
-					data.putSerializable( "url", url );
-					msg.setData( data );
-					
+					msg.obj = image;
+										
 					// aaand we're off
 					imgHandler.sendMessage( msg );
 				} catch( FileNotFoundException e )

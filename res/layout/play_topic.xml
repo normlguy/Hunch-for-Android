@@ -14,8 +14,7 @@
 		<TextView android:text="@+id/TextView01"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:paddingLeft="15dp" android:id="@+id/topicTitle"
-			android:layout_gravity="center_vertical" android:textColor="@color/playTopicHeaderText"
-			android:textSize="24dp"></TextView>
+			android:layout_gravity="center_vertical" style="@style/topicHeader"></TextView>
 	</LinearLayout>
 	<FrameLayout android:id="@+id/topicContentContainer"
 		android:layout_height="fill_parent" android:layout_width="fill_parent"

@@ -26,7 +26,7 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 {
 	
 	public static final int DEFAULT_ITEMS_SHOWN_ON_LOAD = 30;
-	public static final int DEFAULT_ITEMS_ADDED_ON_EXPANSION = 15;
+	public static final int DEFAULT_ITEMS_ADDED_ON_EXPANSION = 10;
 	
 	private final List<T> items;
 	private final List<T> displayedItems;
@@ -60,12 +60,12 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 		
 		// show some of the items at first
 		// but make sure we have enough items to show.
-		// Otherwise, just show as many as we can.
 		if( items.size() >= itemsShownOnLoad )
 		{
 			displayedItems = new ArrayList<T>( itemsShownOnLoad );
 			displayedItems.addAll( items.subList( 0, itemsShownOnLoad ) );
 		}
+		// Otherwise, just show as many as we can.
 		else
 		{
 			displayedItems = new ArrayList<T>( items.size() );
@@ -97,11 +97,12 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 	@Override
 	public long getItemId( int position )
 	{
-		T item = displayedItems.get( position );
-		if( item != null )
-			return displayedItems.get( position ).hashCode();
-		else
-			return -1;
+		return position;
+		//T item = displayedItems.get( position );
+		//if( item != null )
+		//	return displayedItems.get( position ).hashCode();
+		//else
+		//	return -1;
 	}
 	
 	/**
@@ -128,13 +129,16 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 		int numItemsToAdd = ( itemsAddedOnExpansion < items.size() - itemsDisplayed ) ?
 							  itemsAddedOnExpansion : items.size() - itemsDisplayed;
 		
-		Log.d( Const.TAG, "adding " + numItemsToAdd + " items [InfiniteListAdapter]" );
-		
 		// bail if there's nothing to do (bottom of the list)
 		if( numItemsToAdd == 0 )
 			return;
 		
-		displayedItems.addAll( items.subList( itemsDisplayed, itemsDisplayed + numItemsToAdd ) );
+		List<T> itemsToAdd = items.subList( itemsDisplayed, itemsDisplayed + numItemsToAdd );
+		
+		Log.d( Const.TAG, "adding " + numItemsToAdd + " items [InfiniteListAdapter]" );
+		Log.d( Const.TAG, "\tfrom list (" + itemsToAdd.size() + ") " + itemsToAdd.toString() );
+				
+		displayedItems.addAll( itemsToAdd );
 	}
 	
 	/**

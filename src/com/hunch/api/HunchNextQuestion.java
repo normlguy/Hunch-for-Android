@@ -342,7 +342,7 @@ public class HunchNextQuestion extends HunchObject
 				questionImageUrl = jsonNextQuestion.getString( "imageUrl" );
 			} catch ( JSONException e )
 			{
-				Log.i( Const.TAG, "got question object with no imageUrl " +
+				Log.v( Const.TAG, "got question object with no imageUrl " +
 				"in HunchNextQuestion.buildFromJSON()" );
 			}
 

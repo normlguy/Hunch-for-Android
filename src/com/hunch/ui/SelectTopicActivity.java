@@ -47,8 +47,8 @@ public class SelectTopicActivity extends ListActivity
 		
 		public CategoryListAdapter( Context context, List< HunchCategory > items )
 		{
-			super( items );
-			
+			//super( items );
+			super( items, 10, 2 );
 			//this.context = context;
 			inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 		}
@@ -115,9 +115,12 @@ public class SelectTopicActivity extends ListActivity
 		//private final Context context;
 		private final LayoutInflater inflater;
 		
+		private final static int TOPICS_SHOWN_ON_LOAD = 30;
+		private final static int TOPICS_ADDED_ON_EXPANSION = 7;
+		
 		public TopicListAdapter( Context context, List< IHunchTopic > items )
 		{
-			super( items );
+			super( items, TOPICS_SHOWN_ON_LOAD, TOPICS_ADDED_ON_EXPANSION );
 			
 			//this.context = context;
 			inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -128,8 +131,11 @@ public class SelectTopicActivity extends ListActivity
 		@Override
 		protected boolean shouldLoadInline( int curPos, int size )
 		{
+			boolean b = ( curPos > size - 4 );
+			Log.d( Const.TAG, String.format( "shouldLoadInline( %d, %d ) -> %b [TopicListAdapter]",
+					curPos, size, b ) );
 			// load more if we're within 10 of the bottom of the list
-			return ( curPos > size - 10 );
+			return b;
 		}
 
 		@Override
@@ -232,6 +238,7 @@ public class SelectTopicActivity extends ListActivity
 		super.onSaveInstanceState( icicle );
 		
 		icicle.putSerializable( "curState", curState );
+		//icicle.putParcelable( "listData", getListView().onSaveInstanceState() );
 		
 		if( curState == State.TOPICS )
 		{
@@ -247,6 +254,7 @@ public class SelectTopicActivity extends ListActivity
 		super.onRestoreInstanceState( icicle );
 		
 		curState = (State) icicle.getSerializable( "curState" );
+		//getListView().onRestoreInstanceState( icicle.getParcelable( "listData" ) );
 		
 		if( curState == State.TOPICS )
 		{
@@ -261,7 +269,7 @@ public class SelectTopicActivity extends ListActivity
 	{
 		if( code == KeyEvent.KEYCODE_BACK )
 		{
-			// someone hit the back button
+			// someone hit the back button.
 			// if we're in topics mode, go back to
 			// category mode
 			if( curState == State.TOPICS )

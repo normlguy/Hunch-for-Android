@@ -141,7 +141,7 @@ public class HunchResponse extends HunchObject
 			}
 
 			if ( __id == null )
-				Log.i(	Const.TAG, "building HunchResponse for NextQuestion " +
+				Log.v(	Const.TAG, "building HunchResponse for NextQuestion " +
 						"without ID! (probably a \"skip this question\" response)" );
 		}
 
