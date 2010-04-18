@@ -139,6 +139,8 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 		Log.d( Const.TAG, "\tfrom list (" + itemsToAdd.size() + ") " + itemsToAdd.toString() );
 				
 		displayedItems.addAll( itemsToAdd );
+		
+		notifyDataSetChanged();
 	}
 	
 	/**

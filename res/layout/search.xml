@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center_vertical"
+	android:id="@+id/searchLayout" android:layout_height="wrap_content"
+	android:layout_width="wrap_content" android:padding="5dp">
+
+	<EditText android:text="@+id/EditText01" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/searchText"></EditText>
+	<Button android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/searchButton"
+		android:drawableLeft="@drawable/ic_search_small"></Button>
+</LinearLayout>
+
+
+
+

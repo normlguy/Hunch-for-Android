@@ -193,9 +193,16 @@ public class HunchNextQuestion extends HunchObject
 		return topic;
 	}
 
+	/**
+	 * Gets the previous question and answer state for this question.
+	 * 
+	 * Returns null if this is the first question.
+	 * 
+	 * @return the QA State of the previous question
+	 */
 	public String getPrevQAState()
 	{
-		assert prevQAState != null;
+		//assert prevQAState != null;
 		
 		return prevQAState;
 	}

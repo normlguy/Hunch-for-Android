@@ -6,9 +6,9 @@
 	<TextView android:text="@+id/TextView01"
 		android:layout_height="wrap_content" android:id="@+id/questionText"
 		android:textColor="@color/playTopicQuestionText" android:textStyle="bold"
-		android:textSize="18dp" android:layout_gravity="center_horizontal"
+		android:layout_gravity="center_horizontal"
 		android:layout_width="fill_parent" android:gravity="center"
-		android:paddingTop="5px" android:layout_alignParentTop="true">
+		android:paddingTop="5px" android:layout_alignParentTop="true" android:textSize="20dp">
 	</TextView>
 
 

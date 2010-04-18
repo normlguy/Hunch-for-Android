@@ -18,24 +18,28 @@ import android.util.Log;
 public class ImageCacher
 {
 	private final static Map< URL, Drawable > drawableMap = new HashMap< URL, Drawable >();
-	private final static ExecutorService executor;
+	private static ExecutorService executor;
 	
-	static
+	// no instantiation
+	private ImageCacher() {}
+	
+	private static void startExecutor()
 	{
+		// if we already have an executor, theres no need for another one.
+		if( executor != null ) return;
+		
 		if( Const.IMAGE_FETCH_THREADS > 1 )
 			executor = Executors.newFixedThreadPool( Const.IMAGE_FETCH_THREADS );
 		else if ( Const.IMAGE_FETCH_THREADS == 1 )
 			executor = Executors.newSingleThreadExecutor();
 		else
 			executor = Executors.newCachedThreadPool();
-		
 	}
-	
-	// no instantiation
-	private ImageCacher() {}
 	
 	public static void fromURL( final String imgUrl, final ImageCacher.Callback callback )
 	{
+		
+		startExecutor();
 		
 		URL tempUrl = null;
 		try

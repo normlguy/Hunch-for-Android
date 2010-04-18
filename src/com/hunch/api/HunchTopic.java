@@ -27,12 +27,138 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 		public void callComplete( List< IHunchTopic > h );
 	}
 	
-	// what is with the long names in this app???
-	// it makes sense (to me at least)
-//	public interface LazyDeserializingListCallback
-//	{
-//		public void callComplete( )
-//	}
+	public static class SearchStub extends HunchObject
+	{
+		
+		private static Builder b = new Builder();
+		
+		static class Builder extends HunchObject.Builder
+		{
+			private JSONObject json;
+			
+			private String buildId;
+			private String buildDecision;
+			private String buildUrlName;
+			private Double buildScore;
+
+			@Override
+			SearchStub build()
+			{
+				SearchStub ret = new SearchStub( json, buildId, buildDecision, buildUrlName, buildScore );
+				
+				reset();
+				
+				return ret;
+			}
+
+			@Override
+			Builder init( JSONObject j )
+			{
+				json = j;
+				return this;
+			}
+			
+			Builder setId( String id )
+			{
+				this.buildId = id;
+				return this;
+			}
+			
+			Builder setDecision( String decision )
+			{
+				this.buildDecision = decision;
+				return this;
+			}
+			
+			Builder setUrlName( String urlName )
+			{
+				this.buildUrlName = urlName;
+				return this;
+			}
+
+			Builder setScore( Double score )
+			{
+				this.buildScore = score;
+				return this;
+			}
+			
+			@Override
+			void reset()
+			{
+				json = null;
+				buildId = null;
+				buildDecision = null;
+				buildUrlName = null;
+				buildScore = null;
+			}
+			
+		}
+		
+		private final JSONObject json;
+		
+		private final String id;
+		private final String decision;
+		private final String urlName;
+		private final Double score;
+		
+		public SearchStub( JSONObject json, String id, String decision, String urlName, Double score )
+		{
+			this.json = json;
+			this.id = id;
+			this.decision = decision;
+			this.urlName = urlName;
+			this.score = score;
+		}
+		
+		public String getId()
+		{
+			return id;
+		}
+		
+		public String getDecision()
+		{
+			return decision;
+		}
+		
+		public String getUrlName()
+		{
+			return urlName;
+		}
+		
+		public Double getScore()
+		{
+			return score;
+		}
+		
+		@Override
+		public JSONObject getJSON()
+		{
+			return json;
+		}
+		
+		public static SearchStub buildFromJSON( JSONObject json )
+		{
+			try
+			{
+				String id = json.getString( "id" );
+				String decision = json.getString( "decision" );
+				String urlName = json.getString( "urlName" );
+				Double score = json.getDouble( "score" );
+				
+				b.init( json )
+				.setId( id )
+				.setDecision( decision )
+				.setUrlName( urlName )
+				.setScore( score );
+				
+				return b.build();
+			} catch ( JSONException ex )
+			{
+				throw new RuntimeException( "Couldn't build SearchStub!", ex );
+			}
+		}
+		
+	}
 	
 	public enum Variety
 	{

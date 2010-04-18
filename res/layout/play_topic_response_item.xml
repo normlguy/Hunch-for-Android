@@ -3,5 +3,5 @@
 	android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="left" android:paddingBottom="5dp" android:paddingLeft="10dp" android:clickable="true" android:id="@+id/itemLayout" android:focusable="true" android:paddingRight="10dp">
 	
 	
-<Button android:text="@+id/Button01" android:layout_height="wrap_content" android:drawableLeft="@drawable/response_bullet" android:layout_width="fill_parent" android:gravity="left|center_vertical" android:drawablePadding="8px" android:id="@+id/responseButton"></Button>
+<Button android:text="@+id/Button01" android:layout_height="wrap_content" android:drawableLeft="@drawable/response_bullet" android:layout_width="fill_parent" android:gravity="left|center_vertical" android:drawablePadding="8px" android:id="@+id/responseButton" android:textSize="16dp"></Button>
 </LinearLayout>

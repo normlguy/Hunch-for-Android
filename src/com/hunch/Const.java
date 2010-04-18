@@ -30,6 +30,13 @@ public class Const
 	public static final int		HOME_TAB_FOCUSED_COLOR	= Color.argb( 198, 57, 25, 125 );
 	
 	// thread number constants (0 for cached thread pool)
-	public static final int IMAGE_FETCH_THREADS = 2;
+	public static final int IMAGE_FETCH_THREADS = 3;
 	public static final int API_CALLING_THREADS = 0;
+	
+	// topic play menu item identifiers
+	public static final int MENU_RESTART_TOPIC = 0;
+	
+	// select topic menu item identifiers
+	public static final int MENU_SEARCH = 0;
+	public static final int MENU_SETTINGS = 1;
 }

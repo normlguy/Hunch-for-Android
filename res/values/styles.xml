@@ -6,7 +6,8 @@
 		<item name="android:textColor">@color/listItemText</item>
 	</style>
 	<style name="topicHeader">
-		<item name="android:textSize">24dp</item>
+		<item name="android:textSize">28dp</item>
 		<item name="android:textColor">@color/playTopicHeaderText</item>
-	</style>
+	<item name="android:textStyle">bold</item>
+</style>
 </resources>

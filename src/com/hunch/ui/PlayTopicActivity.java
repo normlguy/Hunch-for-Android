@@ -1,5 +1,12 @@
 package com.hunch.ui;
 
+import static com.hunch.Const.QUESTION_IMAGE_SIZE;
+import static com.hunch.Const.RESPONSE_IMAGE_SIZE;
+import static com.hunch.Const.RESULT_IMAGE_SIZE;
+import static com.hunch.Const.TAG;
+import static com.hunch.Const.TOPIC_IMAGE_SIZE;
+import static com.hunch.Const.MENU_RESTART_TOPIC;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +18,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -20,8 +29,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import static com.hunch.Const.*;
 import com.hunch.ImageCacher;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
@@ -425,6 +434,8 @@ public class PlayTopicActivity extends Activity
 					populateTopic( h );
 					setupQuestion( h );
 				}
+				
+				setupBackButton( h );
 			}
 		} );
 	}
@@ -552,6 +563,7 @@ public class PlayTopicActivity extends Activity
 				else
 				{
 					setupQuestion( response );
+					setupBackButton( response );
 				}
 
 			}
@@ -583,6 +595,11 @@ public class PlayTopicActivity extends Activity
 		titleText.setText( R.string.resultsTitleText );
 	}
 
+	/**
+	 * Sets up the question text and response list adapter.
+	 * 
+	 * @param nextQuestion
+	 */
 	private void setupQuestion( final HunchNextQuestion nextQuestion )
 	{
 		curState = State.INTERVIEW;
@@ -609,10 +626,82 @@ public class PlayTopicActivity extends Activity
 
 	}
 	
+	private void setupBackButton( final HunchNextQuestion h )
+	{
+		final Button button = (Button) findViewById( R.id.lastQuestion );
+		final String prevQAState = h.getPrevQAState();
+		final State state = curState;
+		
+		button.setOnClickListener( new View.OnClickListener()
+		{
+			
+			@Override
+			public void onClick( View v )
+			{
+				if( prevQAState == null )
+				{
+					// this is the first question, we can't go back any further!
+					Toast.makeText( PlayTopicActivity.this, "Can't go back - this is the first question!",
+							Toast.LENGTH_SHORT ).show();
+				}
+				else
+				{
+					api.nextQuestion( topicId, prevQAState, null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE, 
+							TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
+					{
+
+						@Override
+						public void callComplete( HunchNextQuestion hnq )
+						{
+							//populateTopic( h );
+							if( state == State.RESULTS )
+							{
+								// if we are showing results right now
+								// we need to recreate the layouts to
+								// display the topic again
+								createTopicLayouts();
+							}
+						
+							setupQuestion( hnq );
+							setupBackButton( hnq );
+						}
+					
+					} );
+				}
+			}
+		} );
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu( final Menu menu )
+	{
+		super.onCreateOptionsMenu( menu );
+		
+		// create the menu
+		// we don't care about group or order right now.
+		menu.add( Menu.NONE, MENU_RESTART_TOPIC, Menu.NONE, "Restart Topic" )
+			.setIcon( R.drawable.restart_topic );
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected( MenuItem item )
+	{
+		if( item.getItemId() == MENU_RESTART_TOPIC )
+		{
+			curQAState = "";
+			
+			startTopic();
+		}
+		
+		return super.onOptionsItemSelected( item );
+	}
+	
 	private void resultDetails( HunchResult result )
 	{
 		latestResultDetailsId = result.getId();
-		curState = State.RESULTS_DETAIL;
+		//curState = State.RESULTS_DETAIL;
 		
 		Log.d( TAG, "show result with ID#" + result.getId() );
 	}

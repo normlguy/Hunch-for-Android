@@ -2,6 +2,7 @@ package com.hunch.ui;
 
 import java.util.List;
 
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,10 +50,13 @@ public class SelectTopicActivity extends ListActivity
 		//private final Context context;
 		private final LayoutInflater inflater;
 		
+		private static final int ITEMS_SHOWN_ON_LOAD = 20;
+		private static final int ITEMS_ADDED_ON_EXPANSION = 5;
+		
 		public CategoryListAdapter( Context context, List< HunchCategory > items )
 		{
 			//super( items );
-			super( items, 10, 2 );
+			super( items, ITEMS_SHOWN_ON_LOAD, ITEMS_ADDED_ON_EXPANSION );
 			//this.context = context;
 			inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 		}
@@ -56,7 +64,7 @@ public class SelectTopicActivity extends ListActivity
 		@Override
 		public boolean shouldLoadInline( int curPos, int size )
 		{
-			return ( curPos > size - 7 );
+			return ( curPos > size - 3 );
 		}
 		
 		@Override
@@ -132,8 +140,8 @@ public class SelectTopicActivity extends ListActivity
 		protected boolean shouldLoadInline( int curPos, int size )
 		{
 			boolean b = ( curPos > size - 4 );
-			Log.d( Const.TAG, String.format( "shouldLoadInline( %d, %d ) -> %b [TopicListAdapter]",
-					curPos, size, b ) );
+			//Log.d( Const.TAG, String.format( "shouldLoadInline( %d, %d ) -> %b [TopicListAdapter]",
+			//		curPos, size, b ) );
 			// load more if we're within 10 of the bottom of the list
 			return b;
 		}
@@ -201,6 +209,7 @@ public class SelectTopicActivity extends ListActivity
 	
 	private State curState;
 	private String lastCatUrlName = null;
+	private Dialog searchDialog = null;
 
 	@Override
 	public void onCreate( Bundle b )
@@ -210,6 +219,19 @@ public class SelectTopicActivity extends ListActivity
 		setContentView( R.layout.home_tab1_category_list );
 
 		api = HunchAPI.getInstance();
+		
+		final ImageView divider = new ImageView( this );
+		divider.setBackgroundColor( R.drawable.categoryListDivider );
+		//final LinearLayout layout = new LinearLayout( this );
+		//layout.addView( divider );
+		getListView().addHeaderView( divider );
+		
+		//logo.setBackgroundResource( R.drawable.hunch_logo );
+		//final FrameLayout header = new FrameLayout( this );
+		//header.setBackgroundResource( R.color.listItemBackground );
+		//header.addView( logo, new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT ) );
+		
+		//getListView().addHeaderView( header );
 		
 		Log.d( Const.TAG, "onCreate()[topicSelectActivity]" );
 
@@ -283,7 +305,7 @@ public class SelectTopicActivity extends ListActivity
 		}
 		
 		return false;
-	}
+	}	
 	
 	private void startCategoryList()
 	{

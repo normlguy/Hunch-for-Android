@@ -3,19 +3,15 @@
 	package="com.hunch" android:versionCode="1" android:versionName="1.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:theme="@android:style/Theme.NoTitleBar">
-		<activity android:name=".HunchSplash" android:label="@string/app_name">
+		<activity android:name=".ui.SelectTopicActivity"
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-
-		<activity android:name=".ui.HunchHome" android:label="@string/app_name" />
-		<activity android:name=".ui.SelectTopicActivity"/>
-		<activity android:name=".ui.TabTwoContentActivity"></activity>
-		<activity android:name=".ui.TabThreeContentActivity"></activity>
-	<activity android:name=".ui.PlayTopicActivity"></activity>
-</application>
+		<activity android:name=".ui.PlayTopicActivity"></activity>
+	</application>
 	<uses-sdk android:minSdkVersion="3" />
 
 
