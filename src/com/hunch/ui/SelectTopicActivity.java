@@ -38,85 +38,6 @@ import com.hunch.util.InfiniteListAdapter;
  */
 public class SelectTopicActivity extends ListActivity
 {
-	/*interface DrawableWithText
-	{
-		public void setDrawableAsync( ImageView v );
-
-		public String text();
-	}*/
-	
-	private class CategoryListAdapter extends InfiniteListAdapter< HunchCategory >
-	{
-		//private final Context context;
-		private final LayoutInflater inflater;
-		
-		private static final int ITEMS_SHOWN_ON_LOAD = 20;
-		private static final int ITEMS_ADDED_ON_EXPANSION = 5;
-		
-		public CategoryListAdapter( Context context, List< HunchCategory > items )
-		{
-			//super( items );
-			super( items, ITEMS_SHOWN_ON_LOAD, ITEMS_ADDED_ON_EXPANSION );
-			//this.context = context;
-			inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-		}
-		
-		@Override
-		public boolean shouldLoadInline( int curPos, int size )
-		{
-			return ( curPos > size - 3 );
-		}
-		
-		@Override
-		public View getView( int position, View convertView, ViewGroup parent )
-		{
-			final View listItem = inflater.inflate( R.layout.image_list_item, parent, false );
-			
-			final HunchCategory item = getItem( position );
-			
-			setupView( item, listItem );
-			
-			tryLoadInline( position );
-			
-			return listItem;
-			
-		}
-		
-		private void setupView( HunchCategory cat, View view )
-		{
-			// get handles to the UI elements we need to set
-			final ImageView imageView = (ImageView) view.findViewById( R.id.itemImage );
-			final TextView text = (TextView) view.findViewById( R.id.itemText );
-			
-			// toString will lazy-load the HunchCategory if it supports it (probably not)
-			text.setText( cat.toString() );
-			
-			// async load the category image
-			ImageCacher.fromURL( cat.getImageUrl(), new ImageCacher.Callback()
-			{
-				@Override
-				public void callComplete( Drawable d )
-				{
-					imageView.setImageDrawable( d );
-				}
-			} );
-			
-			addListeners( cat, view );
-		}
-		
-		private void addListeners( final HunchCategory cat, View view )
-		{
-			view.setOnClickListener( new OnClickListener()
-			{
-				
-				@Override
-				public void onClick( View v )
-				{
-					startTopicsList( cat.getUrlName() );
-				}
-			} );
-		}
-	}
 
 	private class TopicListAdapter extends InfiniteListAdapter< IHunchTopic >
 	{
@@ -201,14 +122,7 @@ public class SelectTopicActivity extends ListActivity
 	}
 
 	private HunchAPI api;
-	
-	private enum State
-	{
-		CATEGORIES, TOPICS
-	}
-	
-	private State curState;
-	private String lastCatUrlName = null;
+	private String catURLName = null;
 	private Dialog searchDialog = null;
 
 	@Override
@@ -225,13 +139,9 @@ public class SelectTopicActivity extends ListActivity
 		//final LinearLayout layout = new LinearLayout( this );
 		//layout.addView( divider );
 		getListView().addHeaderView( divider );
-		
-		//logo.setBackgroundResource( R.drawable.hunch_logo );
-		//final FrameLayout header = new FrameLayout( this );
-		//header.setBackgroundResource( R.color.listItemBackground );
-		//header.addView( logo, new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT ) );
-		
-		//getListView().addHeaderView( header );
+
+		// get the category
+		catURLName = b.getString( "categoryURL" );
 		
 		Log.d( Const.TAG, "onCreate()[topicSelectActivity]" );
 
@@ -241,15 +151,8 @@ public class SelectTopicActivity extends ListActivity
 	public void onResume()
 	{
 		super.onResume();
-		
-		if( curState == null || curState == State.CATEGORIES )
-		{
-			startCategoryList();
-		}
-		else if( curState == State.TOPICS )
-		{
-			startTopicsList( lastCatUrlName );
-		}
+
+		startTopicsList();
 		
 		Log.d( Const.TAG, "onResume()[topicSelectActivity]" );
 	}
@@ -259,15 +162,12 @@ public class SelectTopicActivity extends ListActivity
 	{
 		super.onSaveInstanceState( icicle );
 		
-		icicle.putSerializable( "curState", curState );
+		//icicle.putSerializable( "curState", curState );
 		//icicle.putParcelable( "listData", getListView().onSaveInstanceState() );
 		
-		if( curState == State.TOPICS )
-		{
-			icicle.putString( "lastCatUrlName", lastCatUrlName );
-		}
+		icicle.putString( "categoryURL", catURLName );
 		
-		Log.d( Const.TAG, String.format( "onSaveInstanceState( %s )[topicSelectActivity]", curState ) );
+		//Log.d( Const.TAG, "onSaveInstanceState()[topicSelectActivity]" );
 	}
 	
 	@Override
@@ -275,64 +175,18 @@ public class SelectTopicActivity extends ListActivity
 	{
 		super.onRestoreInstanceState( icicle );
 		
-		curState = (State) icicle.getSerializable( "curState" );
+		//curState = (State) icicle.getSerializable( "curState" );
 		//getListView().onRestoreInstanceState( icicle.getParcelable( "listData" ) );
 		
-		if( curState == State.TOPICS )
-		{
-			lastCatUrlName = icicle.getString( "lastCatUrlName" );
-		}
+		catURLName = icicle.getString( "categoryURL" );
 		
-		Log.d( Const.TAG, String.format( "onRestoreInstanceState( %s )[topicSelectActivity]", curState ) );
+		//Log.d( Const.TAG, "onRestoreInstanceState()[topicSelectActivity]" );
 	}
 	
-	@Override
-	public boolean onKeyDown( int code, KeyEvent event )
+	private void startTopicsList()
 	{
-		if( code == KeyEvent.KEYCODE_BACK )
-		{
-			// someone hit the back button.
-			// if we're in topics mode, go back to
-			// category mode
-			if( curState == State.TOPICS )
-			{
-				startCategoryList();
-				
-				// nobody else handle this keypress please
-				return true;
-			}
-			
-		}
 		
-		return false;
-	}	
-	
-	private void startCategoryList()
-	{
-		curState = State.CATEGORIES;
-		api.listCategories( new HunchCategory.ListCallback()
-		{
-			
-			@Override
-			public void callComplete( List< HunchCategory > h )
-			{
-				//catList = h;
-				CategoryListAdapter adapter = new CategoryListAdapter( SelectTopicActivity.this, h );
-
-				SelectTopicActivity.this.setListAdapter( adapter );			
-			}
-		});
-		
-		// empty the list so the loading animation shows
-		getListView().setAdapter( null );
-	}
-	
-	private void startTopicsList( String urlName )
-	{
-		lastCatUrlName = urlName;
-		curState = State.TOPICS;
-		
-		api.listTopics( urlName, Const.TOPIC_LIST_IMAGE_SIZE, new HunchTopic.ListCallback()
+		api.listTopics( catURLName, Const.TOPIC_LIST_IMAGE_SIZE, new HunchTopic.ListCallback()
 		{
 
 			@Override
