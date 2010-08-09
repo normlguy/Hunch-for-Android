@@ -1,3 +1,22 @@
+/*
+ * Copyright 2009, 2010 Tyler Levine
+ * 
+ * This file is part of Hunch for Android.
+ *
+ * Hunch for Android is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Hunch for Android is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Hunch for Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hunch.ui;
 
 import static com.hunch.Const.RESULT_IMG_SIZE;
@@ -230,7 +249,7 @@ public class ShowResultsActivity extends Activity
 
 	}
 
-	private void saveResults( Bundle bundle )
+	private void saveResultsModel( Bundle bundle )
 	{
 		TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
 		bundle.putString( "topicTitle", topicTitle.getText().toString() );
@@ -262,7 +281,7 @@ public class ShowResultsActivity extends Activity
 		
 	}
 	
-	private void showResults( final HunchRankedResults results )
+	private void startResults( final HunchRankedResults results )
 	{
 		//curState = State.RESULTS;
 		

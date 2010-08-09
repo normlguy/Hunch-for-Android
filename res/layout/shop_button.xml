@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+
+ Copyright 2009, 2010 Tyler Levine
+  
+ This file is part of Hunch for Android.
+ 
+ Hunch for Android is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Hunch for Android is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Hunch for Android.  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content" android:background="@drawable/result_btn"
 	android:layout_width="fill_parent" android:gravity="center_vertical">
 	<TextView android:text="@+id/TextView01" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/vendorName"
 		android:paddingLeft="8dp" style="@style/shopButtonVendorText"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" style="@style/shopButtonPriceText" android:gravity="right" android:id="@+id/itemPrice"></TextView>
+	<TextView android:text="@+id/TextView01"
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		style="@style/shopButtonPriceText" android:gravity="right" android:id="@+id/itemPrice"></TextView>
 </LinearLayout>

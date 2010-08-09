@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+	<!--
+
+		Copyright 2009, 2010 Tyler Levine This file is part of Hunch for
+		Android. Hunch for Android is free software: you can redistribute it
+		and/or modify it under the terms of the GNU General Public License as
+		published by the Free Software Foundation, either version 3 of the
+		License, or (at your option) any later version. Hunch for Android is
+		distributed in the hope that it will be useful, but WITHOUT ANY
+		WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+		for more details. You should have received a copy of the GNU General
+		Public License along with Hunch for Android. If not, see
+		<http://www.gnu.org/licenses/>.
+	-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="left" android:paddingBottom="5dp" android:paddingLeft="10dp" android:clickable="true" android:id="@+id/itemLayout" android:focusable="true" android:paddingRight="10dp">
-	
-	
-<Button android:text="@+id/Button01" android:layout_height="wrap_content" android:drawableLeft="@drawable/response_bullet" android:layout_width="fill_parent" android:gravity="left|center_vertical" android:drawablePadding="8px" android:id="@+id/responseButton" android:textSize="16dp"></Button>
+	android:layout_height="wrap_content" android:layout_width="fill_parent"
+	android:gravity="left" android:paddingBottom="5dp" android:paddingLeft="10dp"
+	android:clickable="true" android:id="@+id/itemLayout"
+	android:focusable="true" android:paddingRight="10dp">
+
+
+	<Button android:text="@+id/Button01" android:layout_height="wrap_content"
+		android:drawableLeft="@drawable/response_bullet" android:layout_width="fill_parent"
+		android:gravity="left|center_vertical" android:drawablePadding="8px"
+		android:id="@+id/responseButton" android:textSize="16dp"></Button>
 </LinearLayout>
