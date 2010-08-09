@@ -39,13 +39,13 @@ public final class R {
     }
     public static final class id {
         public static final int Button01=0x7f070019;
-        public static final int EditText01=0x7f070023;
-        public static final int FrameLayout01=0x7f07001c;
+        public static final int EditText01=0x7f070027;
         public static final int ImageView01=0x7f070008;
         public static final int LinearLayout01=0x7f070005;
         public static final int LinearLayout02=0x7f07000a;
-        public static final int RelativeLayout01=0x7f07001e;
+        public static final int RelativeLayout01=0x7f070021;
         public static final int TextView01=0x7f07000e;
+        public static final int detailsLayout=0x7f07001b;
         public static final int divider=0x7f070009;
         public static final int headerLayout=0x7f070006;
         public static final int homeContainer=0x7f070000;
@@ -53,34 +53,40 @@ public final class R {
         public static final int homeTabOne=0x7f070002;
         public static final int homeTabThree=0x7f070004;
         public static final int homeTabTwo=0x7f070003;
+        public static final int infoImage=0x7f07001e;
+        public static final int infoLayout=0x7f07001d;
+        public static final int infoScrollView=0x7f07001c;
+        public static final int infoText=0x7f07001f;
         public static final int itemImage=0x7f070010;
         public static final int itemLayout=0x7f070018;
+        public static final int itemPrice=0x7f07002b;
         public static final int itemText=0x7f070011;
         public static final int lastQuestion=0x7f070017;
         public static final int loadingItemText=0x7f07000c;
         public static final int logoView=0x7f070007;
-        public static final int mainResultLayout=0x7f07001d;
+        public static final int mainResultLayout=0x7f070020;
         public static final int playTopicBottomButtonLayout=0x7f070016;
         public static final int playTopicLayout=0x7f070012;
         public static final int progressBar=0x7f07000b;
-        public static final int questionAndResponsesLayout=0x7f070028;
-        public static final int questionText=0x7f070029;
+        public static final int questionAndResponsesLayout=0x7f07002e;
+        public static final int questionText=0x7f07002f;
         public static final int responseButton=0x7f07001a;
-        public static final int responseLayout=0x7f07002a;
-        public static final int resultImage=0x7f070021;
-        public static final int resultName=0x7f07001b;
-        public static final int resultNumber=0x7f07001f;
-        public static final int resultPct=0x7f070020;
-        public static final int searchButton=0x7f070025;
-        public static final int searchLayout=0x7f070022;
-        public static final int searchText=0x7f070024;
-        public static final int splashButton=0x7f070027;
-        public static final int splashText=0x7f070026;
+        public static final int responseLayout=0x7f070030;
+        public static final int resultImage=0x7f070024;
+        public static final int resultName=0x7f070025;
+        public static final int resultNumber=0x7f070022;
+        public static final int resultPct=0x7f070023;
+        public static final int searchButton=0x7f070029;
+        public static final int searchLayout=0x7f070026;
+        public static final int searchText=0x7f070028;
+        public static final int splashButton=0x7f07002d;
+        public static final int splashText=0x7f07002c;
         public static final int tabThreeContent=0x7f07000f;
         public static final int tabTwoContent=0x7f07000d;
         public static final int topicContentContainer=0x7f070015;
         public static final int topicImage=0x7f070013;
         public static final int topicTitle=0x7f070014;
+        public static final int vendorName=0x7f07002a;
     }
     public static final class layout {
         public static final int home=0x7f030000;
@@ -93,8 +99,9 @@ public final class R {
         public static final int result_details=0x7f030007;
         public static final int result_list_item=0x7f030008;
         public static final int search=0x7f030009;
-        public static final int splash=0x7f03000a;
-        public static final int topic_content_layout=0x7f03000b;
+        public static final int shop_button=0x7f03000a;
+        public static final int splash=0x7f03000b;
+        public static final int topic_content_layout=0x7f03000c;
     }
     public static final class string {
         public static final int app_name=0x7f050001;
@@ -106,6 +113,7 @@ public final class R {
         public static final int playTopicSkip=0x7f05000a;
         public static final int resultsTitleText=0x7f05000c;
         public static final int searchOptionsText=0x7f05000d;
+        public static final int selectTopicExceptionTitle=0x7f05000e;
         public static final int splash=0x7f050004;
         public static final int splashButton=0x7f050005;
         public static final int tabOneContent=0x7f050006;
@@ -114,6 +122,9 @@ public final class R {
     }
     public static final class style {
         public static final int listItemMainText=0x7f060000;
+        public static final int resultDetailsInfoText=0x7f060004;
+        public static final int shopButtonPriceText=0x7f060003;
+        public static final int shopButtonVendorText=0x7f060002;
         public static final int topicHeader=0x7f060001;
     }
 }

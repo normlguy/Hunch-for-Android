@@ -377,7 +377,7 @@ public class HunchNextQuestion extends HunchObject
 			//Log.d( Const.TAG, "building HunchTopic...\n" + jsonTopic.toString( 4 ) );
 			
 			tBuilder.init( jsonTopic )
-			.setId( jsonTopic.getInt( "topicId" ) )
+			.setId( jsonTopic.getString( "topicId" ) )
 			.setDecision( jsonTopic.getString( "topicDecision" ) )
 			.setHunchUrl( jsonTopic.getString( "hunchUrl" ) )
 			.setImageUrl( jsonTopic.getString( "imageUrl" ) )

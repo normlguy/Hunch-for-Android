@@ -1,13 +1,15 @@
 package com.hunch.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hunch.Const;
-
 import android.util.Log;
+
+import com.hunch.Const;
 
 
 /**
@@ -32,12 +34,69 @@ public class HunchResult extends HunchObject
 		public void callComplete( List< HunchResult > h );
 	}
 	
+	public static class AffiliateLink
+	{
+		private String url, text, html;
+		private Double price;
+		
+		private AffiliateLink( String url, String text, String html, Double price )
+		{
+			this.url = url;
+			this.text = text;
+			this.html = html;
+			this.price = price;
+		}
+		
+		public String getUrl()
+		{
+			return url;
+		}
+		
+		public String getText()
+		{
+			return text;
+		}
+		
+		public String getHtml()
+		{
+			return html;
+		}
+		
+		public Double getPrice()
+		{
+			return price;
+		}
+		
+		public static AffiliateLink buildFromJSON( JSONObject json )
+		{
+			String url = null, text = null, html = null;
+			Double price = null;
+			
+			try
+			{
+				url = json.getString( "url" );
+				text = json.getString( "text" );
+				html = json.getString( "html" );
+				price = json.getDouble( "price" );
+			} catch ( JSONException e )
+			{
+				Log.w( Const.TAG, String.format( "Couldn't build affiliate link! (%s, %s, %s, %d)",
+						url, text, html, price ) );
+				
+				return null;
+			}
+			
+			return new AffiliateLink( url, text, html, price );
+		}
+	}
+	
 	static class Builder extends HunchObject.Builder
 	{
 		
 		private JSONObject val;
 		private int __id, __topicId;
 		private String __type, __name, __urlName, __desc, __imageUrl, __readMoreUrl, __hunchUrl;
+		private List< AffiliateLink > affiliateLinks;
 		
 		private Builder() {}
 		
@@ -45,6 +104,13 @@ public class HunchResult extends HunchObject
 		Builder init( JSONObject jsonVal )
 		{
 			val = jsonVal;
+			affiliateLinks = new ArrayList< AffiliateLink >();
+			return this;
+		}
+		
+		Builder addAffiliateLink( JSONObject json )
+		{
+			affiliateLinks.add( AffiliateLink.buildFromJSON( json ) );
 			return this;
 		}
 		
@@ -112,6 +178,7 @@ public class HunchResult extends HunchObject
 			__desc = null;
 			__readMoreUrl = null;
 			__hunchUrl = null;
+			affiliateLinks = null;
 			__id = __topicId = Integer.MIN_VALUE;
 		}
 		
@@ -126,7 +193,7 @@ public class HunchResult extends HunchObject
 			}
 			
 			HunchResult ret = new HunchResult( val, __id, __topicId, __type, __name, __urlName,
-					__desc, __imageUrl, __readMoreUrl, __hunchUrl );
+					__desc, __imageUrl, __readMoreUrl, __hunchUrl, affiliateLinks );
 			reset();
 			
 			return ret;
@@ -136,10 +203,12 @@ public class HunchResult extends HunchObject
 	private final JSONObject json;
 	private final int _id, _topicId;
 	private final String _type, _name, _urlName, _desc, _imageUrl, _readMoreUrl, _hunchUrl;
+	private final List< AffiliateLink > _affiliateLinks;
 	
 	
 	private HunchResult( JSONObject jsonObj, int id, int topicId, String type, String name,
-			String urlName, String desc, String imageUrl, String readMoreUrl, String hunchUrl )
+			String urlName, String desc, String imageUrl, String readMoreUrl, String hunchUrl,
+			List< AffiliateLink > affiliateLinks )
 	{
 		json = jsonObj;
 		_id = id;
@@ -151,6 +220,7 @@ public class HunchResult extends HunchObject
 		_imageUrl = imageUrl;
 		_readMoreUrl = readMoreUrl;
 		_hunchUrl = hunchUrl;
+		_affiliateLinks = affiliateLinks;
 		
 	}
 	
@@ -159,6 +229,16 @@ public class HunchResult extends HunchObject
 		if( b == null ) b = new Builder();
 		
 		return b;
+	}
+	
+	public List< AffiliateLink > getAffiliateLinks()
+	{
+		return _affiliateLinks;
+	}
+	
+	public boolean hasAffiliateLinks()
+	{
+		return _affiliateLinks != null;
 	}
 	
 	public String getImageUrl()
@@ -233,7 +313,25 @@ public class HunchResult extends HunchObject
 				builder.setReadMoreUrl( json.getString( "readMoreUrl" ) );
 			} catch( JSONException e )
 			{
-				Log.v( Const.TAG, "No read more URL in Hunch result! Skipping..." );
+				Log.v( Const.TAG, "No read more URL in Hunch result! This is usually OK." );
+			}
+			
+			// add affiliate links (may be omitted)
+			JSONArray affiliateLinks = null;
+			try
+			{
+				affiliateLinks = json.getJSONArray( "affiliateLinks" );
+			} catch( JSONException e )
+			{
+				Log.v( Const.TAG, "building result with no affiliate links [HunchResult]" );
+			}
+			
+			if( affiliateLinks == null )
+				return builder.build();
+			
+			for( int i = 0; i < affiliateLinks.length(); i++ )
+			{
+				builder.addAffiliateLink( affiliateLinks.getJSONObject( i ) );
 			}
 			
 		} catch ( NumberFormatException e )
@@ -274,6 +372,7 @@ public class HunchResult extends HunchObject
 		result = 31 * result + _imageUrl.hashCode();
 		result = 31 * result + _readMoreUrl.hashCode();
 		result = 31 * result + _hunchUrl.hashCode();
+		result = 31 * result + _affiliateLinks.hashCode();
 		
 		return result;
 	}

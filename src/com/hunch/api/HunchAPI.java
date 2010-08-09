@@ -243,7 +243,7 @@ public class HunchAPI
 				b.init( j );
 				try
 				{
-					b.setId( id )
+					b.setId( String.valueOf( id ) )
 							.setDecision( topic.getString( "decision" ) )
 							.setUrlName( topic.getString( "urlName" ) )
 							.setShortName( topic.getString( "shortName" ) )
@@ -336,7 +336,7 @@ public class HunchAPI
 					}
 
 					b.init( topic )
-							.setId( id )
+							.setId( String.valueOf( id ) )
 							.setDecision( decision )
 							.setUrlName( urlName )
 							.setScore( score );

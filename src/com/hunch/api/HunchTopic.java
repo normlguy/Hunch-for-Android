@@ -30,7 +30,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 	public static class SearchStub extends HunchObject
 	{
 		
-		private static Builder b = new Builder();
+		private static Builder stubBuilder = new Builder();
 		
 		static class Builder extends HunchObject.Builder
 		{
@@ -145,13 +145,13 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 				String urlName = json.getString( "urlName" );
 				Double score = json.getDouble( "score" );
 				
-				b.init( json )
+				stubBuilder.init( json )
 				.setId( id )
 				.setDecision( decision )
 				.setUrlName( urlName )
 				.setScore( score );
 				
-				return b.build();
+				return stubBuilder.build();
 			} catch ( JSONException ex )
 			{
 				throw new RuntimeException( "Couldn't build SearchStub!", ex );
@@ -168,7 +168,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 	static class Builder extends HunchObject.Builder
 	{
 		private JSONObject _val;
-		private Integer buildId;
+		private String buildId;
 		private String buildDecision, buildImageUrl, buildResultType,
 				buildUrlName, buildShortName, buildHunchUrl;
 		private Boolean buildIsEitherOr;
@@ -187,7 +187,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 			return this;
 		}
 
-		Builder setId( Integer id )
+		Builder setId( String id )
 		{
 			this.buildId = id;
 			return this;
@@ -334,7 +334,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 
 	}
 
-	protected final Integer _id;
+	protected final String _id;
 	protected final String _decision, _imageUrl, _resultType, _urlName,
 			_shortName;
 	protected final Boolean _isEitherOr;
@@ -344,7 +344,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 	protected final Double _score;
 	protected final Variety variety;
 
-	protected HunchTopic( JSONObject val, Integer id, String decision,
+	protected HunchTopic( JSONObject val, String id, String decision,
 			String imageUrl, String resultType, String urlName,
 			String shortName, Boolean isEitherOr, String hunchUrl,
 			HunchCategory category, Double score, Variety v )
@@ -372,7 +372,7 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 	/* (non-Javadoc)
 	 * @see com.hunch.api.IHunchTopic#getId()
 	 */
-	public Integer getId()
+	public String getId()
 	{
 		return _id;
 	}
@@ -478,14 +478,14 @@ public class HunchTopic extends HunchObject implements IHunchTopic
 		HunchTopic.Builder builder = getBuilder();
 
 		// build the HunchTopic object
-		int id = Integer.MIN_VALUE;
+		String id = null;
 		int eitherOr = Integer.MIN_VALUE;
 		
 		builder.init( topic );
 
 		try
 		{
-			id = Integer.parseInt( topic.getString( "id" ) );
+			id = topic.getString( "id" );
 			eitherOr = Integer.parseInt( topic.getString( "eitherOrTopic" ) );
 
 			

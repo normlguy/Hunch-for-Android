@@ -76,7 +76,7 @@ public class LazyHunchTopic extends HunchObject implements IHunchTopic
 	 * @see com.hunch.api.IHunchTopic#getId()
 	 */
 	@Override
-	public Integer getId()
+	public String getId()
 	{
 		lazyBuild();
 		

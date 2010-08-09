@@ -12,7 +12,7 @@ import com.hunch.api.HunchTopic.Variety;
 public interface IHunchTopic
 {
 
-	public abstract Integer getId();
+	public abstract String getId();
 
 	public abstract String getDecision();
 

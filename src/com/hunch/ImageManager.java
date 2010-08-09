@@ -467,6 +467,9 @@ public class ImageManager
 					image.setImageDrawable( d );		
 				}
 			} );
+			
+			// set it to the placeholder image for now
+			image.setImageResource( Const.CAT_DEFAULT_IMG );
 		}
 		
 	}
@@ -493,6 +496,9 @@ public class ImageManager
 					image.setImageDrawable( d );		
 				}
 			} );
+			
+			// set it to the placeholder image for now
+			image.setImageResource( Const.TOPIC_DEFAULT_IMG );
 		}
 	}
 	

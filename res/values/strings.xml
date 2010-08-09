@@ -15,4 +15,5 @@
 <string name="lastQuestionText">Back</string>
 <string name="resultsTitleText">Results</string>
 <string name="searchOptionsText">Search for:</string>
+<string name="selectTopicExceptionTitle">Uh Oh...</string>
 </resources>
