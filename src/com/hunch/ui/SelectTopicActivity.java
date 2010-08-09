@@ -6,26 +6,19 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hunch.Const;
-import com.hunch.ImageCacher;
+import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
-import com.hunch.api.HunchCategory;
 import com.hunch.api.HunchTopic;
 import com.hunch.api.IHunchTopic;
 import com.hunch.util.InfiniteListAdapter;
@@ -91,14 +84,8 @@ public class SelectTopicActivity extends ListActivity
 			text.setText( topic.toString() );
 			
 			// async load the topic image
-			ImageCacher.fromURL( topic.getImageUrl(), new ImageCacher.Callback()
-			{
-				@Override
-				public void callComplete( Drawable d )
-				{
-					imageView.setImageDrawable( d );
-				}
-			} );
+			ImageManager.getInstance().getTopicImage( SelectTopicActivity.this, imageView,
+					topic.getImageUrl() );
 			
 			addListeners( topic, view );
 		}
@@ -123,7 +110,7 @@ public class SelectTopicActivity extends ListActivity
 
 	private HunchAPI api;
 	private String catURLName = null;
-	private Dialog searchDialog = null;
+	//private Dialog searchDialog = null;
 
 	@Override
 	public void onCreate( Bundle b )
@@ -141,9 +128,9 @@ public class SelectTopicActivity extends ListActivity
 		getListView().addHeaderView( divider );
 
 		// get the category
-		catURLName = b.getString( "categoryURL" );
+		catURLName = this.getIntent().getExtras().getString( "catURLName" );
 		
-		Log.d( Const.TAG, "onCreate()[topicSelectActivity]" );
+		Log.d( Const.TAG, "onCreate()[SelectTopicActivity]" );
 
 	}
 	
@@ -154,7 +141,7 @@ public class SelectTopicActivity extends ListActivity
 
 		startTopicsList();
 		
-		Log.d( Const.TAG, "onResume()[topicSelectActivity]" );
+		Log.d( Const.TAG, "onResume()[SelectTopicActivity]" );
 	}
 	
 	@Override
@@ -186,7 +173,7 @@ public class SelectTopicActivity extends ListActivity
 	private void startTopicsList()
 	{
 		
-		api.listTopics( catURLName, Const.TOPIC_LIST_IMAGE_SIZE, new HunchTopic.ListCallback()
+		api.listTopics( catURLName, Const.TOPIC_LIST_IMG_SIZE, new HunchTopic.ListCallback()
 		{
 
 			@Override

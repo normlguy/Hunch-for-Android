@@ -5,7 +5,6 @@ import java.util.List;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hunch.ImageCacher;
+import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchCategory;
@@ -75,17 +74,9 @@ public class SelectCategoryActivity extends ListActivity
 			// toString will lazy-load the HunchCategory if it supports it (probably not)
 			text.setText( cat.toString() );
 			
-			// check to see if the icon is in the resources
-			
 			// async load the category image
-			ImageCacher.fromURL( cat.getImageUrl(), new ImageCacher.Callback()
-			{
-				@Override
-				public void callComplete( Drawable d )
-				{
-					imageView.setImageDrawable( d );
-				}
-			} );
+			ImageManager.getInstance().getCategoryImage( SelectCategoryActivity.this, imageView,
+					cat.getImageUrl() );
 			
 			addListeners( cat, view );
 		}

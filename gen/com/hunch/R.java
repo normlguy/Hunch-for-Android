@@ -24,25 +24,18 @@ public final class R {
         public static final int btn_default_pressed=0x7f020003;
         public static final int btn_default_selected=0x7f020004;
         public static final int btn_default_top=0x7f020005;
-        public static final int categoryListDivider=0x7f020018;
-        public static final int homeTabFocused=0x7f020017;
-        public static final int hunch_logo=0x7f020006;
-        public static final int hunch_question_bg=0x7f020007;
-        public static final int ic_menu_search=0x7f020008;
-        public static final int ic_search_small=0x7f020009;
-        public static final int icon=0x7f02000a;
-        public static final int placeholder_32x32=0x7f02000b;
+        public static final int categoryListDivider=0x7f020011;
+        public static final int default_image_32=0x7f020006;
+        public static final int homeTabFocused=0x7f020010;
+        public static final int hunch_logo=0x7f020007;
+        public static final int hunch_question_bg=0x7f020008;
+        public static final int ic_menu_search=0x7f020009;
+        public static final int ic_search_small=0x7f02000a;
+        public static final int icon=0x7f02000b;
         public static final int response_bullet=0x7f02000c;
         public static final int restart_topic=0x7f02000d;
         public static final int result_btn=0x7f02000e;
-        public static final int tab1_icon=0x7f02000f;
-        public static final int tab3_icon=0x7f020010;
-        public static final int tab_focus=0x7f020011;
-        public static final int tab_indicator=0x7f020012;
-        public static final int tab_press=0x7f020013;
-        public static final int tab_selected=0x7f020014;
-        public static final int tab_unselected=0x7f020015;
-        public static final int top_result=0x7f020016;
+        public static final int top_result=0x7f02000f;
     }
     public static final class id {
         public static final int Button01=0x7f070019;
@@ -60,7 +53,6 @@ public final class R {
         public static final int homeTabOne=0x7f070002;
         public static final int homeTabThree=0x7f070004;
         public static final int homeTabTwo=0x7f070003;
-        public static final int icon=0x7f070028;
         public static final int itemImage=0x7f070010;
         public static final int itemLayout=0x7f070018;
         public static final int itemText=0x7f070011;
@@ -71,10 +63,10 @@ public final class R {
         public static final int playTopicBottomButtonLayout=0x7f070016;
         public static final int playTopicLayout=0x7f070012;
         public static final int progressBar=0x7f07000b;
-        public static final int questionAndResponsesLayout=0x7f07002a;
-        public static final int questionText=0x7f07002b;
+        public static final int questionAndResponsesLayout=0x7f070028;
+        public static final int questionText=0x7f070029;
         public static final int responseButton=0x7f07001a;
-        public static final int responseLayout=0x7f07002c;
+        public static final int responseLayout=0x7f07002a;
         public static final int resultImage=0x7f070021;
         public static final int resultName=0x7f07001b;
         public static final int resultNumber=0x7f07001f;
@@ -86,7 +78,6 @@ public final class R {
         public static final int splashText=0x7f070026;
         public static final int tabThreeContent=0x7f07000f;
         public static final int tabTwoContent=0x7f07000d;
-        public static final int title=0x7f070029;
         public static final int topicContentContainer=0x7f070015;
         public static final int topicImage=0x7f070013;
         public static final int topicTitle=0x7f070014;
@@ -103,8 +94,7 @@ public final class R {
         public static final int result_list_item=0x7f030008;
         public static final int search=0x7f030009;
         public static final int splash=0x7f03000a;
-        public static final int tab_indicator=0x7f03000b;
-        public static final int topic_content_layout=0x7f03000c;
+        public static final int topic_content_layout=0x7f03000b;
     }
     public static final class string {
         public static final int app_name=0x7f050001;

@@ -1,10 +1,10 @@
 package com.hunch.ui;
 
-import static com.hunch.Const.QUESTION_IMAGE_SIZE;
-import static com.hunch.Const.RESPONSE_IMAGE_SIZE;
-import static com.hunch.Const.RESULT_IMAGE_SIZE;
+import static com.hunch.Const.QUESTION_IMG_SIZE;
+import static com.hunch.Const.RESPONSE_IMG_SIZE;
+import static com.hunch.Const.RESULT_IMG_SIZE;
 import static com.hunch.Const.TAG;
-import static com.hunch.Const.TOPIC_IMAGE_SIZE;
+import static com.hunch.Const.TOPIC_IMG_SIZE;
 import static com.hunch.Const.MENU_RESTART_TOPIC;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hunch.ImageCacher;
+import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchNextQuestion;
@@ -158,7 +158,8 @@ public class PlayTopicActivity extends Activity
 			
 			final ViewGroup parentGroup = (ViewGroup) resultView;
 
-			ImageCacher.fromURL( result.getImageUrl(), new ImageCacher.Callback()
+			ImageManager.getInstance().getTopicImageWithCallback( PlayTopicActivity.this, 
+					result.getImageUrl(), new ImageManager.Callback()
 			{
 
 				@Override
@@ -181,7 +182,7 @@ public class PlayTopicActivity extends Activity
 					parentGroup.addView( resultImg, childIndex );
 
 					// set the drawable
-					resultImg.setBackgroundDrawable( d );
+					resultImg.setImageDrawable( d );
 
 				}
 			} );
@@ -260,7 +261,7 @@ public class PlayTopicActivity extends Activity
 			else
 			{
 				// and use it to get the full result off the network
-				HunchAPI.getInstance().getResult( stub.getId(), RESULT_IMAGE_SIZE,
+				HunchAPI.getInstance().getResult( stub.getId(), RESULT_IMG_SIZE,
 						new HunchResult.Callback()
 				{
 
@@ -409,8 +410,8 @@ public class PlayTopicActivity extends Activity
 		createTopicLayouts();
 		
 		// then get the first question
-		api.nextQuestion( topicId, curQAState, null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE, 
-				TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
+		api.nextQuestion( topicId, curQAState, null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE, 
+				TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion h )
@@ -483,7 +484,7 @@ public class PlayTopicActivity extends Activity
 			 * in this case, we're forced to do an extra API call to get the info
 			 */
 			
-			api.getTopic( topicId, null, TOPIC_IMAGE_SIZE, new HunchTopic.Callback()
+			api.getTopic( topicId, null, TOPIC_IMG_SIZE, new HunchTopic.Callback()
 			{
 				
 				@Override
@@ -492,16 +493,8 @@ public class PlayTopicActivity extends Activity
 					// set the topic image
 					final ImageView topicImg = (ImageView) findViewById( R.id.topicImage );
 
-					ImageCacher.fromURL( topic.getImageUrl(), new ImageCacher.Callback()
-					{
-
-						@Override
-						public void callComplete( Drawable d )
-						{
-							topicImg.setImageDrawable( d );
-						}
-
-					} );
+					ImageManager.getInstance().getTopicImage( PlayTopicActivity.this, topicImg,
+							topic.getImageUrl() );
 
 					// set the topic title
 					final TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
@@ -520,16 +513,8 @@ public class PlayTopicActivity extends Activity
 		// set the topic image
 		final ImageView topicImg = (ImageView) findViewById( R.id.topicImage );
 
-		ImageCacher.fromURL( topic.getImageUrl(), new ImageCacher.Callback()
-		{
-
-			@Override
-			public void callComplete( Drawable d )
-			{
-				topicImg.setImageDrawable( d );
-			}
-
-		} );
+		ImageManager.getInstance().getTopicImage( PlayTopicActivity.this, topicImg,
+				topic.getImageUrl() );
 
 		// set the topic title
 		final TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
@@ -541,8 +526,8 @@ public class PlayTopicActivity extends Activity
 	{
 		curQAState = resp.getQAState();
 
-		api.nextQuestion( topicId, resp.getQAState(), null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE,
-				TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
+		api.nextQuestion( topicId, resp.getQAState(), null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE,
+				TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion response )
@@ -646,8 +631,8 @@ public class PlayTopicActivity extends Activity
 				}
 				else
 				{
-					api.nextQuestion( topicId, prevQAState, null, QUESTION_IMAGE_SIZE, RESPONSE_IMAGE_SIZE, 
-							TOPIC_IMAGE_SIZE, new HunchNextQuestion.Callback()
+					api.nextQuestion( topicId, prevQAState, null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE, 
+							TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 					{
 
 						@Override

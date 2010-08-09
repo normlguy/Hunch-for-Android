@@ -144,18 +144,14 @@ public abstract class InfiniteListAdapter<T> extends BaseAdapter
 	}
 	
 	/**
-	 * Override this method. It decides when we should load more items inline.
-	 * 
-	 * The default implementation returns true once the curPos is 90% or more than size.
+	 * This method decides when we should load more items inline.
 	 * 
 	 * @param curPos The index of the last item visible in the list.
 	 * @param size The total size of the list.
-	 * @return Whether or not to load more items inline.
+	 * @return true to load more items, false otherwise.
 	 */
-	protected boolean shouldLoadInline( int curPos, int size )
-	{		
-		return curPos >= Math.round( size * 0.9f );
-	}
+	protected abstract boolean shouldLoadInline( int curPos, int size );
+
 	
 	/**
 	 * Provides raw access to full items list (whether those items are currently

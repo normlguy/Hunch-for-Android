@@ -222,7 +222,7 @@ public class HunchAPIRequest
 			throw new RuntimeException( String.format( "tried to build malformed URL! (%s)", url ), e );
 		}
 		
-		Log.v( Const.TAG, "performing API call (" + address.toString() + ")" );
+		Log.i( Const.TAG, "performing API call (" + address.toString() + ")" );
 		
 		new AsyncAPIRequest().setCallback( c ).execute( address );
 		

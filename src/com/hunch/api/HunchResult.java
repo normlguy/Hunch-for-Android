@@ -233,7 +233,7 @@ public class HunchResult extends HunchObject
 				builder.setReadMoreUrl( json.getString( "readMoreUrl" ) );
 			} catch( JSONException e )
 			{
-				Log.w( Const.TAG, "No read more URL in Hunch result! This is probably OK." );
+				Log.v( Const.TAG, "No read more URL in Hunch result! Skipping..." );
 			}
 			
 		} catch ( NumberFormatException e )

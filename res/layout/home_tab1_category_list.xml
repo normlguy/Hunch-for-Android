@@ -10,7 +10,10 @@
 			android:layout_height="wrap_content" android:id="@+id/logoView"
 			android:background="@drawable/hunch_logo"></ImageView>
 	</FrameLayout>
-	<ImageView android:id="@+id/ImageView01" android:layout_below="@android:id/empty" android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageView><ListView android:layout_width="fill_parent"
+	<ImageView android:id="@+id/ImageView01"
+		android:layout_below="@android:id/empty" android:layout_width="wrap_content"
+		android:layout_height="wrap_content"></ImageView>
+	<ListView android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:id="@android:id/list"
 		android:background="@color/listItemBackground" android:divider="@drawable/categoryListDivider"
 		android:dividerHeight="1dp" android:layout_below="@id/headerLayout">
@@ -23,17 +26,28 @@
 		android:id="@android:id/empty" android:layout_gravity="center"
 		android:layout_height="fill_parent" android:layout_below="@id/headerLayout">
 		<ImageView android:background="@drawable/categoryListDivider"
-			android:id="@+id/divider" android:layout_width="fill_parent" android:layout_height="1dp"></ImageView>
-		
-
-		
+			android:id="@+id/divider" android:layout_width="fill_parent"
+			android:layout_height="1dp"></ImageView>
 
 
-	
-<LinearLayout android:id="@+id/LinearLayout02" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_below="@id/divider" android:paddingTop="3dp"><ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/progressBar" android:layout_marginLeft="5dp" style="@android:style/Widget.ProgressBar" android:background="@color/listItemBackground" /><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/loadingText" style="@style/listItemMainText" android:id="@+id/loadingItemText" android:paddingLeft="10dp" android:textSize="30sp">
-		</TextView>
-	</LinearLayout>
-</RelativeLayout>
+
+
+
+
+		<LinearLayout android:id="@+id/LinearLayout02"
+			android:layout_height="fill_parent" android:layout_width="fill_parent"
+			android:layout_below="@id/divider" android:paddingTop="3dp">
+			<ProgressBar android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/progressBar"
+				android:layout_marginLeft="5dp" style="@android:style/Widget.ProgressBar"
+				android:background="@color/listItemBackground" />
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/loadingText"
+				style="@style/listItemMainText" android:id="@+id/loadingItemText"
+				android:paddingLeft="10dp" android:textSize="30sp">
+			</TextView>
+		</LinearLayout>
+	</RelativeLayout>
 
 
 </RelativeLayout>
