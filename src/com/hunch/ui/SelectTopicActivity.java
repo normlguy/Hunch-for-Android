@@ -98,7 +98,7 @@ public class SelectTopicActivity extends ListActivity
 				@Override
 				public void onClick( View v )
 				{
-					Intent topicIntent = new Intent( SelectTopicActivity.this, PlayTopicActivity.class );
+					Intent topicIntent = new Intent( SelectTopicActivity.this, TopicInterviewActivity.class );
 					topicIntent.putExtra( "topicId", topic.getId() );
 
 					SelectTopicActivity.this.startActivity( topicIntent );

@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:background="@color/playTopicBackground" android:layout_height="fill_parent" android:layout_width="fill_parent">
-<TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="center" android:id="@+id/resultName"></TextView>
-<FrameLayout android:id="@+id/FrameLayout01" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_marginTop="3dp" android:background="@drawable/hunch_question_bg" android:layout_below="@id/resultName"></FrameLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:background="@drawable/hunch_question_bg" android:padding="5dp"
+	android:id="@+id/detailsLayout">
+
+	<ScrollView android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:id="@+id/infoScrollView">
+		<LinearLayout android:layout_height="fill_parent"
+			android:layout_width="fill_parent" android:orientation="vertical"
+			android:id="@+id/infoLayout" android:gravity="center_horizontal">
+			<ImageView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/infoImage"></ImageView>
+			<TextView android:text="@+id/TextView01"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:gravity="center_horizontal" style="@style/resultDetailsInfoText"
+				android:id="@+id/infoText"></TextView>
+
+		</LinearLayout>
+	</ScrollView>
 </RelativeLayout>
