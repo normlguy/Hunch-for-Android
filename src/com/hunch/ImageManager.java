@@ -529,6 +529,7 @@ public class ImageManager
 			temp = new URL( url );
 		} catch ( MalformedURLException e )
 		{
+			Log.w( Const.TAG, "Malformed URL Exception! (" + url + ")" );
 			e.printStackTrace();
 			// TODO: better handling of malformed urls?
 			// but really this should never happen unless the

@@ -71,10 +71,7 @@ public class ResultDetailsActivity extends Activity
 			{
 				setupDetails( h );
 				
-				if( progress.isShowing() )
-				{
-					progress.dismiss();
-				}
+				dismissProgressDialog();
 			}
 		} );
 		
@@ -92,6 +89,19 @@ public class ResultDetailsActivity extends Activity
 			progress.setTitle( "Loading..." );
 			progress.setMessage( "Fetching result details" );
 			progress.show();
+		}
+		else
+		{
+			progress.show();
+		}
+	}
+	
+	private void dismissProgressDialog()
+	{
+		if( progress.isShowing() )
+		{
+			progress.dismiss();
+			progress = null;
 		}
 	}
 	

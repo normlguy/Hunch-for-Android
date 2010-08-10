@@ -270,13 +270,13 @@ public class HunchRankedResults extends HunchObject
 		private final String id;
 		private final String eitherOrPct;
 		
-		private ResultStub( String id, String eitherOrPct )
+		protected ResultStub( String id, String eitherOrPct )
 		{
 			this.id = id;
 			this.eitherOrPct = eitherOrPct;
 		}
 		
-		private ResultStub( Integer id, Integer eitherOrPct )
+		protected ResultStub( Integer id, Integer eitherOrPct )
 		{
 			this( String.valueOf( id ), String.valueOf( eitherOrPct ) );
 		}

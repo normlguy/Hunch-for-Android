@@ -50,7 +50,6 @@ import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchNextQuestion;
 import com.hunch.api.HunchQuestion;
 import com.hunch.api.HunchResponse;
-import com.hunch.api.HunchTopic;
 import com.hunch.api.IHunchTopic;
 import com.hunch.util.InfiniteListAdapter;
 
@@ -136,9 +135,7 @@ public class TopicInterviewActivity extends Activity
 
 	private String curQAState;
 	
-	private String curTopicId;
-	private String curTopicTitle;
-	private String curTopicImgUrl;
+	private IHunchTopic curTopic = null;
 	
 	//private boolean showResultsLoadingDialog;
 	
@@ -163,8 +160,8 @@ public class TopicInterviewActivity extends Activity
 		//if ( icicle != null && icicle.containsKey( "qaState" ) )
 		//	curQAState = icicle.getString( "qaState" );
 		
-		curTopicId = getIntent().getStringExtra( "topicId" );
-		Log.d( TAG, String.format( "creating: (tid: %s)", curTopicId ) );
+		String topicId = getIntent().getStringExtra( "topicId" );
+		Log.d( TAG, String.format( "creating: (tid: %s)", topicId ) );
 
 	}
 
@@ -175,67 +172,17 @@ public class TopicInterviewActivity extends Activity
 		
 		//String topicId = getIntent().getStringExtra( "topicId" );
 		
-		assert curTopicId != null;
+		String topicId = getIntent().getStringExtra( "topicId" );
 		
-		startTopic( curTopicId );
+		startTopic( topicId );
 		
-		Log.d( TAG, String.format( "resuming: (tid: %s, qaS: %s)", curTopicId, curQAState ) );
-	}
-
-	@Override
-	public void onRestoreInstanceState( Bundle icicle )
-	{
-		super.onRestoreInstanceState( icicle );
-
-		//if ( topicId == null )
-		//	topicId = icicle.getString( "topicId" );
-
-		curQAState = icicle.getString( "qaState" );
-		curTopicId = icicle.getString( "topicId" );
-		curTopicTitle = icicle.getString( "topicTitle" );
-		curTopicImgUrl = icicle.getString( "curTopicImgUrl" );
-		//curState = (State) icicle.getSerializable( "curState" );
-		//showResultsLoadingDialog = icicle.getBoolean( "showLoadingDialog" );
-		//latestResultDetailsId = icicle.getInt( "latestResultDetailsId" );
-
-		//Log.d( TAG, String.format( "restoring state %s: (tid: %s, qaS: %s)",
-		//		curState, topicId, curQAState ) );//, latestResultDetailsId ) );
-	}
-
-	@Override
-	public void onSaveInstanceState( Bundle out )
-	{
-		super.onSaveInstanceState( out );
-
-		//Log.d( TAG, String.format( "saving state %s: (tid: %s, qaS: %s)",
-		//		curState, topicId, curQAState ) );
-
-		//out.putSerializable( "state", curState );
-		out.putString( "qaState", curQAState );
-		out.putString( "topicId", curTopicId );
-		out.putString( "topicTitle", curTopicTitle );
-		out.putString( "topicImgUrl", curTopicImgUrl );
-		//out.putBoolean( "showLoadingDialog", showResultsLoadingDialog );
-		
-		/*if( curState == State.RESULTS )
-		{
-			Bundle results = new Bundle();
-			saveResults( results );
-			out.putBundle( "savedResults", results );
-		}*/
-		
-		//if( latestResultDetailsId != null )
-		//	out.putInt( "latestResultDetailsId", latestResultDetailsId );
-		
-		//out.putSerializable( "curState", curState );
-	}
-	
-	
+		Log.d( TAG, String.format( "resuming: (tid: %s, qaS: %s)", topicId, curQAState ) );
+	}	
 	
 	private void startTopic( final String topicId )
 	{		
-		// first create the layouts
-		createTopicLayouts();
+		// first set up the content view
+		setContentView(	createView() );
 		
 		// then get the first question
 		api.nextQuestion( topicId, curQAState, null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE, TOPIC_IMG_SIZE,
@@ -243,10 +190,15 @@ public class TopicInterviewActivity extends Activity
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion h )
-			{	
+			{
+				if( h.getTopic() != null )
+				{
+					curTopic = h.getTopic();
+				}
+				
 				if ( h.isResult() )
 				{
-					showResults( h.getRankedResultResponses() );
+					showResults( h.getRankedResultResponses(), curTopic );
 				}
 				else
 				{
@@ -259,7 +211,7 @@ public class TopicInterviewActivity extends Activity
 		} );
 	}
 
-	private void createTopicLayouts()
+	private View createView()
 	{
 		// first inflate the layout to get the main viewgroup
 		final LayoutInflater inflater = getLayoutInflater();
@@ -280,8 +232,10 @@ public class TopicInterviewActivity extends Activity
 		TextView topicTitle = (TextView) mainLayout.findViewById( R.id.topicTitle );
 		topicTitle.setText( "" );
 		
-		// display everything
-		setContentView( mainLayout );		
+		final TextView topicText = (TextView) topicContent.findViewById( R.id.questionText );
+		topicText.setText( "" );
+		
+		return mainLayout;
 		
 	}
 	
@@ -293,16 +247,16 @@ public class TopicInterviewActivity extends Activity
 	 * @param question The question to display.
 	 */
 	private void populateTopic( HunchNextQuestion question )
-	{
+	{		
+		// otherwise we can just get the topic info out of the HunchNextQuestion
+		IHunchTopic topic = question.getTopic();
+		
 		if( question.isResult() )
 		{
-			showResults( question.getRankedResultResponses() );			
+			showResults( question.getRankedResultResponses(), topic );			
 			return;
 		}
 		
-		// otherwise we can just get the topic info out of the HunchNextQuestion
-		IHunchTopic topic = question.getTopic();
-
 		// set the topic image
 		final ImageView topicImg = (ImageView) findViewById( R.id.topicImage );
 
@@ -310,15 +264,14 @@ public class TopicInterviewActivity extends Activity
 		
 		// set the topic title
 		final TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
-		String strTopicTitle = topic.getDecision();
-		topicTitle.setText( strTopicTitle );
+		topicTitle.setText( topic.getDecision() );
 	}
 
 	private void handleResponse( final HunchResponse resp )
 	{
 		curQAState = resp.getQAState();
 
-		api.nextQuestion( curTopicId, resp.getQAState(), null, QUESTION_IMG_SIZE,
+		api.nextQuestion( curTopic.getId(), resp.getQAState(), null, QUESTION_IMG_SIZE,
 				RESPONSE_IMG_SIZE, TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
@@ -326,7 +279,7 @@ public class TopicInterviewActivity extends Activity
 			{
 				if ( response.isResult() )
 				{
-					showResults( response.getRankedResultResponses() );
+					showResults( response.getRankedResultResponses(), curTopic );
 				}
 				else
 				{
@@ -394,7 +347,7 @@ public class TopicInterviewActivity extends Activity
 				}
 				else
 				{
-					api.nextQuestion( curTopicId, prevQAState, null, QUESTION_IMG_SIZE,
+					api.nextQuestion( curTopic.getId(), prevQAState, null, QUESTION_IMG_SIZE,
 							RESPONSE_IMG_SIZE, TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 					{
 
@@ -440,19 +393,19 @@ public class TopicInterviewActivity extends Activity
 		{
 			curQAState = "";
 			
-			startTopic( curTopicId );
+			startTopic( curTopic.getId() );
 		}
 		
 		return super.onOptionsItemSelected( item );
 	}
 	
-	protected void showResults( String rankedResultResponses )
+	protected void showResults( String rankedResultResponses, IHunchTopic topic )
 	{
 		Intent resultDetailsIntent = new Intent( this, ShowResultsActivity.class );
 		resultDetailsIntent.putExtra( "rankedResultResponses", rankedResultResponses );
-		resultDetailsIntent.putExtra( "topicId", curTopicId );
-		resultDetailsIntent.putExtra( "topicTitle", curTopicTitle );
-		resultDetailsIntent.putExtra( "topicImgUrl", curTopicImgUrl );
+		resultDetailsIntent.putExtra( "topicId", topic.getId() );
+		resultDetailsIntent.putExtra( "topicTitle", topic.getDecision() );
+		resultDetailsIntent.putExtra( "topicImgUrl", topic.getImageUrl() );
 		
 		startActivity( resultDetailsIntent );
 	}

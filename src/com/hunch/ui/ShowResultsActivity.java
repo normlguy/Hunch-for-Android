@@ -22,24 +22,29 @@ package com.hunch.ui;
 import static com.hunch.Const.RESULT_IMG_SIZE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.hunch.Const;
 import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
@@ -62,7 +67,7 @@ public class ShowResultsActivity extends Activity
 		private final Context context;
 		//private final ProgressDialog progress;
 		//private boolean showProgress = true;
-		private final Map< ResultStub, HunchResult > resultsCache = new HashMap< ResultStub, HunchResult >();
+		//private final Map< ResultStub, HunchResult > resultsCache = new HashMap< ResultStub, HunchResult >();
 		
 		public static final int RESULTS_SHOWN_ON_LOAD = 10;
 		public static final int RESULTS_ADDED_INLINE = 5;
@@ -75,11 +80,29 @@ public class ShowResultsActivity extends Activity
 			//progress = new ProgressDialog( context );
 		}
 		
-		public HunchResult getFromCache( ResultStub stub )
+		public ResultModel getFromModel( int position )
 		{
-			if( !resultsCache.containsKey( stub ) ) return null;
+			if( model == null ) return null;
 			
-			return resultsCache.get( stub );
+			return model.getResultModel( position );
+		}
+		
+		public void addToModel( int position, String name, String id, String imgUrl, String pct )
+		{
+			if( model == null ) return;
+			
+			if( model.getResultModel( position ) != null )
+			{
+				// there is already a result here! don't overwrite
+				return;
+			}
+			
+			ResultModel resultModel = new ResultModel( name, id, imgUrl, pct );
+			
+			Log.d( Const.TAG, "adding to model at position " + position + ", total size: " 
+					+ model.size() );
+			
+			model.addResultModel( position, resultModel );
 		}
 
 		@Override
@@ -87,9 +110,21 @@ public class ShowResultsActivity extends Activity
 		{
 			return curPos >= size - 3;
 		}
+		
+		private void setupResultView( final View resultView, final String resultName,
+				final String resultImgUrl, final String resultId, int index, String pct,
+				boolean addToModel )
+		{
+			if( addToModel )
+			{
+				addToModel( index, resultName, resultId, resultImgUrl, pct );
+			}
+			
+			setupResultView( resultView, resultName, resultImgUrl, resultId, index, pct );
+		}
 
-		private void setupResultView( final HunchResult result, View resultView, int index,
-				String pct )
+		private void setupResultView( final View resultView, final String resultName,
+				final String resultImgUrl, final String resultId, int index, String pct )
 		{
 			// first download the result image.
 			// this is gonna take a while because it needs
@@ -103,7 +138,7 @@ public class ShowResultsActivity extends Activity
 			final ViewGroup parentGroup = (ViewGroup) resultView;
 
 			ImageManager.getInstance().getTopicImageWithCallback( ShowResultsActivity.this,
-					result.getImageUrl(), new ImageManager.Callback()
+					resultImgUrl, new ImageManager.Callback()
 			{
 
 				@Override
@@ -126,17 +161,19 @@ public class ShowResultsActivity extends Activity
 					parentGroup.addView( resultImg, childIndex );
 
 					// set the drawable
-					resultImg.setBackgroundDrawable( d );
+					resultImg.setImageDrawable( d );
 
 				}
 			} );
 
+			
+			
 			// now set the rest of the fields - index, name and the percentage
 			TextView resultNumber = (TextView) resultView.findViewById( R.id.resultNumber );
 			resultNumber.setText( String.valueOf( index + 1 ) + "." );
 
-			TextView resultName = (TextView) resultView.findViewById( R.id.resultName );
-			resultName.setText( result.getName() );
+			TextView resultNameView = (TextView) resultView.findViewById( R.id.resultName );
+			resultNameView.setText( resultName );
 
 			TextView resultPct = (TextView) resultView.findViewById( R.id.resultPct );
 			if ( pct != null )
@@ -158,7 +195,7 @@ public class ShowResultsActivity extends Activity
 				@Override
 				public void onClick( View v )
 				{
-					resultDetails( result );
+					resultDetails( resultId );
 				}
 			} );
 
@@ -176,29 +213,20 @@ public class ShowResultsActivity extends Activity
 			// get the basic result info
 			final ResultStub stub = getItem( position );
 			
-			/*
-			 * BUGFIX:
-			 * 
-			 *  getView() is called every time the view is supposed to enter the screen.
-			 *  
-			 *  This was not the behavior I expected at first, so getting the result off the network
-			 *  every time was not smart.
-			 *  
-			 *  I'm going to try to cache the results locally and use that before trying to
-			 *  get the result off the wire.
-			 */
-
-			if( resultsCache.containsKey( stub ) )
+			
+			ResultModel result = getFromModel( position );
+			if( result != null )
 			{
-				HunchResult result = resultsCache.get( stub );
 				
 				if( stub.hasEitherOrPct() )
 				{
-					setupResultView( result, resultView, position, stub.getEitherOrPct() );
+					setupResultView( resultView, result.getName(), result.getImageUrl(),
+							result.getId(), position, stub.getEitherOrPct() );
 				}
 				else
 				{
-					setupResultView( result, resultView, position, null );
+					setupResultView( resultView, result.getName(), result.getImageUrl(),
+							result.getId(), position, null );
 				}
 			}
 			// we don't have this result yet, go get it.
@@ -211,17 +239,16 @@ public class ShowResultsActivity extends Activity
 
 					@Override
 					public void callComplete( HunchResult h )
-					{
-						// add it to the cache set
-						resultsCache.put( stub, h );
-					
+					{					
 						if( stub.hasEitherOrPct() )
 						{
-							setupResultView( h, resultView, position, stub.getEitherOrPct() );
+							setupResultView( resultView, h.getName(), h.getImageUrl(), 
+									String.valueOf( h.getId() ), position, stub.getEitherOrPct(), true );
 						}
 						else
 						{
-							setupResultView( h, resultView, position, null );
+							setupResultView( resultView, h.getName(), h.getImageUrl(),
+									String.valueOf( h.getId() ), position, null, true );
 						}
 					}
 				} );
@@ -249,72 +276,325 @@ public class ShowResultsActivity extends Activity
 
 	}
 
-	private void saveResultsModel( Bundle bundle )
+	private static class ShowResultsModel
 	{
-		TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
-		bundle.putString( "topicTitle", topicTitle.getText().toString() );
+		private ResultModel[] results;
+		private final Bundle data;
 		
-		ListView resultsLayout = (ListView) findViewById( R.id.responseLayout );
+		private final String KEY_TOPIC_ID = "topicId";
+		private final String KEY_TOPIC_NAME = "topicName";
+		private final String KEY_TOPIC_IMG_URL = "topicImgUrl";
 		
-		ResultListAdapter adapter = (ResultListAdapter) resultsLayout.getAdapter();
+		private static final int GROWTH_MARGIN = 10;
 		
-		int numResults = adapter.getCount();
-		
-		ArrayList< Parcelable > results = new ArrayList< Parcelable >( numResults );
-		
-		for( int i = 0; i < numResults; i++ )
+		public ShowResultsModel( String topicId, String topicName, String topicImgUrl,
+				int initialCapacity )
 		{
-			ResultStub resultStub = adapter.getItem( i );
-			HunchResult result = adapter.getFromCache( resultStub );
+			data = new Bundle();
+			data.putString( KEY_TOPIC_ID, topicId );
+			data.putString( KEY_TOPIC_NAME, topicName );
+			data.putString( KEY_TOPIC_IMG_URL, topicImgUrl );
 			
-			if( result == null ) continue;
-			
-			Bundle resultBundle = new Bundle();
-			resultBundle.putInt( "order", i );
-			resultBundle.putString( "text", result.getName() );
-			resultBundle.putInt( "id", result.getId() );
-
-			results.add( resultBundle );
+			results = new ResultModel[ initialCapacity ];
 		}
 		
-		bundle.putParcelableArrayList( "results", results );
+		public ShowResultsModel( String topicId, String topicName, String topicImgUrl )
+		{
+			this( topicId, topicName, topicImgUrl, GROWTH_MARGIN );
+		}
+		
+		public void addResultModel( int position, ResultModel model )
+		{
+			try
+			{
+				results[ position ] = model;
+			} catch ( ArrayIndexOutOfBoundsException e )
+			{
+				setCapacity( position + GROWTH_MARGIN );
+				addResultModel( position, model );
+			}
+		}
+		
+		public ResultModel getResultModel( int position )
+		{
+			ResultModel ret = null;
+			try
+			{
+				ret = results[ position ];
+			} catch ( IndexOutOfBoundsException e )
+			{
+				return null;
+			}
+			
+			return ret;
+		}
+		
+		public List< ResultModel > getModelList()
+		{
+			return Arrays.asList( results );
+		}
+		
+		public void setCapacity( int size )
+		{
+			ResultModel[] temp = results;
+			results = new ResultModel[ size ];
+			
+			// if the original array was empty there's nothing to copy
+			if( temp == null ) return;
+			
+			// otherwise copy the data over
+			System.arraycopy( temp, 0, results, 0, size );
+		}
+		
+		public int size()
+		{
+			return results.length;
+		}
+		
+		public String getTopicId()
+		{
+			return data.getString( KEY_TOPIC_ID );
+		}
+		
+		public String getTopicTitle()
+		{
+			return data.getString( KEY_TOPIC_NAME );
+		}
+		
+		public String getTopicImageUrl()
+		{
+			return data.getString( KEY_TOPIC_IMG_URL );
+		}
 		
 	}
 	
-	private void startResults( final HunchRankedResults results )
+	private static class ResultModel extends ResultStub
 	{
-		//curState = State.RESULTS;
+		private final Bundle data;
 		
-		// first remove "skip this question" and "back" buttons
-		// since we don't have a use for them in the results screen
-		ViewGroup topicLayout = (ViewGroup) findViewById( R.id.playTopicLayout );
-		View buttonLayout = topicLayout.findViewById( R.id.playTopicBottomButtonLayout );
-		topicLayout.removeView( buttonLayout );
-
-		// now get handles to the result content layouts
-		// final List< ResultStub > resultsList = results.getAllResults();
-		// final LayoutInflater inflater = getLayoutInflater();
-		// final RelativeLayout contentLayout = (RelativeLayout) findViewById(
-		// R.id.questionAndResponsesLayout );
-		final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
-
-		resultItemsLayout.setAdapter( new ResultListAdapter( this,
-				results.getAllResults() ) );
+		private String KEY_NAME = "name";
+		private String KEY_ID = "id";
+		private String KEY_IMG_URL = "imgUrl";
+		private String KEY_EITHER_OR_PCT = "eitherOrPct";
 		
-		//if( showResultsLoadingDialog )
-		//	showResultsLoadingDialog = false;
+		public ResultModel( String name, String id, String imgUrl, String eitherOrPct )
+		{
+			super( id, eitherOrPct );
+			
+			data = new Bundle();
+			data.putString( KEY_NAME, name );
+			data.putString( KEY_ID, id );
+			data.putString( KEY_IMG_URL, imgUrl );
+			data.putString( KEY_EITHER_OR_PCT, eitherOrPct );
+		}
+		
+		public String getName()
+		{
+			return data.getString( KEY_NAME );
+		}
+		
+		public String getId()
+		{
+			return data.getString( KEY_ID );
+		}
+		
+		public String getImageUrl()
+		{
+			return data.getString( KEY_IMG_URL );
+		}
+		
+		public String getEitherOrPct()
+		{
+			return data.getString( KEY_EITHER_OR_PCT );
+		}
+		
+		public boolean hasEitherOrPct()
+		{
+			return getEitherOrPct() != null;
+		}
+	}
+	
+	private ShowResultsModel model;
+	
+	private ProgressDialog progress;
+	
+	@Override
+	public Object onRetainNonConfigurationInstance()
+	{
+		return model;
+	}
+	
+	@Override
+	public void onCreate( Bundle icicle )
+	{
+		super.onCreate( icicle );		
+	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		Intent resultDetailsIntent = getIntent();
+		String rankedResultResponses = resultDetailsIntent.getStringExtra( "rankedResultResponses" );
+		
+		ShowResultsModel lastModel = (ShowResultsModel) getLastNonConfigurationInstance();
+		String topicId, topicTitle, topicImgUrl;
+		if( lastModel != null )
+		{
+			// the values are in the model
+			topicId = lastModel.getTopicId();
+			topicTitle = lastModel.getTopicTitle();
+			topicImgUrl = lastModel.getTopicImageUrl();
+			
+			startResultsFromLastModel( lastModel );
+		}
+		else
+		{
+			// this is the first run... get the values from the intent
+			topicId = resultDetailsIntent.getStringExtra( "topicId" );
+			topicTitle = resultDetailsIntent.getStringExtra( "topicTitle" );
+			topicImgUrl = resultDetailsIntent.getStringExtra( "topicImgUrl" );
+			
+			startResults( rankedResultResponses, topicId, topicTitle, topicImgUrl );
+		}
+		Log.d( Const.TAG, String.format( "resuming ShowResultsActivity (%s, id: %s)",
+				topicTitle, topicId ) );
+		
+		
+	}
+	
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+	}
+	
+	protected void setupTopicHeader( String topicTitle, String topicImgUrl )
+	{
+		TextView topicTitleView = (TextView) findViewById( R.id.topicTitle );
+		topicTitleView.setText( topicTitle );
+		
+		ImageView topicImgView = (ImageView) findViewById( R.id.topicImage );
+		
+		ImageManager.getInstance().getTopicImage( this, topicImgView, topicImgUrl );
+	}
+	
+	protected View createView()
+	{
+		// first inflate the layout to get the main viewgroup
+		final LayoutInflater inflater = getLayoutInflater();
 
-		final View responseLayout = this.findViewById( R.id.questionAndResponsesLayout );
+		final View mainLayout = inflater.inflate( R.layout.show_results, null );
+		FrameLayout resultsContentContainer = (FrameLayout) 
+						mainLayout.findViewById( R.id.resultsContentContainer );
+		final View resultsContent = inflater.inflate( R.layout.topic_content_layout,
+				resultsContentContainer );
+
+		// disable focusing on the actual list item views (instead contain the
+		// focusing to the pseudo-button views within the list views)
+		final ListView resultsList = (ListView) resultsContent.findViewById( R.id.responseLayout );
+		resultsList.setItemsCanFocus( false );
+		
+		// temporarily hide the topic title textview
+		// otherwise it just sits there displaying "false"
+		// until the API call returns and the topic is loaded
+		TextView resultTitle = (TextView) mainLayout.findViewById( R.id.topicTitle );
+		resultTitle.setText( "" );
+		
+		final TextView resultText = (TextView) resultsContent.findViewById( R.id.questionText );
+		resultText.setText( "" );
+		
+		final View responseLayout = resultsContent.findViewById( R.id.questionAndResponsesLayout );
 
 		final TextView titleText = (TextView) responseLayout.findViewById( R.id.questionText );
-		titleText.setText( R.string.resultsTitleText );
+		titleText.setText( R.string.resultsTitleText );	
+		
+		return mainLayout;
 	}
 	
-	private void resultDetails( HunchResult result )
+	private void setupModel( String topicTitle, String topicId, String topicImgUrl )
+	{
+		model = new ShowResultsModel( topicId, topicTitle, topicImgUrl );
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	private void startResultsFromLastModel( final ShowResultsModel aModel )
+	{
+		setContentView( createView() );
+		
+		final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
+		
+		setupTopicHeader( aModel.getTopicTitle(), aModel.getTopicImageUrl() );
+		
+		// I do love generics but boy do they cause some ugly casts on occasion... 
+		List< ? > modelListForAdapter = (List<?>) aModel.getModelList();
+		resultItemsLayout.setAdapter( new ResultListAdapter( this, 
+				(List< ResultStub >) modelListForAdapter ) );
+	}
+	
+	private void startResults( final String results, final String topicId,
+			final String topicTitle, final String topicImgUrl )
+	{
+		setContentView( createView() );
+		
+		// unfortunately because of the way the API and the app interact,
+		// a double API call is needed before any results are shown, and 
+		// an additional API call for each result... ugly
+		startProgressDialog();
+		
+		HunchAPI.getInstance().rankedResults( topicId, results, null, new HunchRankedResults.Callback()
+		{
+			
+			@Override
+			public void callComplete( HunchRankedResults h )
+			{
+				int curSize = model.size();
+				model.setCapacity( h.getAllResults().size() );
+				Log.d( Const.TAG, "ensuring model list capacity (old size: " + curSize
+						+ ", new ensured size: " + h.getAllResults().size() + ", actual size: " +
+								model.size() + ")" );
+				
+				final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
+				
+				resultItemsLayout.setAdapter( new ResultListAdapter( ShowResultsActivity.this,
+						h.getAllResults() ) );
+				
+				dismissProgressDialog();
+			}
+		} );
+		
+		setupTopicHeader( topicTitle, topicImgUrl );
+		setupModel( topicTitle, topicId, topicImgUrl );		
+		
+	}
+	
+	private void startProgressDialog()
+	{
+		// let the user know we're loading
+		if( progress == null )
+		{
+			progress = new ProgressDialog( this );
+			progress.setIndeterminate( true );
+			progress.setTitle( "Wait just a second..." );
+			progress.setMessage( "Getting your results" );
+			progress.show();
+		}
+	}
+	
+	private void dismissProgressDialog()
+	{
+		if( progress.isShowing() )
+		{
+			progress.dismiss();
+		}
+	}
+	
+	private void resultDetails( String resultId )
 	{
 		//latestResultDetailsId = result.getId();
 		Intent resultDetailsIntent = new Intent( this, ResultDetailsActivity.class );
-		resultDetailsIntent.putExtra( "resultId", result.getId() );
+		resultDetailsIntent.putExtra( "resultId", resultId );
 		
 		startActivity( resultDetailsIntent );
 		

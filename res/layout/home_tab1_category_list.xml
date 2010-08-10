@@ -32,9 +32,7 @@
 			android:layout_height="wrap_content" android:id="@+id/logoView"
 			android:background="@drawable/hunch_logo"></ImageView>
 	</FrameLayout>
-	<ImageView android:id="@+id/ImageView01"
-		android:layout_below="@android:id/empty" android:layout_width="wrap_content"
-		android:layout_height="wrap_content"></ImageView>
+	
 	<ListView android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:id="@android:id/list"
 		android:background="@color/listItemBackground" android:divider="@drawable/categoryListDivider"
@@ -57,16 +55,15 @@
 
 
 		<LinearLayout android:id="@+id/LinearLayout02"
-			android:layout_height="fill_parent" android:layout_width="fill_parent"
-			android:layout_below="@id/divider" android:paddingTop="3dp">
+			android:layout_below="@id/divider" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_centerInParent="true" android:background="@drawable/hunch_question_bg" android:padding="7dp">
 			<ProgressBar android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/progressBar"
-				android:layout_marginLeft="5dp" style="@android:style/Widget.ProgressBar"
-				android:background="@color/listItemBackground" />
+				style="@android:style/Widget.ProgressBar"
+				android:layout_gravity="center_vertical" android:indeterminateDrawable="@drawable/default_image_32"/>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/loadingText"
 				style="@style/listItemMainText" android:id="@+id/loadingItemText"
-				android:paddingLeft="10dp" android:textSize="30sp">
+				android:paddingLeft="10dp" android:textSize="30sp" android:layout_gravity="center_vertical">
 			</TextView>
 		</LinearLayout>
 	</RelativeLayout>

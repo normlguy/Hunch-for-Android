@@ -38,7 +38,7 @@ public final class Const
 	public static final String TOPIC_IMG_SIZE = "64x64";
 	public static final String TOPIC_LIST_IMG_SIZE = "32x32";
 	public static final String RESULT_IMG_SIZE = "48x48";
-	public static final String RESULT_DETAILS_IMG_SIZE = "128x128";
+	public static final String RESULT_DETAILS_IMG_SIZE = "256x256";
 	public static final String CATEGORY_IMG_SIZE = "32x32";
 	
 	// not sure that any of these images are being displayed, but I'll define them anyway
