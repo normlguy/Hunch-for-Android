@@ -24,18 +24,20 @@ public final class R {
         public static final int btn_default_pressed=0x7f020003;
         public static final int btn_default_selected=0x7f020004;
         public static final int btn_default_top=0x7f020005;
-        public static final int categoryListDivider=0x7f020011;
+        public static final int categoryListDivider=0x7f020013;
         public static final int default_image_32=0x7f020006;
-        public static final int homeTabFocused=0x7f020010;
+        public static final int homeTabFocused=0x7f020012;
         public static final int hunch_logo=0x7f020007;
         public static final int hunch_question_bg=0x7f020008;
-        public static final int ic_menu_search=0x7f020009;
-        public static final int ic_search_small=0x7f02000a;
-        public static final int icon=0x7f02000b;
-        public static final int response_bullet=0x7f02000c;
-        public static final int restart_topic=0x7f02000d;
-        public static final int result_btn=0x7f02000e;
-        public static final int top_result=0x7f02000f;
+        public static final int ic_menu_agenda=0x7f020009;
+        public static final int ic_menu_forward=0x7f02000a;
+        public static final int ic_menu_search=0x7f02000b;
+        public static final int ic_search_small=0x7f02000c;
+        public static final int icon=0x7f02000d;
+        public static final int response_bullet=0x7f02000e;
+        public static final int restart_topic=0x7f02000f;
+        public static final int result_btn=0x7f020010;
+        public static final int top_result=0x7f020011;
     }
     public static final class id {
         public static final int Button01=0x7f070016;

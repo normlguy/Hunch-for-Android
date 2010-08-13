@@ -139,7 +139,7 @@ public class HunchAPIRequest
 					}
 					catch ( IOException  e )
 					{
-						throw new RuntimeException( "couldn't connect for API request!" );
+						throw new RuntimeException( "couldn't connect for API request!", e );
 					}
 					
 					JSONObject ret;

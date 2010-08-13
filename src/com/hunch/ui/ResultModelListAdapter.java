@@ -63,6 +63,10 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 		// get the basic result info
 		final ResultModel stub = getItem( position );
 		
+		// try it without convert view for now.. there won't
+		// be too many items in the results list typically
+		convertView = null;
+		
 		// view holder pattern courtesy Romain Guy
 		ResultViewHolder tempHolder;
 		if( convertView == null )
@@ -74,7 +78,7 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 			convertView = inflater.inflate( R.layout.result_list_item, null );
 			
 			tempHolder = new ResultViewHolder();
-			tempHolder.image = (ProgressBar) convertView.findViewById( R.id.resultImage );
+			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.resultImage );
 			tempHolder.text = (TextView) convertView.findViewById( R.id.resultName );
 			tempHolder.number = (TextView) convertView.findViewById( R.id.resultNumber );
 			tempHolder.pct = (TextView) convertView.findViewById( R.id.resultPct );
@@ -86,13 +90,14 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 		else
 		{
 			tempHolder = (ResultViewHolder) convertView.getTag();
+			resetResultView( tempHolder );
 		}
 		
 		final ResultViewHolder holder = tempHolder;
 		
 		HunchResult result = getFromCache( stub );
 		
-		if( result == null || // is it in the cache?
+		if( result == null || // is it not in the cache?
 			stub.isStub() ) // is it a stub?
 		{
 			// get the full result off the network

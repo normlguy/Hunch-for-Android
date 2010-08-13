@@ -49,7 +49,8 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 	public static class ResultViewHolder
 	{
 		View wholeView;
-		ProgressBar image;
+		ProgressBar placeholder;
+		ImageView image;
 		TextView text;
 		TextView number;
 		TextView pct;
@@ -122,9 +123,24 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 		public int hashCode()
 		{
 			int code = 37;
-			code = code * 3 + data.getString( KEY_EITHER_OR_PCT ).hashCode();
+			
+/*			Log.d( Const.TAG, String.format( "hashCode() [EO-PCT: %s, ID: %s, " +
+					"IMG-URL: %s, NAME: %s]", data.getString( KEY_EITHER_OR_PCT ),
+					data.getString( KEY_ID ), data.getString( KEY_IMG_URL ),
+					 data.getString( KEY_NAME ) ) );*/
+			
+			if( hasEitherOrPct() )
+			{
+				code = code * 3 + data.getString( KEY_EITHER_OR_PCT ).hashCode();
+			}
+			
 			code = code * 3 + data.getString( KEY_ID ).hashCode();
-			code = code * 3 + data.getString( KEY_IMG_URL).hashCode();
+			
+			// stub's wont have the rest of the data
+			// and hence will throw NPE's
+			if( isStub() ) return code;
+			
+			code = code * 3 + data.getString( KEY_IMG_URL ).hashCode();
 			code = code * 3 + data.getString( KEY_NAME ).hashCode();
 			
 			return code;
@@ -170,6 +186,38 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 		return new ResultModel( result.getName(), String.valueOf( result.getId() ),
 				result.getImageUrl(), stub.getEitherOrPct() );
 	}
+	
+	protected void resetResultView( ResultViewHolder view )
+	{
+		ViewGroup parent = (ViewGroup) view.wholeView;
+		
+		if( view.placeholder != null && view.image == null )
+		{
+			// the view has not been set yet, no work to do
+			return;
+		}
+		
+		ProgressBar placeholder = new ProgressBar( context );
+		
+		placeholder.setIndeterminate( true );
+		placeholder.setId( R.id.resultImage );
+		placeholder.setLayoutParams( view.image.getLayoutParams() );
+		int childIndex = parent.indexOfChild( view.image );
+		
+		parent.removeView( view.image );
+		
+		view.image.setVisibility( View.GONE );
+		
+		parent.addView( placeholder, childIndex );
+		
+		// reset text views (important!)
+		view.number.setText( "" );
+		view.text.setText( "Loading..." );
+		view.pct.setText( "" );
+		
+		view.image = null;
+		view.placeholder = placeholder;
+	}
 
 	protected void setupResultView( final ResultViewHolder resultView, int position,
 			ResultModel resultData )
@@ -179,9 +227,8 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 		// to hit the network in most cases.
 
 		final ImageView resultImg = new ImageView( context );
-		final ProgressBar placeholder = resultView.image;
-		if( placeholder != null )
-			placeholder.setIndeterminate( true );
+		resultImg.setId( R.id.resultImage );
+		final View placeholder = resultView.wholeView.findViewById( R.id.resultImage );
 		
 		final ViewGroup parentGroup = (ViewGroup) resultView.wholeView;
 
@@ -202,14 +249,17 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 				// remove the progressbar
 				parentGroup.removeView( placeholder );
 				
-				if( placeholder != null )
-					placeholder.setVisibility( View.GONE );
+				placeholder.setVisibility( View.GONE );
 
 				// add the image view
 				parentGroup.addView( resultImg, childIndex );
 
 				// set the drawable
 				resultImg.setImageDrawable( d );
+				
+				// update the tag data
+				resultView.image = resultImg;
+				resultView.placeholder = null;
 
 			}
 		} );

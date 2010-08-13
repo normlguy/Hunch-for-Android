@@ -117,13 +117,9 @@ public class ShowResultsActivity extends Activity
 	@Override
 	public void onCreate( Bundle icicle )
 	{
-		super.onCreate( icicle );		
-	}
-	
-	@Override
-	public void onResume()
-	{
-		super.onResume();
+		super.onCreate( icicle );
+		
+		setContentView( createView() );
 		
 		Intent resultDetailsIntent = getIntent();
 		String rankedResultResponses = resultDetailsIntent.getStringExtra( "rankedResultResponses" );
@@ -151,8 +147,17 @@ public class ShowResultsActivity extends Activity
 		
 		setupTopicInfo( topicTitle, topicId, topicImgUrl );
 		
-		Log.d( Const.TAG, String.format( "resuming ShowResultsActivity (%s, id: %s)",
+		Log.d( Const.TAG, String.format( "onCreate() ShowResultsActivity (%s, id: %s)",
 				topicTitle, topicId ) );	
+	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		Log.d( Const.TAG, "onResume() ShowResultsActivity (%s, id: %s)" );
+		
 	}
 	
 	protected void setupTopicInfo( String title, String id, String imgUrl )
@@ -214,9 +219,7 @@ public class ShowResultsActivity extends Activity
 	}
 	
 	private void startResultsFromLastModel( final ShowResultsModel aModel )
-	{
-		setContentView( createView() );
-		
+	{		
 		final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
 		
 		setupTopicHeader( aModel.getTopicTitle(), aModel.getTopicImageUrl() );
@@ -229,9 +232,7 @@ public class ShowResultsActivity extends Activity
 	
 	private void startResults( final String results, final String topicId,
 			final String topicTitle, final String topicImgUrl )
-	{
-		setContentView( createView() );
-		
+	{		
 		// unfortunately because of the way the API and the app interact,
 		// a double API call is needed before any results are shown, and 
 		// an additional API call for each result... ugly

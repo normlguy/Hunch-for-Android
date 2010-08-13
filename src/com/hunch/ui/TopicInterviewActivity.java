@@ -20,6 +20,8 @@
 package com.hunch.ui;
 
 import static com.hunch.Const.MENU_RESTART_TOPIC;
+import static com.hunch.Const.MENU_SKIP_TO_RESULTS;
+import static com.hunch.Const.MENU_BACK_TO_LIST;
 import static com.hunch.Const.QUESTION_IMG_SIZE;
 import static com.hunch.Const.RESPONSE_IMG_SIZE;
 import static com.hunch.Const.TAG;
@@ -43,6 +45,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hunch.ImageManager;
 import com.hunch.R;
@@ -131,35 +134,21 @@ public class TopicInterviewActivity extends Activity
 
 	
 
-	private HunchAPI api;
+	protected HunchAPI api;
 
-	private String curQAState;
+	protected String curQAState;
+	protected String curRankedResultsResponses;
 	
-	private IHunchTopic curTopic = null;
+	protected IHunchTopic curTopic = null;
 	
-	//private boolean showResultsLoadingDialog;
-	
-	//private Integer latestResultDetailsId;
-
-	/*
-	 * Does this field need to be here? Or can we handle everything with the
-	 * local param to startTopic?
-	 */
-	// private HunchNextQuestion nextQuestion;
 
 	@Override
 	public void onCreate( Bundle icicle )
 	{
-		super.onCreate( icicle );
-
-		
+		super.onCreate( icicle );		
 
 		api = HunchAPI.getInstance();
-		//showResultsLoadingDialog = true;
 
-		//if ( icicle != null && icicle.containsKey( "qaState" ) )
-		//	curQAState = icicle.getString( "qaState" );
-		
 		String topicId = getIntent().getStringExtra( "topicId" );
 		Log.d( TAG, String.format( "creating: (tid: %s)", topicId ) );
 
@@ -169,8 +158,6 @@ public class TopicInterviewActivity extends Activity
 	public void onResume()
 	{
 		super.onResume();
-		
-		//String topicId = getIntent().getStringExtra( "topicId" );
 		
 		String topicId = getIntent().getStringExtra( "topicId" );
 		
@@ -185,8 +172,8 @@ public class TopicInterviewActivity extends Activity
 		setContentView(	createView() );
 		
 		// then get the first question
-		api.nextQuestion( topicId, curQAState, null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE, TOPIC_IMG_SIZE,
-				new HunchNextQuestion.Callback()
+		api.nextQuestion( topicId, curQAState, null, QUESTION_IMG_SIZE, RESPONSE_IMG_SIZE,
+				TOPIC_IMG_SIZE,	new HunchNextQuestion.Callback()
 		{
 			@Override
 			public void callComplete( final HunchNextQuestion h )
@@ -269,9 +256,10 @@ public class TopicInterviewActivity extends Activity
 
 	private void handleResponse( final HunchResponse resp )
 	{
+		final String oldQAState = curQAState;
 		curQAState = resp.getQAState();
 
-		api.nextQuestion( curTopic.getId(), resp.getQAState(), null, QUESTION_IMG_SIZE,
+		api.nextQuestion( curTopic.getId(), curQAState, null, QUESTION_IMG_SIZE,
 				RESPONSE_IMG_SIZE, TOPIC_IMG_SIZE, new HunchNextQuestion.Callback()
 		{
 			@Override
@@ -279,6 +267,12 @@ public class TopicInterviewActivity extends Activity
 			{
 				if ( response.isResult() )
 				{
+					// don't update the qaState because if we do, and the user
+					// hits the back button they will be bounced to the results
+					// screen again instead of the last question, which is probably
+					// what they want.
+					curQAState = oldQAState;
+					
 					showResults( response.getRankedResultResponses(), curTopic );
 				}
 				else
@@ -286,6 +280,9 @@ public class TopicInterviewActivity extends Activity
 					setupQuestion( response );
 					setupBackButton( response );
 				}
+				
+				// update the variable with the super long name
+				curRankedResultsResponses = response.getRankedResultResponses();
 
 			}
 		} );
@@ -382,6 +379,11 @@ public class TopicInterviewActivity extends Activity
 		// we don't care about group or order right now.
 		menu.add( Menu.NONE, MENU_RESTART_TOPIC, Menu.NONE, "Restart Topic" )
 			.setIcon( R.drawable.restart_topic );
+		menu.add( Menu.NONE, MENU_SKIP_TO_RESULTS, Menu.NONE, "Skip to Results" )
+			.setIcon( R.drawable.ic_menu_forward );
+		menu.add( Menu.NONE, MENU_BACK_TO_LIST, Menu.NONE, "Back to List" )
+			.setIcon( R.drawable.ic_menu_agenda );
+		
 		
 		return true;
 	}
@@ -394,6 +396,22 @@ public class TopicInterviewActivity extends Activity
 			curQAState = "";
 			
 			startTopic( curTopic.getId() );
+		}
+		else if( item.getItemId() == MENU_SKIP_TO_RESULTS )
+		{
+			if( curRankedResultsResponses == null )
+			{
+				Toast.makeText( this, "You must answer at least one question" +
+						" before getting any results!", Toast.LENGTH_SHORT );
+			}
+			showResults( curRankedResultsResponses, curTopic );
+		}
+		else if( item.getItemId() == MENU_BACK_TO_LIST )
+		{
+			// finish the activity... ShowResultsDetails and any activites it launches
+			// must be finish()ed by now to avoid the possibility of going "back" to
+			// result details when we really want to go back to TopicSelectActivity
+			this.finish();
 		}
 		
 		return super.onOptionsItemSelected( item );

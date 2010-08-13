@@ -40,7 +40,7 @@
 	</RelativeLayout>
 	<ProgressBar android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/resultImage"
-		style="@android:style/Widget.ProgressBar" android:background="#00000000"/>
+		style="@android:style/Widget.ProgressBar" android:background="#00000000" android:indeterminate="true" android:indeterminateOnly="true"/>
 	<TextView android:text="@string/loadingText" android:id="@+id/resultName"
 		android:layout_width="fill_parent" android:textColor="@color/listItemText"
 		android:textSize="18dp" android:gravity="center" android:layout_margin="5dp" android:layout_height="wrap_content"></TextView>

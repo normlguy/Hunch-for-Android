@@ -66,6 +66,8 @@ public final class Const
 	
 	// topic play menu item identifiers
 	public static final int MENU_RESTART_TOPIC = 0;
+	public static final int MENU_SKIP_TO_RESULTS = 1;
+	public static final int MENU_BACK_TO_LIST = 2;
 	
 	// select topic menu item identifiers
 	public static final int MENU_SEARCH = 0;

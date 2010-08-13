@@ -34,6 +34,7 @@ import com.hunch.R;
 import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchResult;
 import com.hunch.api.HunchRankedResults.ResultStub;
+import com.hunch.util.PerfTimer;
 
 /**
  * 
@@ -52,6 +53,8 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 	@Override
 	public View getView( final int position, View convertView, ViewGroup parent )
 	{
+		PerfTimer.TimerHandle timer = PerfTimer.getInstance().start( "getView() start" );
+		
 		// get the basic result info
 		final ResultStub stub = getItem( position );
 		
@@ -66,7 +69,7 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 			convertView = inflater.inflate( R.layout.result_list_item, null );
 			
 			tempHolder = new ResultViewHolder();
-			tempHolder.image = (ProgressBar) convertView.findViewById( R.id.resultImage );
+			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.resultImage );
 			tempHolder.text = (TextView) convertView.findViewById( R.id.resultName );
 			tempHolder.number = (TextView) convertView.findViewById( R.id.resultNumber );
 			tempHolder.pct = (TextView) convertView.findViewById( R.id.resultPct );
@@ -78,7 +81,10 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 		else
 		{
 			tempHolder = (ResultViewHolder) convertView.getTag();
+			resetResultView( tempHolder );
 		}
+		
+		PerfTimer.getInstance().check( timer, "getView() built view holder" );
 		
 		final ResultViewHolder holder = tempHolder;
 		
@@ -105,12 +111,16 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 			} );
 		}
 		
+		PerfTimer.getInstance().check( timer, "getView() view setup" );
+		
 		// set the special background if it's the top result
 		if ( position == 0 )
 			convertView.setBackgroundResource( R.drawable.top_result );
 		
 		// finally try to add more items inline
 		super.tryLoadInline( position );
+		
+		PerfTimer.getInstance().stop( timer, "getView() return" );
 		
 		return convertView;
 	}
@@ -143,4 +153,6 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 		
 		return ret;
 	}
+
+	
 }
