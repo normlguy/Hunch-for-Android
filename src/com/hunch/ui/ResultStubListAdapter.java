@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,7 +55,9 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 	@Override
 	public View getView( final int position, View convertView, ViewGroup parent )
 	{
-		PerfTimer.TimerHandle timer = PerfTimer.getInstance().start( "getView() start" );
+		//PerfTimer.TimerHandle timer = PerfTimer.getInstance().start( "getView(" + position + ") start" );
+		Log.d( Const.TAG, "ResultModelListAdapter.getView() pos: " + position +
+				" convertView: " + convertView + " parent: " + parent );
 		
 		// get the basic result info
 		final ResultStub stub = getItem( position );
@@ -69,10 +73,11 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 			convertView = inflater.inflate( R.layout.result_list_item, null );
 			
 			tempHolder = new ResultViewHolder();
-			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.resultImage );
-			tempHolder.text = (TextView) convertView.findViewById( R.id.resultName );
-			tempHolder.number = (TextView) convertView.findViewById( R.id.resultNumber );
-			tempHolder.pct = (TextView) convertView.findViewById( R.id.resultPct );
+			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.placeholder );
+			tempHolder.image = (ImageView) convertView.findViewById( R.id.result_icon );
+			tempHolder.text = (TextView) convertView.findViewById( R.id.result_name );
+			tempHolder.number = (TextView) convertView.findViewById( R.id.result_number );
+			tempHolder.pct = (TextView) convertView.findViewById( R.id.result_pct );
 			tempHolder.resultId = stub.getId();
 			tempHolder.wholeView = convertView;
 			
@@ -84,7 +89,7 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 			resetResultView( tempHolder );
 		}
 		
-		PerfTimer.getInstance().check( timer, "getView() built view holder" );
+		//PerfTimer.getInstance().check( timer, "getView() built view holder" );
 		
 		final ResultViewHolder holder = tempHolder;
 		
@@ -111,16 +116,12 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 			} );
 		}
 		
-		PerfTimer.getInstance().check( timer, "getView() view setup" );
-		
-		// set the special background if it's the top result
-		if ( position == 0 )
-			convertView.setBackgroundResource( R.drawable.top_result );
+		//PerfTimer.getInstance().check( timer, "getView() view setup" );
 		
 		// finally try to add more items inline
-		super.tryLoadInline( position );
+		// super.tryLoadInline( position );
 		
-		PerfTimer.getInstance().stop( timer, "getView() return" );
+		//PerfTimer.getInstance().stop( timer, "getView() return" );
 		
 		return convertView;
 	}
@@ -142,7 +143,7 @@ public class ResultStubListAdapter extends ResultListAdapter< ResultStub >
 		}
 		
 		// add the rest of the stubs that haven't been downloaded yet
-		for( ResultStub stub : super.getItems() )
+		for( ResultStub stub : super.items )
 		{
 			// but not the ones who are already downloaded, we already got those
 			if( resultsCache.containsKey( stub ) ) continue;

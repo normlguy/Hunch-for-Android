@@ -20,24 +20,36 @@
  along with Hunch for Android.  If not, see <http://www.gnu.org/licenses/>.
 
  -->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:background="@drawable/hunch_question_bg" android:padding="5dp"
-	android:id="@+id/detailsLayout">
+	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout">
 
-	<ScrollView android:layout_height="fill_parent"
-		android:layout_width="fill_parent" android:id="@+id/infoScrollView">
-		<LinearLayout android:layout_height="fill_parent"
-			android:layout_width="fill_parent" android:orientation="vertical"
-			android:id="@+id/infoLayout" android:gravity="center_horizontal">
-			<ImageView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/infoImage"></ImageView>
-			<TextView android:text="@+id/TextView01"
-				android:layout_height="wrap_content" android:layout_width="fill_parent"
-				android:gravity="center_horizontal" style="@style/resultDetailsInfoText"
-				android:id="@+id/infoText"></TextView>
+<!-- 
+	<LinearLayout android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/headerLayout"
+		android:minHeight="60dp" android:layout_alignParentTop="true"
+		android:paddingLeft="3px" android:paddingTop="7px"
+		android:orientation="horizontal">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/topicImage"
+			android:layout_gravity="center_vertical"></ImageView>
+		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:paddingLeft="15dp" android:id="@+id/topicTitle"
+			android:layout_gravity="center_vertical" style="@style/topicHeader"></TextView>
+	</LinearLayout>
+	
+ -->
+ 
+ 	<include layout="@layout/topic_header" android:id="@+id/header_layout"
+ 		android:layout_height="wrap_content" android:layout_width="fill_parent" />
+ 	
+	<include layout="@layout/result_details_content" android:id="@+id/result_details_content"
+		android:layout_height="fill_parent" android:layout_width="fill_parent"
+		android:layout_below="@id/header_layout" android:layout_above="@id/back_button_layout"
+		android:padding="3px" />
+		
+	<include layout="@layout/back_button" android:layout_below="@id/result_details_content" 
+		android:id="@+id/back_button_layout"
+		android:layout_height="wrap_content" android:layout_width="fill_parent" />
 
-		</LinearLayout>
-	</ScrollView>
 </RelativeLayout>

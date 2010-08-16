@@ -1,48 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- 
+	<!--
 
- Copyright 2009, 2010 Tyler Levine
-  
- This file is part of Hunch for Android.
- 
- Hunch for Android is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- Hunch for Android is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Hunch for Android.  If not, see <http://www.gnu.org/licenses/>.
-
- -->
+		Copyright 2009, 2010 Tyler Levine This file is part of Hunch for
+		Android. Hunch for Android is free software: you can redistribute it
+		and/or modify it under the terms of the GNU General Public License as
+		published by the Free Software Foundation, either version 3 of the
+		License, or (at your option) any later version. Hunch for Android is
+		distributed in the hope that it will be useful, but WITHOUT ANY
+		WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+		for more details. You should have received a copy of the GNU General
+		Public License along with Hunch for Android. If not, see
+		<http://www.gnu.org/licenses/>.
+	-->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="horizontal" android:layout_width="fill_parent"
 	android:layout_gravity="center" android:gravity="center"
-	android:layout_height="wrap_content" android:padding="4dp"
-	android:minHeight="75dp" android:background="@drawable/result_btn" android:id="@+id/mainResultLayout">
-	<RelativeLayout android:id="@+id/RelativeLayout01"
+	android:layout_height="wrap_content" android:padding="4dp" android:id="@+id/result_list_item">
+	<RelativeLayout
 		android:layout_height="fill_parent" android:layout_width="wrap_content"
-		android:paddingRight="7dp" android:paddingLeft="5dp" android:minWidth="32dp">
+		android:paddingRight="7dp" android:paddingLeft="5dp" android:minWidth="32dp"
+		android:id="@+id/resultExtras">
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/resultNumber"
-			android:textSize="22sp" android:textColor="#000000"></TextView>
+			android:layout_height="wrap_content" android:id="@+id/result_number"
+			android:textAppearance="@android:style/TextAppearance.Small" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true" android:id="@+id/resultPct"
-			android:textSize="16sp" android:textColor="#000000" android:layout_marginBottom="5dp"></TextView>
+			android:layout_alignParentBottom="true" android:id="@+id/result_pct"
+			android:textAppearance="@android:style/TextAppearance.Small"
+			android:layout_marginBottom="5dp" android:visibility="gone" />
 
 	</RelativeLayout>
 	<ProgressBar android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/resultImage"
-		style="@android:style/Widget.ProgressBar" android:background="#00000000" android:indeterminate="true" android:indeterminateOnly="true"/>
-	<TextView android:text="@string/loadingText" android:id="@+id/resultName"
+		android:layout_height="wrap_content" android:id="@+id/placeholder"
+		android:background="#00000000"
+		android:indeterminate="true" android:indeterminateOnly="true"
+		style="@android:style/Widget.ProgressBar.Inverse"/>
+	<ImageView android:id="@+id/result_icon" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:visibility="gone" />
+	
+	<TextView android:text="@string/loading_text" android:id="@+id/result_name"
 		android:layout_width="fill_parent" android:textColor="@color/listItemText"
-		android:textSize="18dp" android:gravity="center" android:layout_margin="5dp" android:layout_height="wrap_content"></TextView>
+		android:textAppearance="@android:style/TextAppearance.Medium" android:layout_margin="5dp"
+		android:layout_height="wrap_content" android:gravity="left" />
+
 
 </LinearLayout>

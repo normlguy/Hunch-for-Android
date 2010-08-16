@@ -19,26 +19,25 @@
 
 package com.hunch.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.hunch.Const;
 import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchRankedResults;
+import com.hunch.api.HunchRankedResults.ResultStub;
 import com.hunch.ui.ResultListAdapter.ResultModel;
 import com.hunch.ui.ResultListAdapter.ResultViewHolder;
 
@@ -54,20 +53,18 @@ public class ShowResultsActivity extends Activity
 	private static class ShowResultsModel
 	{
 		private List< ResultModel > results;
-		private final Bundle data;
-		
-		private final String KEY_TOPIC_ID = "topicId";
-		private final String KEY_TOPIC_TITLE = "topicName";
-		private final String KEY_TOPIC_IMG_URL = "topicImgUrl";
+				
+		private final String topicId;
+		private final String topicTitle;
+		private final String topicImgUrl;
 		
 		//private static final int GROWTH_MARGIN = 10;
 		
 		public ShowResultsModel( List< ResultModel > modelList, TopicInfo topic )
 		{
-			data = new Bundle();
-			data.putString( KEY_TOPIC_ID, topic.id );
-			data.putString( KEY_TOPIC_TITLE, topic.title );
-			data.putString( KEY_TOPIC_IMG_URL, topic.imgUrl );
+			topicId = topic.id;
+			topicTitle = topic.title;;
+			topicImgUrl = topic.imgUrl;
 			
 			results = modelList;
 		}
@@ -79,17 +76,17 @@ public class ShowResultsActivity extends Activity
 		
 		public String getTopicId()
 		{
-			return data.getString( KEY_TOPIC_ID );
+			return topicId;
 		}
 		
 		public String getTopicTitle()
 		{
-			return data.getString( KEY_TOPIC_TITLE );
+			return topicTitle;
 		}
 		
 		public String getTopicImageUrl()
 		{
-			return data.getString( KEY_TOPIC_IMG_URL );
+			return topicImgUrl;
 		}
 		
 	}
@@ -120,6 +117,12 @@ public class ShowResultsActivity extends Activity
 		super.onCreate( icicle );
 		
 		setContentView( createView() );
+	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
 		
 		Intent resultDetailsIntent = getIntent();
 		String rankedResultResponses = resultDetailsIntent.getStringExtra( "rankedResultResponses" );
@@ -147,17 +150,6 @@ public class ShowResultsActivity extends Activity
 		
 		setupTopicInfo( topicTitle, topicId, topicImgUrl );
 		
-		Log.d( Const.TAG, String.format( "onCreate() ShowResultsActivity (%s, id: %s)",
-				topicTitle, topicId ) );	
-	}
-	
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		
-		Log.d( Const.TAG, "onResume() ShowResultsActivity (%s, id: %s)" );
-		
 	}
 	
 	protected void setupTopicInfo( String title, String id, String imgUrl )
@@ -176,10 +168,10 @@ public class ShowResultsActivity extends Activity
 	
 	protected void setupTopicHeader( String topicTitle, String topicImgUrl )
 	{
-		TextView topicTitleView = (TextView) findViewById( R.id.topicTitle );
+		TextView topicTitleView = (TextView) findViewById( R.id.topic_name );
 		topicTitleView.setText( topicTitle );
 		
-		ImageView topicImgView = (ImageView) findViewById( R.id.topicImage );
+		ImageView topicImgView = (ImageView) findViewById( R.id.topic_icon );
 		
 		ImageManager.getInstance().getTopicImage( this, topicImgView, topicImgUrl );
 	}
@@ -189,38 +181,31 @@ public class ShowResultsActivity extends Activity
 		// first inflate the layout to get the main viewgroup
 		final LayoutInflater inflater = getLayoutInflater();
 
-		final View mainLayout = inflater.inflate( R.layout.show_results, null );
-		FrameLayout resultsContentContainer = (FrameLayout) 
-						mainLayout.findViewById( R.id.resultsContentContainer );
-		final View resultsContent = inflater.inflate( R.layout.topic_content_layout,
-				resultsContentContainer );
+		final View mainLayout = inflater.inflate( R.layout.results, null );
+		//FrameLayout resultsContentContainer = (FrameLayout) 
+		//				mainLayout.findViewById( R.id.results_list );
+		final View resultsContent = mainLayout.findViewById( R.id.results_list_layout );
 
 		// disable focusing on the actual list item views (instead contain the
 		// focusing to the pseudo-button views within the list views)
-		final ListView resultsList = (ListView) resultsContent.findViewById( R.id.responseLayout );
+		final ListView resultsList = (ListView) resultsContent.findViewById( R.id.response_list );
+		
+		
 		//resultsList.setItemsCanFocus( false );
 		setupListeners( resultsList );
 		
 		// temporarily hide the topic title textview
 		// otherwise it just sits there displaying "false"
 		// until the API call returns and the topic is loaded
-		TextView resultTitle = (TextView) mainLayout.findViewById( R.id.topicTitle );
+		TextView resultTitle = (TextView) mainLayout.findViewById( R.id.topic_name );
 		resultTitle.setText( "" );
-		
-		final TextView resultText = (TextView) resultsContent.findViewById( R.id.questionText );
-		resultText.setText( "" );
-		
-		final View responseLayout = resultsContent.findViewById( R.id.questionAndResponsesLayout );
 
-		final TextView titleText = (TextView) responseLayout.findViewById( R.id.questionText );
-		titleText.setText( R.string.resultsTitleText );	
-		
 		return mainLayout;
 	}
 	
 	private void startResultsFromLastModel( final ShowResultsModel aModel )
 	{		
-		final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
+		final ListView resultItemsLayout = (ListView) findViewById( R.id.response_list );
 		
 		setupTopicHeader( aModel.getTopicTitle(), aModel.getTopicImageUrl() );
 		
@@ -244,9 +229,10 @@ public class ShowResultsActivity extends Activity
 			@Override
 			public void callComplete( HunchRankedResults h )
 			{				
-				final ListView resultItemsLayout = (ListView) findViewById( R.id.responseLayout );
+				final ListView resultItemsLayout = (ListView) findViewById( R.id.response_list );
 				
-				adapter = new ResultStubListAdapter( ShowResultsActivity.this, h.getAllResults() );
+				adapter = new ResultModelListAdapter( ShowResultsActivity.this,
+						convertStubs( h.getAllResults() ) );
 				resultItemsLayout.setAdapter( adapter );
 				
 				dismissProgressDialog();
@@ -254,6 +240,18 @@ public class ShowResultsActivity extends Activity
 		} );
 		
 		setupTopicHeader( topicTitle, topicImgUrl );		
+	}
+	
+	private List< ResultModel > convertStubs( List< ResultStub > stubs )
+	{
+		List< ResultModel > models = new ArrayList< ResultModel >( stubs.size() );
+		
+		for( ResultStub stub : stubs )
+		{
+			models.add( ResultModel.createStub( stub.getId(), stub.getEitherOrPct() ) );
+		}
+		
+		return models;
 	}
 	
 	private void startProgressDialog()
@@ -277,7 +275,7 @@ public class ShowResultsActivity extends Activity
 		}
 	}
 	
-	private void setupListeners( ListView view )
+	private void setupListeners( final ListView view )
 	{
 		view.setOnItemClickListener( new AdapterView.OnItemClickListener()
 		{

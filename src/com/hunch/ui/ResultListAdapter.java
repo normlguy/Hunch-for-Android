@@ -24,18 +24,16 @@ import java.util.Map;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.hunch.ImageManager;
-import com.hunch.R;
 import com.hunch.api.HunchResult;
 import com.hunch.api.HunchRankedResults.ResultStub;
-import com.hunch.util.InfiniteListAdapter;
 
 /**
  * 
@@ -44,7 +42,7 @@ import com.hunch.util.InfiniteListAdapter;
  * @since Aug 12, 2010
  *
  */
-public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
+public abstract class ResultListAdapter< T > extends BaseAdapter
 {
 	public static class ResultViewHolder
 	{
@@ -55,57 +53,63 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 		TextView number;
 		TextView pct;
 		String resultId;
+		
+		boolean isSet = false;
+				
 	}
 	
 	protected static class ResultModel
 	{
-		private final Bundle data;
-		private final boolean isStub;
+		private final boolean mIsStub;
 		
-		private final String KEY_NAME = "name";
-		private final String KEY_ID = "id";
-		private final String KEY_IMG_URL = "imgUrl";
-		private final String KEY_EITHER_OR_PCT = "eitherOrPct";
+		private final String mName;
+		private final String mId;
+		private final String mImgUrl;
+		private final String mEitherOrPct;
 		
 		public ResultModel( String name, String id, String imgUrl, String eitherOrPct )
 		{
 			this( name, id, imgUrl, eitherOrPct, false );
 		}
 		
+		public static ResultModel createStub( String id, String eitherOrPct )
+		{
+			return new ResultModel( null, id, null, eitherOrPct, true );
+		}
+		
 		public ResultModel( String name, String id, String imgUrl, String eitherOrPct, boolean isStub )
 		{
-			data = new Bundle();
-			data.putString( KEY_NAME, name );
-			data.putString( KEY_ID, id );
-			data.putString( KEY_IMG_URL, imgUrl );
-			data.putString( KEY_EITHER_OR_PCT, eitherOrPct );
+			mName = name;
+			mId = id;
+			mImgUrl = imgUrl;
+			mEitherOrPct = eitherOrPct;
 			
-			this.isStub = isStub;
+			mIsStub = isStub;
 		}
 		
 		public boolean isStub()
 		{
-			return isStub;
+			return mIsStub;
 		}
 		
 		public String getName()
 		{
-			return data.getString( KEY_NAME );
+			return mName;
 		}
 		
 		public String getId()
 		{
-			return data.getString( KEY_ID );
+			return mId;
 		}
 		
 		public String getImageUrl()
 		{
-			return data.getString( KEY_IMG_URL );
+			return mImgUrl;
 		}
 		
 		public String getEitherOrPct()
 		{
-			return data.getString( KEY_EITHER_OR_PCT );
+			return mEitherOrPct;
 		}
 		
 		public boolean hasEitherOrPct()
@@ -116,7 +120,7 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 		@Override
 		public String toString()
 		{
-			return "ResultModel[" + data.getString( KEY_NAME ) + "]";
+			return "ResultModel[" + mName + "]";
 		}
 		
 		@Override
@@ -131,17 +135,17 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 			
 			if( hasEitherOrPct() )
 			{
-				code = code * 3 + data.getString( KEY_EITHER_OR_PCT ).hashCode();
+				code = code * 3 + mEitherOrPct.hashCode();
 			}
 			
-			code = code * 3 + data.getString( KEY_ID ).hashCode();
+			code = code * 3 + mId.hashCode();
 			
 			// stub's wont have the rest of the data
 			// and hence will throw NPE's
 			if( isStub() ) return code;
 			
-			code = code * 3 + data.getString( KEY_IMG_URL ).hashCode();
-			code = code * 3 + data.getString( KEY_NAME ).hashCode();
+			code = code * 3 + mImgUrl.hashCode();
+			code = code * 3 + mName.hashCode();
 			
 			return code;
 		}
@@ -151,21 +155,35 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 	//private final ProgressDialog progress;
 	//private boolean showProgress = true;
 	protected final Map< T, HunchResult > resultsCache;
-	
-	public static final int RESULTS_SHOWN_ON_LOAD = 10;
-	public static final int RESULTS_ADDED_INLINE = 5;
+	protected final List< T > items;
 
 	public ResultListAdapter( Context context, List< T > list )
 	{
-		super( list, RESULTS_SHOWN_ON_LOAD, RESULTS_ADDED_INLINE );
-
 		this.context = context;
+		items = list;
 		
 		 resultsCache = new HashMap< T, HunchResult >();
 		//progress = new ProgressDialog( context );
 	}
-
+	
 	@Override
+	public int getCount()
+	{
+		return items.size();
+	}
+	
+	@Override
+	public long getItemId( int pos )
+	{
+		return pos;
+	}
+	
+	@Override
+	public T getItem( int pos )
+	{
+		return items.get( pos );
+	}
+
 	protected boolean shouldLoadInline( int curPos, int size )
 	{
 		return curPos >= size - 3;
@@ -189,105 +207,73 @@ public abstract class ResultListAdapter< T > extends InfiniteListAdapter< T >
 	
 	protected void resetResultView( ResultViewHolder view )
 	{
-		ViewGroup parent = (ViewGroup) view.wholeView;
 		
-		if( view.placeholder != null && view.image == null )
+		if( view.placeholder.getVisibility() != View.GONE &&
+			view.image.getVisibility() == View.GONE )
 		{
 			// the view has not been set yet, no work to do
 			return;
 		}
 		
-		ProgressBar placeholder = new ProgressBar( context );
-		
-		placeholder.setIndeterminate( true );
-		placeholder.setId( R.id.resultImage );
-		placeholder.setLayoutParams( view.image.getLayoutParams() );
-		int childIndex = parent.indexOfChild( view.image );
-		
-		parent.removeView( view.image );
-		
 		view.image.setVisibility( View.GONE );
-		
-		parent.addView( placeholder, childIndex );
+		view.placeholder.setVisibility( View.VISIBLE );
 		
 		// reset text views (important!)
 		view.number.setText( "" );
 		view.text.setText( "Loading..." );
 		view.pct.setText( "" );
+		view.pct.setVisibility( View.GONE );
 		
-		view.image = null;
-		view.placeholder = placeholder;
+		view.isSet = false;
 	}
 
 	protected void setupResultView( final ResultViewHolder resultView, int position,
 			ResultModel resultData )
 	{
+		
+		if( resultView.isSet )
+		{
+			return;
+		}
+		
 		// first download the result image.
 		// this is gonna take a while because it needs
 		// to hit the network in most cases.
-
-		final ImageView resultImg = new ImageView( context );
-		resultImg.setId( R.id.resultImage );
-		final View placeholder = resultView.wholeView.findViewById( R.id.resultImage );
 		
-		final ViewGroup parentGroup = (ViewGroup) resultView.wholeView;
-
-		ImageManager.getInstance().getTopicImageWithCallback( context, resultData.getImageUrl(),
-				new ImageManager.Callback()
+		if( resultView.image.getVisibility() == View.GONE )
 		{
-
-			@Override
-			public void callComplete( Drawable d )
+			ImageManager.getInstance().getTopicImageWithCallback( context, resultData.getImageUrl(),
+					new ImageManager.Callback()
 			{
-				// copy the layout params and index
-				resultImg.setLayoutParams( placeholder.getLayoutParams() );
-				int childIndex = parentGroup.indexOfChild( placeholder );
+
+				@Override
+				public void callComplete( Drawable d )
+				{
+
+					// remove the progressbar
+					resultView.placeholder.setVisibility( View.GONE );
+
+					// set the drawable
+					resultView.image.setImageDrawable( d );
 				
-				//if( progress.isShowing() )
-				//	progress.hide();
+					// show the image view
+					resultView.image.setVisibility( View.VISIBLE );
+				}
+			} );
+		}
 
-				// remove the progressbar
-				parentGroup.removeView( placeholder );
-				
-				placeholder.setVisibility( View.GONE );
-
-				// add the image view
-				parentGroup.addView( resultImg, childIndex );
-
-				// set the drawable
-				resultImg.setImageDrawable( d );
-				
-				// update the tag data
-				resultView.image = resultImg;
-				resultView.placeholder = null;
-
-			}
-		} );
-		
 		// now set the rest of the fields - index, name and the percentage
 		resultView.number.setText( String.valueOf( position + 1 ) + "." );
 
 		resultView.text.setText( resultData.getName() );
-		
-		// set the special background if it's the top result
-		if ( position == 0 )
-		{
-			resultView.wholeView.setBackgroundResource( R.drawable.top_result );
-		}
-		else
-		{
-			resultView.wholeView.setBackgroundResource( R.drawable.result_btn );
-		}
 
-		TextView resultPct = resultView.pct;
 		if ( resultData.hasEitherOrPct() )
 		{
-			resultPct.setText( resultData.getEitherOrPct() + "%" );
-		} else
-		{
-			resultPct.setVisibility( View.GONE );
-			parentGroup.removeView( resultPct );
+			resultView.pct.setVisibility( View.VISIBLE );
+			resultView.pct.setText( resultData.getEitherOrPct() + "%" );
 		}
+		
+		resultView.isSet = true;
 
 	}
 

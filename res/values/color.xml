@@ -26,7 +26,9 @@
 	<color name="listItemBackground">#FFFFFF</color>
 <color name="listItemText">#501C0A</color>
 <drawable name="categoryListDivider">#F1EBE9</drawable>
+<drawable name="results_list_divider">#F1EBE9</drawable>
 <color name="playTopicBackground">#FFFFFF</color>
 <color name="playTopicHeaderText">#666666</color>
 <color name="playTopicQuestionText">#252525</color>
+<color name="logo_background">#FFFFFF</color>
 </resources>

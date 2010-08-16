@@ -20,13 +20,15 @@
  along with Hunch for Android.  If not, see <http://www.gnu.org/licenses/>.
 
  -->
- 
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:background="@color/playTopicBackground" android:id="@+id/showResultsLayout">
+	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout"
+	android:paddingLeft="3dp" android:paddingRight="3dp" android:paddingTop="3dp" >
 
+<!-- 
 	<LinearLayout android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/topicHeaderLayout"
+		android:layout_width="fill_parent" android:id="@+id/headerLayout"
 		android:minHeight="60dp" android:layout_alignParentTop="true"
 		android:paddingLeft="3px" android:paddingTop="7px"
 		android:orientation="horizontal">
@@ -37,12 +39,19 @@
 			android:paddingLeft="15dp" android:id="@+id/topicTitle"
 			android:layout_gravity="center_vertical" style="@style/topicHeader"></TextView>
 	</LinearLayout>
-	<FrameLayout android:id="@+id/resultsContentContainer"
+	
+ -->
+ 
+ 	<include layout="@layout/topic_header" android:id="@+id/header_layout" />
+ 	
+	<include layout="@layout/interview_content" android:id="@+id/interview_content"
 		android:layout_height="fill_parent" android:layout_width="fill_parent"
-		android:layout_below="@id/topicHeaderLayout"
-		android:padding="3px">
-
-	</FrameLayout>
+		android:layout_below="@id/header_layout" 
+		android:layout_above="@+id/playTopicBottomButtonLayout"
+		android:padding="3px" />
+		
+	<include layout="@layout/back_button" android:id="@+id/back_button_layout"
+		android:layout_height="wrap_content" android:layout_width="fill_parent" 
+		android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
-

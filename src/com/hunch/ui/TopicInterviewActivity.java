@@ -19,9 +19,9 @@
 
 package com.hunch.ui;
 
+import static com.hunch.Const.MENU_BACK_TO_LIST;
 import static com.hunch.Const.MENU_RESTART_TOPIC;
 import static com.hunch.Const.MENU_SKIP_TO_RESULTS;
-import static com.hunch.Const.MENU_BACK_TO_LIST;
 import static com.hunch.Const.QUESTION_IMG_SIZE;
 import static com.hunch.Const.RESPONSE_IMG_SIZE;
 import static com.hunch.Const.TAG;
@@ -41,9 +41,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -203,24 +203,19 @@ public class TopicInterviewActivity extends Activity
 		// first inflate the layout to get the main viewgroup
 		final LayoutInflater inflater = getLayoutInflater();
 
-		final View mainLayout = inflater.inflate( R.layout.play_topic, null );
-		FrameLayout topicContentContainer = (FrameLayout) 
-						mainLayout.findViewById( R.id.topicContentContainer );
-		final View topicContent = inflater.inflate( R.layout.topic_content_layout, topicContentContainer );
-
-		// disable focusing on the actual list item views (instead contain the
-		// focusing to the pseudo-button views within the list views)
-		final ListView responses = (ListView) topicContent.findViewById( R.id.responseLayout );
-		responses.setItemsCanFocus( false );
+		final View mainLayout = inflater.inflate( R.layout.interview, null );
+		
+		final RelativeLayout topicContent = (RelativeLayout)
+			mainLayout.findViewById( R.id.interview_content );
 		
 		// temporarily hide the topic title textview
 		// otherwise it just sits there displaying "false"
 		// until the API call returns and the topic is loaded
-		TextView topicTitle = (TextView) mainLayout.findViewById( R.id.topicTitle );
-		topicTitle.setText( "" );
+		//TextView topicTitle = (TextView) mainLayout.findViewById( R.id.topic_name );
+		//topicTitle.setText( "" );
 		
-		final TextView topicText = (TextView) topicContent.findViewById( R.id.questionText );
-		topicText.setText( "" );
+		final TextView questionText = (TextView) topicContent.findViewById( R.id.question_text );
+		questionText.setText( "" );
 		
 		return mainLayout;
 		
@@ -245,12 +240,12 @@ public class TopicInterviewActivity extends Activity
 		}
 		
 		// set the topic image
-		final ImageView topicImg = (ImageView) findViewById( R.id.topicImage );
+		final ImageView topicImg = (ImageView) findViewById( R.id.topic_icon );
 
 		ImageManager.getInstance().getTopicImage( this, topicImg, topic.getImageUrl() );
 		
 		// set the topic title
-		final TextView topicTitle = (TextView) findViewById( R.id.topicTitle );
+		final TextView topicTitle = (TextView) findViewById( R.id.topic_name );
 		topicTitle.setText( topic.getDecision() );
 	}
 
@@ -299,7 +294,7 @@ public class TopicInterviewActivity extends Activity
 		
 		final HunchQuestion question = nextQuestion.getNextQuestion();
 
-		final View topicContent = findViewById( R.id.questionAndResponsesLayout );
+		final View topicContent = findViewById( R.id.interview_content );
 
 		// FrameLayout curContentContainer = (FrameLayout) findViewById(
 		// R.id.topicContentContainer );
@@ -309,11 +304,11 @@ public class TopicInterviewActivity extends Activity
 		// R.layout.topic_content_layout, null );
 
 		// what is the question?
-		final TextView questionText = (TextView) topicContent.findViewById( R.id.questionText );
+		final TextView questionText = (TextView) topicContent.findViewById( R.id.question_text );
 		questionText.setText( question.getText() );
 
 		// add the responses to the list
-		final ListView responses = (ListView) topicContent.findViewById( R.id.responseLayout );
+		final ListView responses = (ListView) topicContent.findViewById( R.id.response_list );
 		responses.setAdapter( new ResponseListAdapter( this, question.getResponses() ) );
 
 
@@ -321,7 +316,7 @@ public class TopicInterviewActivity extends Activity
 	
 	private void setupBackButton( final HunchNextQuestion h )
 	{
-		final Button button = (Button) findViewById( R.id.lastQuestion );
+		final Button button = (Button) findViewById( R.id.back_button );
 		final String prevQAState = h.getPrevQAState();
 		// final State state = curState;
 		

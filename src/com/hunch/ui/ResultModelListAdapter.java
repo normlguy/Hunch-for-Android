@@ -21,9 +21,11 @@ package com.hunch.ui;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ import com.hunch.Const;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchResult;
+import com.hunch.api.HunchRankedResults.ResultStub;
 
 /**
  * 
@@ -60,12 +63,15 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 	@Override
 	public View getView( final int position, View convertView, ViewGroup parent )
 	{
+		Log.d( Const.TAG, "ResultModelListAdapter.getView() pos: " + position +
+				" convertView: " + convertView + " parent: " + parent );
+		
 		// get the basic result info
 		final ResultModel stub = getItem( position );
 		
 		// try it without convert view for now.. there won't
 		// be too many items in the results list typically
-		convertView = null;
+		// convertView = null;
 		
 		// view holder pattern courtesy Romain Guy
 		ResultViewHolder tempHolder;
@@ -78,10 +84,11 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 			convertView = inflater.inflate( R.layout.result_list_item, null );
 			
 			tempHolder = new ResultViewHolder();
-			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.resultImage );
-			tempHolder.text = (TextView) convertView.findViewById( R.id.resultName );
-			tempHolder.number = (TextView) convertView.findViewById( R.id.resultNumber );
-			tempHolder.pct = (TextView) convertView.findViewById( R.id.resultPct );
+			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.placeholder );
+			tempHolder.image = (ImageView) convertView.findViewById( R.id.result_icon );
+			tempHolder.text = (TextView) convertView.findViewById( R.id.result_name );
+			tempHolder.number = (TextView) convertView.findViewById( R.id.result_number );
+			tempHolder.pct = (TextView) convertView.findViewById( R.id.result_pct );
 			tempHolder.resultId = stub.getId();
 			tempHolder.wholeView = convertView;
 			
@@ -120,7 +127,7 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 		}
 		
 		// finally try to add more items inline
-		super.tryLoadInline( position );
+		// super.tryLoadInline( position );
 		
 		return convertView;
 	}
@@ -131,7 +138,7 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 	@Override
 	public List< ResultModel > getAdapterData()
 	{
-		return super.getItems();
+		return items;
 	}
 
 }

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 	<!--
-
-		Copyright 2009, 2010 Tyler Levine This file is part of Hunch for
-		Android. Hunch for Android is free software: you can redistribute it
+		Copyright 2009, 2010 Tyler Levine
+		
+		This file is part of Hunch for Android.
+		
+		Hunch for Android is free software: you can redistribute it
 		and/or modify it under the terms of the GNU General Public License as
 		published by the Free Software Foundation, either version 3 of the
 		License, or (at your option) any later version. Hunch for Android is
@@ -19,17 +21,18 @@
 	android:layout_width="fill_parent" android:id="@+id/questionAndResponsesLayout"
 	android:background="@drawable/hunch_question_bg"
 	android:layout_centerHorizontal="true" android:layout_height="fill_parent">
-	<TextView android:layout_height="wrap_content" android:id="@+id/questionText"
+	
+	<TextView android:layout_height="wrap_content" android:id="@+id/results_text"
 		android:textColor="@color/playTopicQuestionText" android:textStyle="bold"
 		android:layout_gravity="center_horizontal" android:layout_width="fill_parent"
 		android:gravity="center" android:paddingTop="5px"
-		android:layout_alignParentTop="true" android:textSize="20dp" android:text="@+id/questionText">
-	</TextView>
+		android:layout_alignParentTop="true"
+		android:textAppearance="@android:style/TextAppearance.Medium"
+		android:text="@string/results" />
 
-
-
-	<ListView android:layout_below="@id/questionText"
-		android:layout_height="wrap_content" android:id="@+id/responseLayout"
-		android:divider="#0000" android:layout_width="fill_parent"
-		android:cacheColorHint="#00000000"></ListView>
+	<ListView android:layout_below="@id/results_text"
+		android:layout_height="wrap_content" android:id="@+id/response_list"
+		android:layout_width="fill_parent"
+		android:cacheColorHint="#00000000" />
+		
 </RelativeLayout>

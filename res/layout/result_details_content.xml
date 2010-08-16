@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:background="@drawable/hunch_question_bg" android:padding="3dp" >
+
+	<ScrollView android:layout_height="fill_parent"
+		android:layout_width="fill_parent" >
+		<LinearLayout android:layout_height="fill_parent"
+			android:layout_width="fill_parent" android:orientation="vertical"
+			android:id="@+id/info_layout" android:gravity="center_horizontal">
+			
+			<ImageView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/info_image" />
+			<TextView android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:gravity="left" style="@style/resultDetailsInfoText"
+				android:id="@+id/info_text" />
+
+		</LinearLayout>
+	</ScrollView>
+</RelativeLayout>

@@ -135,7 +135,7 @@ public class SelectTopicActivity extends ListActivity
 	{
 		super.onCreate( b );
 
-		setContentView( R.layout.home_tab1_category_list );
+		setContentView( R.layout.category_list );
 
 		api = HunchAPI.getInstance();
 		

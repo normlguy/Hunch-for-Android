@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+	<!--
+
+		Copyright 2009, 2010 Tyler Levine
+		
+		This file is part of Hunch for Android.
+		
+		Hunch for Android is free software: you can redistribute it
+		and/or modify it under the terms of the GNU General Public License as
+		published by the Free Software Foundation, either version 3 of the
+		License, or (at your option) any later version. Hunch for Android is
+		distributed in the hope that it will be useful, but WITHOUT ANY
+		WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+		for more details. You should have received a copy of the GNU General
+		Public License along with Hunch for Android. If not, see
+		<http://www.gnu.org/licenses/>.
+	-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:background="@color/playTopicBackground" android:id="@+id/resultsLayout">
+
+	<include android:id="@+id/topic_header" layout="@layout/topic_header"
+		android:layout_alignParentTop="true" android:layout_height="wrap_content"
+		android:layout_width="fill_parent" />
+
+	<include android:id="@+id/results_list_layout" layout="@layout/results_content"
+		android:layout_below="@id/topic_header" />
+
+</RelativeLayout>
+
