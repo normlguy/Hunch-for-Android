@@ -22,7 +22,8 @@
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout">
+	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout"
+	android:padding="3dp" >
 
 <!-- 
 	<LinearLayout android:layout_height="wrap_content"
@@ -48,7 +49,7 @@
 		android:layout_below="@id/header_layout" android:layout_above="@id/back_button_layout"
 		android:padding="3px" />
 		
-	<include layout="@layout/back_button" android:layout_below="@id/result_details_content" 
+	<include layout="@layout/back_button" android:layout_alignParentBottom="true" 
 		android:id="@+id/back_button_layout"
 		android:layout_height="wrap_content" android:layout_width="fill_parent" />
 

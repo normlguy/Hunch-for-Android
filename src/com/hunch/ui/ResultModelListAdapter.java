@@ -104,7 +104,7 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 		
 		HunchResult result = getFromCache( stub );
 		
-		if( result == null || // is it not in the cache?
+		if( // result == null || // is it not in the cache?
 			stub.isStub() ) // is it a stub?
 		{
 			// get the full result off the network
@@ -114,8 +114,9 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 
 				@Override
 				public void callComplete( HunchResult h )
-				{					
-					setupResultView( holder, position, buildModel( h, stub ) );
+				{
+					stub.unStub( h.getName(), h.getImageUrl() );
+					setupResultView( holder, position, stub );
 					addToCache( stub, h );
 				}
 			} );
@@ -123,7 +124,7 @@ public class ResultModelListAdapter extends ResultListAdapter< ResultListAdapter
 		// we have a full model in the cache
 		else
 		{
-			super.setupResultView( holder, position, buildModel( result, stub ) );
+			super.setupResultView( holder, position, stub );
 		}
 		
 		// finally try to add more items inline

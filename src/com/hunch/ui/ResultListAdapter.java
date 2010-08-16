@@ -60,12 +60,12 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 	
 	protected static class ResultModel
 	{
-		private final boolean mIsStub;
+		private boolean mIsStub;
 		
-		private final String mName;
-		private final String mId;
-		private final String mImgUrl;
-		private final String mEitherOrPct;
+		private String mName;
+		private String mId;
+		private String mImgUrl;
+		private String mEitherOrPct;
 		
 		public ResultModel( String name, String id, String imgUrl, String eitherOrPct )
 		{
@@ -85,6 +85,16 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 			mEitherOrPct = eitherOrPct;
 			
 			mIsStub = isStub;
+		}
+		
+		public void unStub( String name, String imgUrl )
+		{
+			if( !mIsStub ) return;
+			
+			mName = name;
+			mImgUrl = imgUrl;
+			
+			mIsStub = false;
 		}
 		
 		public boolean isStub()

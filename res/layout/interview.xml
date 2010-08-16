@@ -24,7 +24,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
 	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout"
-	android:paddingLeft="3dp" android:paddingRight="3dp" android:paddingTop="3dp" >
+	android:padding="3dp" >
 
 <!-- 
 	<LinearLayout android:layout_height="wrap_content"
