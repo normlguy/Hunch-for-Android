@@ -21,10 +21,10 @@
 
  -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
 	android:background="@color/playTopicBackground" android:id="@+id/playTopicLayout"
-	android:padding="3dp" >
+	android:padding="3dp" android:orientation="vertical">
 
 <!-- 
 	<LinearLayout android:layout_height="wrap_content"
@@ -42,16 +42,18 @@
 	
  -->
  
- 	<include layout="@layout/topic_header" android:id="@+id/header_layout" />
+ 	<include layout="@layout/topic_header" android:id="@+id/header_layout" 
+ 		android:layout_width="fill_parent" android:layout_height="wrap_content" 
+ 		android:layout_weight="0.0" />
  	
 	<include layout="@layout/interview_content" android:id="@+id/interview_content"
 		android:layout_height="fill_parent" android:layout_width="fill_parent"
 		android:layout_below="@id/header_layout" 
 		android:layout_above="@+id/playTopicBottomButtonLayout"
-		android:padding="3px" />
+		android:padding="3px" android:layout_weight="1.0" />
 		
-	<include layout="@layout/back_button" android:id="@+id/back_button_layout"
+	<include layout="@layout/back_button" android:id="@+id/back_button"
 		android:layout_height="wrap_content" android:layout_width="fill_parent" 
-		android:layout_alignParentBottom="true" />
+		android:layout_weight="0.0" />
 
-</RelativeLayout>
+</LinearLayout>

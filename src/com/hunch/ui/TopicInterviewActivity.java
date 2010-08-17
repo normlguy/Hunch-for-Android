@@ -47,6 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hunch.Const;
 import com.hunch.ImageManager;
 import com.hunch.R;
 import com.hunch.api.HunchAPI;
@@ -131,8 +132,6 @@ public class TopicInterviewActivity extends Activity
 		}
 
 	}
-
-	
 
 	protected HunchAPI api;
 
@@ -320,6 +319,9 @@ public class TopicInterviewActivity extends Activity
 		final String prevQAState = h.getPrevQAState();
 		// final State state = curState;
 		
+		// Log.d( Const.TAG, "setting up back button [" + button + "]" );
+		
+		
 		// if the user moves through the menus very quickly
 		// we can reach the results page while a question is
 		// still being retrieved.
@@ -332,6 +334,7 @@ public class TopicInterviewActivity extends Activity
 			@Override
 			public void onClick( View v )
 			{
+				// Log.d( Const.TAG, "back button clicked [" + button + "]" );
 				if( prevQAState == null )
 				{
 					// this is the first question, let's go back to the topic list by finishing the activity
@@ -394,11 +397,14 @@ public class TopicInterviewActivity extends Activity
 		}
 		else if( item.getItemId() == MENU_SKIP_TO_RESULTS )
 		{
-			if( curRankedResultsResponses == null )
+			if( curQAState == null ||
+				curQAState == "" )
 			{
 				Toast.makeText( this, "You must answer at least one question" +
-						" before getting any results!", Toast.LENGTH_SHORT );
+						" before getting any results!", Toast.LENGTH_SHORT ).show();
+				return super.onOptionsItemSelected( item );
 			}
+			
 			showResults( curRankedResultsResponses, curTopic );
 		}
 		else if( item.getItemId() == MENU_BACK_TO_LIST )
