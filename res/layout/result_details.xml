@@ -42,15 +42,19 @@
  -->
  
  	<include layout="@layout/topic_header" android:id="@+id/header_layout"
- 		android:layout_height="wrap_content" android:layout_width="fill_parent" />
+ 		android:layout_height="wrap_content" android:layout_width="fill_parent"
+ 		android:layout_weight="0.0" />
  	
 	<include layout="@layout/result_details_content" android:id="@+id/result_details_content"
-		android:layout_height="fill_parent" android:layout_width="fill_parent"
-		android:layout_below="@id/header_layout" android:layout_above="@id/back_button"
-		android:padding="3px" />
+		android:layout_height="fill_parent"	android:layout_width="fill_parent"
+		android:layout_below="@id/header_layout"
+		android:layout_above="@id/back_button"
+		android:padding="3px"
+		android:layout_weight="1.0" />
 		
 	<include layout="@layout/back_button" android:layout_alignParentBottom="true" 
 		android:id="@id/back_button"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" />
+		android:layout_height="wrap_content" android:layout_width="fill_parent" 
+		android:layout_weight="0.0" />
 
 </RelativeLayout>

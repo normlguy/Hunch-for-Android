@@ -18,12 +18,16 @@
  */
 package com.hunch.ui;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -31,7 +35,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.hunch.Const;
 import com.hunch.ImageManager;
+import com.hunch.R;
+import com.hunch.api.HunchAPI;
 import com.hunch.api.HunchResult;
 import com.hunch.api.HunchRankedResults.ResultStub;
 
@@ -42,7 +49,7 @@ import com.hunch.api.HunchRankedResults.ResultStub;
  * @since Aug 12, 2010
  *
  */
-public abstract class ResultListAdapter< T > extends BaseAdapter
+public class ResultListAdapter extends BaseAdapter
 {
 	public static class ResultViewHolder
 	{
@@ -53,9 +60,7 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 		TextView number;
 		TextView pct;
 		String resultId;
-		
-		boolean isSet = false;
-				
+		Integer position;
 	}
 	
 	protected static class ResultModel
@@ -133,15 +138,15 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 			return "ResultModel[" + mName + "]";
 		}
 		
+		public String inspect()
+		{
+			return String.format( "ResultModel[ name=%s, id=%s, stub=%s ]", mName, mId, mIsStub );
+		}
+		
 		@Override
 		public int hashCode()
 		{
 			int code = 37;
-			
-/*			Log.d( Const.TAG, String.format( "hashCode() [EO-PCT: %s, ID: %s, " +
-					"IMG-URL: %s, NAME: %s]", data.getString( KEY_EITHER_OR_PCT ),
-					data.getString( KEY_ID ), data.getString( KEY_IMG_URL ),
-					 data.getString( KEY_NAME ) ) );*/
 			
 			if( hasEitherOrPct() )
 			{
@@ -164,18 +169,15 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 	protected final Context context;
 	//private final ProgressDialog progress;
 	//private boolean showProgress = true;
-	protected final Map< T, HunchResult > resultsCache;
-	protected final List< T > items;
+	//protected final Map< ResultModel, HunchResult > resultsCache;
+	protected final List< ResultModel > items;
 
-	public ResultListAdapter( Context context, List< T > list )
+	public ResultListAdapter( Context context, List< ResultModel > list )
 	{
 		this.context = context;
 		items = list;
-		
-		 resultsCache = new HashMap< T, HunchResult >();
-		//progress = new ProgressDialog( context );
 	}
-	
+
 	@Override
 	public int getCount()
 	{
@@ -189,7 +191,7 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 	}
 	
 	@Override
-	public T getItem( int pos )
+	public ResultModel getItem( int pos )
 	{
 		return items.get( pos );
 	}
@@ -197,16 +199,6 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 	protected boolean shouldLoadInline( int curPos, int size )
 	{
 		return curPos >= size - 3;
-	}
-	
-	protected HunchResult getFromCache( T stub )
-	{
-		return resultsCache.get( stub );
-	}
-	
-	protected void addToCache( T stub, HunchResult result )
-	{
-		resultsCache.put( stub, result );
 	}
 	
 	protected ResultModel buildModel( HunchResult result, ResultStub stub )
@@ -233,26 +225,25 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 		view.text.setText( "Loading..." );
 		view.pct.setText( "" );
 		view.pct.setVisibility( View.GONE );
-		
-		view.isSet = false;
 	}
 
 	protected void setupResultView( final ResultViewHolder resultView, int position,
 			ResultModel resultData )
 	{
 		
-		if( resultView.isSet )
+		/*if( resultView.isSet )
 		{
 			return;
-		}
+		}*/
 		
 		// first download the result image.
 		// this is gonna take a while because it needs
 		// to hit the network in most cases.
 		
-		if( resultView.image.getVisibility() == View.GONE )
+		if( resultView.placeholder.getVisibility() != View.GONE )
 		{
-			ImageManager.getInstance().getTopicImageWithCallback( context, resultData.getImageUrl(),
+			ImageManager.getInstance()
+			.getTopicImageWithCallback( context, resultData.getImageUrl(),
 					new ImageManager.Callback()
 			{
 
@@ -271,6 +262,11 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 				}
 			} );
 		}
+		else
+		{
+			ImageManager.getInstance()
+			.getTopicImage( context, resultView.image, resultData.getImageUrl() );
+		}
 
 		// now set the rest of the fields - index, name and the percentage
 		resultView.number.setText( String.valueOf( position + 1 ) + "." );
@@ -282,13 +278,91 @@ public abstract class ResultListAdapter< T > extends BaseAdapter
 			resultView.pct.setVisibility( View.VISIBLE );
 			resultView.pct.setText( resultData.getEitherOrPct() + "%" );
 		}
-		
-		resultView.isSet = true;
 
 	}
 
 	@Override
-	public abstract View getView( final int position, View convertView, ViewGroup parent );
+	public View getView( final int position, View convertView, ViewGroup parent )
+	{
+		Log.d( Const.TAG, "ResultModelListAdapter.getView() pos: " + position +
+				" convertView: " + convertView + " parent: " + parent );
+		
+		// get the basic result info
+		final ResultModel model = getItem( position );
+		
+		Log.d( Const.TAG, "loaded model: " + model.inspect() );
+		
+		// try it without convert view for now.. there won't
+		// be too many items in the results list typically
+		// convertView = null;
+		
+		// view holder pattern courtesy Romain Guy
+		ResultViewHolder tempHolder;
+		if( convertView == null )
+		{
+			// first find the inflater
+			final LayoutInflater inflater = (LayoutInflater)
+					context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+			
+			convertView = inflater.inflate( R.layout.result_list_item, parent, false );
+			
+			tempHolder = new ResultViewHolder();
+			tempHolder.placeholder = (ProgressBar) convertView.findViewById( R.id.placeholder );
+			tempHolder.image = (ImageView) convertView.findViewById( R.id.result_icon );
+			tempHolder.text = (TextView) convertView.findViewById( R.id.result_name );
+			tempHolder.number = (TextView) convertView.findViewById( R.id.result_number );
+			tempHolder.pct = (TextView) convertView.findViewById( R.id.result_pct );
+			tempHolder.resultId = model.getId();
+			tempHolder.position = position;
+			tempHolder.wholeView = convertView;
+			
+			convertView.setTag( tempHolder );
+			
+		}
+		else
+		{
+			tempHolder = (ResultViewHolder) convertView.getTag();
+			
+			// update the position -- it may have changed
+			tempHolder.position = position;
+			
+			// also update the result id because
+			// this view may be showing a different result now
+			tempHolder.resultId = model.getId();
+			
+		}
+		
+		// if the result is already downloaded,
+		// just set up the new view and then return
+		if( !model.isStub() )
+		{
+			setupResultView( tempHolder, position, model );
+			return convertView;
+		}
+		
+		final ResultViewHolder holder = tempHolder;
+		
+		//	get the full result off the network
+		HunchAPI.getInstance().getResult( model.getId(), Const.RESULT_IMG_SIZE,
+				new HunchResult.Callback()
+		{
 
-	public abstract List< ResultModel > getAdapterData();
+			@Override
+			public void callComplete( HunchResult h )
+			{
+				model.unStub( h.getName(), h.getImageUrl() );
+				setupResultView( holder, position, model );
+			}
+		} );
+		
+		// reset the view until it gets loaded
+		resetResultView( holder );
+		
+		return convertView;
+	}
+	
+	public List< ResultModel > getAdapterData()
+	{
+		return items;
+	}
 }

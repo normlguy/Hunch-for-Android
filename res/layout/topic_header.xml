@@ -33,6 +33,6 @@
     <TextView android:id="@+id/topic_name"
         android:layout_height="wrap_content"
         android:paddingLeft="6dip"
-		android:layout_gravity="center_vertical" android:gravity="center" android:layout_width="wrap_content" android:textAppearance="@android:style/TextAppearance.Large.Inverse"/>
+		android:layout_gravity="center_vertical" android:gravity="center" android:textAppearance="@android:style/TextAppearance.Large.Inverse" android:layout_width="fill_parent"/>
 </LinearLayout>
 

@@ -14,7 +14,7 @@
 				android:layout_height="wrap_content" android:id="@+id/info_image" />
 			<TextView android:layout_height="wrap_content" android:layout_width="fill_parent"
 				android:gravity="left" style="@style/resultDetailsInfoText"
-				android:id="@+id/info_text" />
+				android:id="@+id/info_text" android:layout_margin="10dp"/>
 
 		</LinearLayout>
 	</ScrollView>

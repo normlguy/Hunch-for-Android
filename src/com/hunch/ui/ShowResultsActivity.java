@@ -50,7 +50,7 @@ import com.hunch.ui.ResultListAdapter.ResultViewHolder;
  */
 public class ShowResultsActivity extends Activity
 {
-	private static class ShowResultsModel
+	protected static class ShowResultsModel
 	{
 		private List< ResultModel > results;
 				
@@ -100,8 +100,9 @@ public class ShowResultsActivity extends Activity
 	
 	// private ShowResultsModel model;
 	private ProgressDialog progress;
-	private ResultListAdapter<?> adapter;
+	private ResultListAdapter adapter;
 	private TopicInfo curTopicInfo;
+	private ShowResultsModel lastModel;
 	
 	@Override
 	public Object onRetainNonConfigurationInstance()
@@ -117,6 +118,8 @@ public class ShowResultsActivity extends Activity
 		super.onCreate( icicle );
 		
 		setContentView( createView() );
+		
+		lastModel = (ShowResultsModel) getLastNonConfigurationInstance();
 	}
 	
 	@Override
@@ -127,7 +130,6 @@ public class ShowResultsActivity extends Activity
 		Intent resultDetailsIntent = getIntent();
 		String rankedResultResponses = resultDetailsIntent.getStringExtra( "rankedResultResponses" );
 		
-		ShowResultsModel lastModel = (ShowResultsModel) getLastNonConfigurationInstance();
 		String topicId, topicTitle, topicImgUrl;
 		if( lastModel != null )
 		{
@@ -137,6 +139,7 @@ public class ShowResultsActivity extends Activity
 			topicImgUrl = lastModel.getTopicImageUrl();
 			
 			startResultsFromLastModel( lastModel );
+			setupTopicInfo( topicTitle, topicId, topicImgUrl );
 		}
 		else
 		{
@@ -146,9 +149,8 @@ public class ShowResultsActivity extends Activity
 			topicImgUrl = resultDetailsIntent.getStringExtra( "topicImgUrl" );
 			
 			startResults( rankedResultResponses, topicId, topicTitle, topicImgUrl );
+			setupTopicInfo( topicTitle, topicId, topicImgUrl );
 		}
-		
-		setupTopicInfo( topicTitle, topicId, topicImgUrl );
 		
 	}
 	
@@ -164,6 +166,12 @@ public class ShowResultsActivity extends Activity
 	public void onPause()
 	{
 		super.onPause();
+		
+		List< ResultModel > models = adapter.getAdapterData();
+		ShowResultsModel model = new ShowResultsModel( models, curTopicInfo );
+		
+		lastModel = model;
+		
 	}
 	
 	protected void setupTopicHeader( String topicTitle, String topicImgUrl )
@@ -209,9 +217,8 @@ public class ShowResultsActivity extends Activity
 		
 		setupTopicHeader( aModel.getTopicTitle(), aModel.getTopicImageUrl() );
 		
-		// I do love generics but boy do they cause some ugly casts on occasion...
 		List< ResultModel > modelListForAdapter = aModel.getModelList();
-		adapter = new ResultModelListAdapter( this, modelListForAdapter );
+		adapter = new ResultListAdapter( this, modelListForAdapter );
 		resultItemsLayout.setAdapter( adapter );
 	}
 	
@@ -231,7 +238,7 @@ public class ShowResultsActivity extends Activity
 			{				
 				final ListView resultItemsLayout = (ListView) findViewById( R.id.response_list );
 				
-				adapter = new ResultModelListAdapter( ShowResultsActivity.this,
+				adapter = new ResultListAdapter( ShowResultsActivity.this,
 						convertStubs( h.getAllResults() ) );
 				resultItemsLayout.setAdapter( adapter );
 				

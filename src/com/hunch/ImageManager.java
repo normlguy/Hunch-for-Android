@@ -29,8 +29,8 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +92,7 @@ public class ImageManager
 			return;
 		}
 		
-		List< CachePolicy > completedAdds = new LinkedList< CachePolicy >();
+		List< CachePolicy > completedAdds = new ArrayList< CachePolicy >( policies.length );
 		for( CachePolicy policy : policies )
 		{
 			// if we have already added to this cache, don't add again
@@ -269,7 +269,7 @@ public class ImageManager
 			return null;
 		}
 		
-		Log.v( Const.TAG, "found image in app cache (" + url + ")" );
+		//Log.v( Const.TAG, "found image in app cache (" + url + ")" );
 		
 		return iStream;
 	}
@@ -311,7 +311,7 @@ public class ImageManager
 			return null;
 		}
 		
-		Log.v( Const.TAG, "found image in internal cache (" + url + ")" );
+		//Log.v( Const.TAG, "found image in internal cache (" + url + ")" );
 		
 		return iStream;
 	}
@@ -557,17 +557,21 @@ public class ImageManager
 	
 	public void getTopicImageWithCallback( Context context, String imgURL, Callback callback )
 	{
+		Log.d( Const.TAG, "getting image drawable (" + imgURL + ")" );
+		
 		URL url = stringToURL( imgURL );
 		Drawable cachedDrawable = getCachedTopicImage( context, url );
 		
 		if( cachedDrawable != null )
 		{
 			// the image is in the cache
+			Log.d( Const.TAG, "Set image drawable from cache (" + imgURL + ")" );
 			callback.callComplete( cachedDrawable );
 		}
 		else
 		{
 			// the image is not in the cache, must download
+			Log.d( Const.TAG, "downloading image drawable from net (" + imgURL + ")" );
 			downloadTopicDrawable( url, context, callback );
 		}
 	}
