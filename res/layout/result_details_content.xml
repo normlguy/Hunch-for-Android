@@ -11,7 +11,8 @@
 			android:id="@+id/info_layout" android:gravity="center_horizontal">
 			
 			<ImageView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/info_image" />
+				android:layout_height="wrap_content" android:id="@+id/info_image" 
+				android:layout_margin="6dip" />
 			<TextView android:layout_height="wrap_content" android:layout_width="fill_parent"
 				android:gravity="left" style="@style/resultDetailsInfoText"
 				android:id="@+id/info_text" android:layout_margin="10dp"/>

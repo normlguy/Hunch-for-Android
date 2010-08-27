@@ -167,9 +167,6 @@ public class ResultListAdapter extends BaseAdapter
 	}
 	
 	protected final Context context;
-	//private final ProgressDialog progress;
-	//private boolean showProgress = true;
-	//protected final Map< ResultModel, HunchResult > resultsCache;
 	protected final List< ResultModel > items;
 
 	public ResultListAdapter( Context context, List< ResultModel > list )

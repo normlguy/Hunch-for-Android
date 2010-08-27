@@ -18,16 +18,16 @@
 		<http://www.gnu.org/licenses/>.
 	-->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:background="@color/playTopicBackground" android:id="@+id/resultsLayout">
+	android:background="@color/playTopicBackground" android:id="@+id/resultsLayout"
+	android:orientation="vertical" android:padding="3dip" >
 
 	<include android:id="@+id/topic_header" layout="@layout/topic_header"
-		android:layout_alignParentTop="true" android:layout_height="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" />
 
 	<include android:id="@+id/results_list_layout" layout="@layout/results_content"
 		android:layout_below="@id/topic_header" />
 
-</RelativeLayout>
-
+</LinearLayout>
